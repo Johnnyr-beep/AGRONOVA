@@ -1,9 +1,9 @@
 {
   "version": 2,
   "name": "agronova-frontend",
+  "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npm run build",
   "outputDirectory": "dist/agronova-web-angular/browser",
-  "installCommand": "npm install",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
