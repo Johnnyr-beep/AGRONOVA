@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "agronova",
+  "builds": [
+    {
+      "src": "agronova-web-angular/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/agronova-web-angular/browser"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

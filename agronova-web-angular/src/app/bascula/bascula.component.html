@@ -45,56 +45,86 @@
                 <div class="col-span-12 lg:col-span-8 space-y-6">
                     <div class="grid grid-cols-6 gap-4">
                         <div class="col-span-2 space-y-1.5">
-                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Guía</label>
-                            <input type="text" pInputText formControlName="GuiaMovilizacion" 
+                            <label class="text-[8px] font-black uppercase tracking-widest ml-1"
+                                   [class.text-slate-700]="!fieldInvalid('GuiaMovilizacion')"
+                                   [class.text-rose-500]="fieldInvalid('GuiaMovilizacion')">Guía</label>
+                            <input type="text" pInputText formControlName="GuiaMovilizacion"
+                                   [class.border-rose-500]="fieldInvalid('GuiaMovilizacion')"
                                    class="w-full bg-black/40 border-white/5 rounded-lg py-3 font-black text-white text-xs tracking-widest outline-none" />
                         </div>
                         <div class="col-span-2 space-y-1.5">
-                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Nº Ticket</label>
-                            <input type="text" pInputText formControlName="NumeroTicket" 
+                            <label class="text-[8px] font-black uppercase tracking-widest ml-1"
+                                   [class.text-slate-700]="!fieldInvalid('NumeroTicket')"
+                                   [class.text-rose-500]="fieldInvalid('NumeroTicket')">Nº Ticket *</label>
+                            <input type="text" pInputText formControlName="NumeroTicket"
+                                   [class.border-rose-500]="fieldInvalid('NumeroTicket')"
                                    class="w-full bg-black/40 border-white/5 rounded-lg py-3 font-black text-[#a4c639] text-xs tracking-widest outline-none" />
+                            <p *ngIf="fieldInvalid('NumeroTicket')" class="text-[8px] text-rose-500 ml-1 mt-0.5">Campo obligatorio</p>
                         </div>
                         <div class="col-span-2 space-y-1.5">
                             <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Referencia</label>
-                            <input type="text" pInputText formControlName="Referencia" 
+                            <input type="text" pInputText formControlName="Referencia"
                                    class="w-full bg-black/40 border-white/5 rounded-lg py-3 font-black text-white text-xs tracking-widest outline-none" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-1.5">
-                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Procedencia</label>
-                            <p-autoComplete formControlName="Procedencia" [suggestions]="suggestions['Procedencia']" 
+                            <label class="text-[8px] font-black uppercase tracking-widest ml-1"
+                                   [class.text-slate-700]="!fieldInvalid('Procedencia')"
+                                   [class.text-rose-500]="fieldInvalid('Procedencia')">Procedencia *</label>
+                            <p-autoComplete formControlName="Procedencia" [suggestions]="suggestions['Procedencia']"
                                            (completeMethod)="searchSuggestions($event, 'Procedencia')"
-                                           styleClass="industrial-autocomplete" inputStyleClass="industrial-input-compact" />
+                                           [inputStyleClass]="fieldInvalid('Procedencia') ? 'industrial-input-compact border-rose-500' : 'industrial-input-compact'"
+                                           styleClass="industrial-autocomplete" />
+                            <p *ngIf="fieldInvalid('Procedencia')" class="text-[8px] text-rose-500 ml-1">Campo obligatorio</p>
                         </div>
                         <div class="space-y-1.5">
-                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Proveedor / Planta</label>
-                            <p-autoComplete formControlName="ProveedorNombre" [suggestions]="suggestions['ProveedorNombre']" 
+                            <label class="text-[8px] font-black uppercase tracking-widest ml-1"
+                                   [class.text-slate-700]="!fieldInvalid('ProveedorNombre')"
+                                   [class.text-rose-500]="fieldInvalid('ProveedorNombre')">Proveedor / Planta *</label>
+                            <p-autoComplete formControlName="ProveedorNombre" [suggestions]="suggestions['ProveedorNombre']"
                                            (completeMethod)="searchSuggestions($event, 'ProveedorNombre')"
-                                           styleClass="industrial-autocomplete" inputStyleClass="industrial-input-compact" />
+                                           [inputStyleClass]="fieldInvalid('ProveedorNombre') ? 'industrial-input-compact border-rose-500' : 'industrial-input-compact'"
+                                           styleClass="industrial-autocomplete" />
+                            <p *ngIf="fieldInvalid('ProveedorNombre')" class="text-[8px] text-rose-500 ml-1">Campo obligatorio</p>
                         </div>
                     </div>
 
                     <div class="space-y-1.5">
-                        <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Cliente Destino / Consignatario</label>
-                        <p-autoComplete formControlName="ClienteNombre" [suggestions]="suggestions['ClienteNombre']" 
+                        <label class="text-[8px] font-black uppercase tracking-widest ml-1"
+                               [class.text-slate-700]="!fieldInvalid('ClienteNombre')"
+                               [class.text-rose-500]="fieldInvalid('ClienteNombre')">Cliente Destino / Consignatario *</label>
+                        <p-autoComplete formControlName="ClienteNombre" [suggestions]="suggestions['ClienteNombre']"
                                        (completeMethod)="searchSuggestions($event, 'ClienteNombre')"
-                                       styleClass="industrial-autocomplete w-full" inputStyleClass="industrial-input-compact w-full" />
+                                       [inputStyleClass]="fieldInvalid('ClienteNombre') ? 'industrial-input-compact w-full border-rose-500' : 'industrial-input-compact w-full'"
+                                       styleClass="industrial-autocomplete w-full" />
+                        <p *ngIf="fieldInvalid('ClienteNombre')" class="text-[8px] text-rose-500 ml-1">Campo obligatorio</p>
                     </div>
 
                     <div class="grid grid-cols-3 gap-4">
                         <div class="space-y-1.5">
-                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Placa Vehículo</label>
-                            <p-autoComplete formControlName="PatentaVehiculo" [suggestions]="suggestions['PatentaVehiculo']" 
+                            <label class="text-[8px] font-black uppercase tracking-widest ml-1"
+                                   [class.text-slate-700]="!fieldInvalid('PatentaVehiculo')"
+                                   [class.text-rose-500]="fieldInvalid('PatentaVehiculo')">Placa Vehículo *</label>
+                            <p-autoComplete formControlName="PatentaVehiculo" [suggestions]="suggestions['PatentaVehiculo']"
                                            (completeMethod)="searchSuggestions($event, 'PatentaVehiculo')"
-                                           styleClass="industrial-autocomplete" inputStyleClass="industrial-input-compact uppercase tracking-[0.2em]" />
+                                           [inputStyleClass]="fieldInvalid('PatentaVehiculo') ? 'industrial-input-compact uppercase tracking-[0.2em] border-rose-500' : 'industrial-input-compact uppercase tracking-[0.2em]'"
+                                           styleClass="industrial-autocomplete" />
+                            <p *ngIf="basculaForm.get('PatentaVehiculo')?.hasError('required') && basculaForm.get('PatentaVehiculo')?.touched"
+                               class="text-[8px] text-rose-500 ml-1">Campo obligatorio</p>
+                            <p *ngIf="basculaForm.get('PatentaVehiculo')?.hasError('placaInvalida') && basculaForm.get('PatentaVehiculo')?.touched"
+                               class="text-[8px] text-amber-400 ml-1">⚠ Formato: ABC123 o ABC12D</p>
                         </div>
                         <div class="col-span-2 space-y-1.5">
-                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Conductor / Transportista</label>
-                            <p-autoComplete formControlName="Conductor" [suggestions]="suggestions['Conductor']" 
+                            <label class="text-[8px] font-black uppercase tracking-widest ml-1"
+                                   [class.text-slate-700]="!fieldInvalid('Conductor')"
+                                   [class.text-rose-500]="fieldInvalid('Conductor')">Conductor / Transportista *</label>
+                            <p-autoComplete formControlName="Conductor" [suggestions]="suggestions['Conductor']"
                                            (completeMethod)="searchSuggestions($event, 'Conductor')"
-                                           styleClass="industrial-autocomplete w-full" inputStyleClass="industrial-input-compact w-full" />
+                                           [inputStyleClass]="fieldInvalid('Conductor') ? 'industrial-input-compact w-full border-rose-500' : 'industrial-input-compact w-full'"
+                                           styleClass="industrial-autocomplete w-full" />
+                            <p *ngIf="fieldInvalid('Conductor')" class="text-[8px] text-rose-500 ml-1">Campo obligatorio</p>
                         </div>
                     </div>
                 </div>
@@ -135,11 +165,26 @@
                             <div class="text-2xl font-black text-[#a4c639] tracking-tighter">{{ (basculaForm.get('PesoLleno')?.value - basculaForm.get('PesoVacio')?.value) | number:'1.0-0' }}</div>
                         </div>
 
-                        <!-- Promedio -->
-                        <div class="col-span-2 bg-black/60 rounded-2xl p-4 border border-white/5 flex items-center justify-between">
-                            <span class="text-[7px] font-black text-slate-800 uppercase tracking-[0.2em]">Promedio</span>
-                            <div class="text-xl font-black text-white tracking-tighter">
-                                {{ (basculaForm.get('CantidadAnimales')?.value > 0 ? (basculaForm.get('PesoLleno')?.value - basculaForm.get('PesoVacio')?.value) / basculaForm.get('CantidadAnimales')?.value : 0) | number:'1.1-1' }}
+                        <!-- Promedio con alerta biológica -->
+                        <div class="col-span-2 rounded-2xl p-4 border flex items-center justify-between transition-all"
+                             [class.bg-black/60]="alertaPromedio === 'none' || alertaPromedio === 'ok'"
+                             [class.border-white/5]="alertaPromedio === 'none' || alertaPromedio === 'ok'"
+                             [class.bg-amber-500/10]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'"
+                             [class.border-amber-500/30]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'">
+                            <div>
+                                <span class="text-[7px] font-black uppercase tracking-[0.2em]"
+                                      [class.text-slate-800]="alertaPromedio === 'none'"
+                                      [class.text-[#a4c639]]="alertaPromedio === 'ok'"
+                                      [class.text-amber-400]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'"
+                                >Promedio</span>
+                                <p *ngIf="alertaPromedio === 'bajo'" class="text-[7px] text-amber-400 font-bold mt-0.5">⚠ PESO BAJO — verifique</p>
+                                <p *ngIf="alertaPromedio === 'alto'" class="text-[7px] text-amber-400 font-bold mt-0.5">⚠ PESO ALTO — verifique</p>
+                            </div>
+                            <div class="text-xl font-black tracking-tighter"
+                                 [class.text-white]="alertaPromedio === 'none'"
+                                 [class.text-[#a4c639]]="alertaPromedio === 'ok'"
+                                 [class.text-amber-400]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'">
+                                {{ promedioKgAnimal | number:'1.1-1' }}
                                 <span class="text-[8px] text-slate-800 font-bold ml-1">KG/ANIM</span>
                             </div>
                         </div>

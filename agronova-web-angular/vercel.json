@@ -1,7 +1,9 @@
 {
   "version": 2,
-  "public": true,
   "name": "agronova-frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/agronova-web-angular/browser",
+  "installCommand": "npm install",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
