@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribución de Carnes — AGROPECUARIA SANTA CRUZ</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap');
+
+  :root {
+    --bg: #F5F2ED;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE8;
+    --border: #D8D3CC;
+    --border2: #C4BFB8;
+    --text: #1C1A18;
+    --text2: #6B6560;
+    --text3: #9E9891;
+    --accent: #2D5A3D;
+    --accent2: #4A8C60;
+    --accent-bg: #EBF4EE;
+    --exito: #5B2D8B;
+    --exito-bg: #F0EBF8;
+    --surtimay: #B8500A;
+    --surtimay-bg: #FDF0E8;
+    --danger: #C0392B;
+    --warning: #D68910;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  header .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  header .sub {
+    font-size: 11px;
+    opacity: 0.7;
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+
+  /* Upload zone */
+  .upload-section {
+    background: var(--surface);
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+    margin-bottom: 24px;
+  }
+
+  .upload-section.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+  }
+
+  .upload-section.has-file {
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--accent-bg);
+  }
+
+  .upload-icon {
+    width: 48px; height: 48px;
+    background: var(--accent-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 22px;
+  }
+
+  .upload-section h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .upload-section p { color: var(--text2); font-size: 12px; }
+
+  .upload-section input[type=file] { display: none; }
+
+  .badge-file {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #fff;
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; margin-top: 12px;
+  }
+
+  /* Botones */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #234829; }
+  .btn-primary:disabled { background: var(--border2); border-color: var(--border2); cursor: not-allowed; }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border2);
+  }
+  .btn-outline:hover { background: var(--surface2); }
+
+  .btn-download {
+    background: #1A3A5C;
+    color: #fff;
+    border-color: #1A3A5C;
+    font-size: 13px;
+    padding: 12px 24px;
+  }
+  .btn-download:hover { background: #0F2640; }
+
+  .actions { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+
+  /* Mensajes */
+  .msg {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .msg.error { background: #FDEDED; border: 1px solid #F5C6CB; color: var(--danger); display: block; }
+  .msg.success { background: var(--accent-bg); border: 1px solid #A8D5B5; color: var(--accent); display: block; }
+  .msg.info { background: #EBF4FF; border: 1px solid #BDDCF9; color: #1A5276; display: block; }
+
+  /* Progress */
+  .progress-bar {
+    height: 4px; background: var(--border); border-radius: 2px;
+    margin-bottom: 20px; overflow: hidden; display: none;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+  .tab {
+    padding: 10px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text2);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+    background: none; border-top: none; border-left: none; border-right: none;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab:hover { color: var(--text); }
+
+  /* Panel resultado */
+  .result-panel { display: none; }
+  .result-panel.visible { display: block; }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .stat-card .label { font-size: 11px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .value { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; color: var(--text); line-height: 1; }
+  .stat-card .sub-val { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+  /* Tabla de vista previa */
+  .table-wrapper { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    background: var(--surface2);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 500;
+    border-bottom: 1.5px solid var(--border);
+    white-space: nowrap;
+    color: var(--text);
+    position: sticky; top: 0;
+  }
+  td { padding: 8px 12px; border-bottom: 0.5px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--bg); }
+  tr:hover td { background: var(--accent-bg); }
+
+  .cadena-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .cadena-carulla { background: #EBF4EE; color: var(--accent); }
+  .cadena-exito { background: var(--exito-bg); color: var(--exito); }
+  .cadena-surtimay { background: var(--surtimay-bg); color: var(--surtimay); }
+
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .total-row td { font-weight: 500; background: #FFFBF0 !important; border-top: 1.5px solid var(--border2); }
+
+  /* Tienda card */
+  .tienda-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 500;
+  }
+  .tienda-header.carulla { background: var(--accent-bg); color: var(--accent); }
+  .tienda-header.exito { background: var(--exito-bg); color: var(--exito); }
+  .tienda-header.surtimay { background: var(--surtimay-bg); color: var(--surtimay); }
+
+  .tienda-body { display: none; padding: 0 4px 12px; }
+  .tienda-body.open { display: block; }
+  .tienda-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .pill {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  #tab-content > div { display: none; }
+  #tab-content > div.active { display: block; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text3);
+  }
+  .empty-state .big { font-family: 'Fraunces', serif; font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Distribución de Cortes</div>
+    <div class="sub">Agropecuaria Santa Cruz Ltda — Generador de despacho</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="upload-section" id="dropZone">
+    <input type="file" id="fileInput" accept=".xlsx,.xls">
+    <div class="upload-icon">📂</div>
+    <h2>Sube la Orden de Compra</h2>
+    <p>Arrastra el archivo .xlsx aquí o haz clic para seleccionarlo</p>
+    <p style="margin-top:6px; color: var(--text3);">Requiere hojas: DETALLADO y COMPARATIVO</p>
+    <div id="fileBadge" style="display:none">
+      <div class="badge-file">✓ <span id="fileName"></span></div>
+    </div>
+  </div>
+
+  <div id="msgBox" class="msg"></div>
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="btnProcesar" disabled onclick="procesarArchivo()">
+      ⚡ Generar Distribución
+    </button>
+    <button class="btn btn-outline" id="btnReset" onclick="resetApp()" style="display:none">↺ Nuevo archivo</button>
+    <button class="btn btn-download" id="btnDescargar" onclick="descargarExcel()" style="display:none">
+      ↓ Descargar Excel
+    </button>
+  </div>
+
+  <div id="resultPanel" class="result-panel">
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('tiendas')">Por Tienda</button>
+      <button class="tab" onclick="switchTab('pivot')">Tabla Cruzada</button>
+      <button class="tab" onclick="switchTab('cadenas')">Por Cadena</button>
+    </div>
+
+    <div id="tab-content">
+      <div id="tab-tiendas" class="active"></div>
+      <div id="tab-pivot"></div>
+      <div id="tab-cadenas"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let datosGlobales = null;
+let workbookData = null;
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+function handleFile(file) {
+  if (!file.name.match(/\.xlsx?$/i)) {
+    showMsg('El archivo debe ser .xlsx o .xls', 'error'); return;
+  }
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileBadge').style.display = 'block';
+  dropZone.classList.add('has-file');
+  document.getElementById('btnProcesar').disabled = false;
+  showMsg(`Archivo cargado: ${file.name}`, 'info');
+  window._pendingFile = file;
+}
+
+function showMsg(text, type) {
+  const box = document.getElementById('msgBox');
+  box.className = `msg ${type}`;
+  box.textContent = text;
+}
+
+function hideMsg() {
+  document.getElementById('msgBox').className = 'msg';
+}
+
+function setProgress(pct) {
+  document.getElementById('progressBar').style.display = 'block';
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function resetApp() {
+  datosGlobales = null;
+  workbookData = null;
+  window._pendingFile = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileBadge').style.display = 'none';
+  dropZone.classList.remove('has-file');
+  document.getElementById('btnProcesar').disabled = true;
+  document.getElementById('btnReset').style.display = 'none';
+  document.getElementById('btnDescargar').style.display = 'none';
+  document.getElementById('resultPanel').style.display = 'none';
+  document.getElementById('progressBar').style.display = 'none';
+  document.getElementById('progressFill').style.width = '0%';
+  hideMsg();
+}
+
+function procesarArchivo() {
+  if (!window._pendingFile) return;
+  setProgress(10);
+  showMsg('Leyendo archivo...', 'info');
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      setProgress(30);
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+
+      // Buscar hojas con nombres flexibles
+      const sheetNames = wb.SheetNames.map(s => s.trim());
+      const findSheet = (keys) => {
+        for (const k of keys) {
+          const found = wb.SheetNames.find(s => s.trim().toUpperCase().includes(k.toUpperCase()));
+          if (found) return XLSX.utils.sheet_to_json(wb.Sheets[found], { defval: '' });
+        }
+        return null;
+      };
+
+      const detallado = findSheet(['DETALLADO']);
+      const comparativo = findSheet(['COMPARATIVO']);
+
+      if (!detallado) { showMsg('No se encontró la hoja DETALLADO en el archivo.', 'error'); return; }
+
+      setProgress(60);
+
+      // Normalizar nombres de columnas
+      const norm = (arr) => arr.map(row => {
+        const out = {};
+        for (const k of Object.keys(row)) out[k.trim()] = row[k];
+        return out;
+      });
+
+      const det = norm(detallado);
+
+      // Mapeo PLU → nombre desde COMPARATIVO
+      const pluMap = {};
+      if (comparativo) {
+        norm(comparativo).forEach(r => {
+          const plu = parseInt(r['PLU'] || r['Plu'] || 0);
+          const nombre = r['PRODUCTO ( ÉXITO )'] || r['Nombre'] || '';
+          if (plu && nombre) pluMap[plu] = nombre.toString().trim();
+        });
+      }
+
+      // Procesar datos
+      const filas = det.filter(r => {
+        const dep = r['Dep Desc'] || r['TIENDA'] || r['DEP DESC'] || '';
+        const plu = r['Plu'] || r['PLU'] || r['plu'] || 0;
+        const cant = r['C.Ped'] || r['CANT'] || r['C.PEDIDA'] || 0;
+        return dep && plu && cant;
+      });
+
+      if (filas.length === 0) {
+        showMsg('No se encontraron datos válidos en la hoja DETALLADO. Verifica las columnas: Dep Desc, Plu, C.Ped', 'error');
+        return;
+      }
+
+      // Normalizar filas
+      const datos = filas.map(r => {
+        const plu = parseInt(r['Plu'] || r['PLU'] || 0);
+        return {
+          dep: parseInt(r['Dep'] || r['DEP'] || 0),
+          tienda: (r['Dep Desc'] || r['TIENDA'] || '').toString().trim(),
+          orden: r['Orden'] || r['ORDEN'] || '',
+          plu,
+          descOriginal: (r['Desc Plu'] || r['PRODUCTO'] || '').toString().trim(),
+          nombre: pluMap[plu] || (r['Desc Plu'] || r['PRODUCTO'] || '').toString().trim(),
+          cantidad: parseInt(r['C.Ped'] || r['CANT'] || 0),
+          costo: parseInt(r['Cst'] || r['COSTO'] || 0),
+          fIni: r['F.Ini'] || r['FECHA INI'] || '',
+          fFin: r['F.Fin'] || r['FECHA FIN'] || ''
+        };
+      });
+
+      setProgress(80);
+      datosGlobales = datos;
+      workbookData = wb;
+
+      renderResultados(datos);
+      setProgress(100);
+      showMsg(`✓ Procesados ${datos.length} registros — ${[...new Set(datos.map(d=>d.tienda))].length} tiendas — ${[...new Set(datos.map(d=>d.plu))].length} productos`, 'success');
+      document.getElementById('resultPanel').style.display = 'block';
+      document.getElementById('btnReset').style.display = 'inline-flex';
+      document.getElementById('btnDescargar').style.display = 'inline-flex';
+      document.getElementById('resultPanel').classList.add('visible');
+
+    } catch(err) {
+      showMsg('Error al procesar el archivo: ' + err.message, 'error');
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(window._pendingFile);
+}
+
+function cadenaClass(nombre) {
+  const n = nombre.toUpperCase();
+  if (n.includes('CARULLA')) return 'carulla';
+  if (n.includes('SURTIMAYORISTA') || n.includes('SURTIMAY')) return 'surtimay';
+  return 'exito';
+}
+
+function cadenaNombre(nombre) {
+  const cls = cadenaClass(nombre);
+  if (cls === 'carulla') return 'CARULLA';
+  if (cls === 'surtimay') return 'SURTIMAYORISTA';
+  return 'ÉXITO';
+}
+
+function renderResultados(datos) {
+  const tiendas = [...new Set(datos.map(d => d.tienda))].sort();
+  const productos = [...new Set(datos.map(d => d.plu))];
+  const totalUnd = datos.reduce((a,d) => a + d.cantidad, 0);
+  const totalCosto = datos.reduce((a,d) => a + d.cantidad * d.costo, 0);
+
+  // Stats
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="label">Tiendas</div>
+      <div class="value">${tiendas.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Productos</div>
+      <div class="value">${productos.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Unidades totales</div>
+      <div class="value">${totalUnd.toLocaleString('es-CO')}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Valor estimado</div>
+      <div class="value" style="font-size:18px">$${Math.round(totalCosto/1000000).toLocaleString('es-CO')}M</div>
+      <div class="sub-val">${totalCosto.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0})}</div>
+    </div>
+  `;
+
+  renderTiendas(datos, tiendas);
+  renderPivot(datos, tiendas);
+  renderCadenas(datos, tiendas);
+}
+
+function renderTiendas(datos, tiendas) {
+  const cont = document.getElementById('tab-tiendas');
+  let html = '';
+  for (const tienda of tiendas) {
+    const rows = datos.filter(d => d.tienda === tienda).sort((a,b) => a.nombre.localeCompare(b.nombre));
+    const cls = cadenaClass(tienda);
+    const orden = rows[0]?.orden || '';
+    const dep = rows[0]?.dep || '';
+    const totalT = rows.reduce((a,r) => a + r.cantidad, 0);
+    const costoT = rows.reduce((a,r) => a + r.cantidad * r.costo, 0);
+    const id = 'td_' + tienda.replace(/\W/g,'_');
+
+    html += `<div class="tienda-block">
+      <div class="tienda-header ${cls}" onclick="toggleTienda('${id}')">
+        <span>🏪 ${tienda} <span class="pill" style="margin-left:8px">DEP ${dep}</span> <span class="pill">ORD ${orden}</span></span>
+        <span>${totalT} uds — ${costoT.toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0})} <span id="arrow_${id}">▼</span></span>
+      </div>
+      <div class="tienda-body" id="${id}">
+        <div class="table-wrapper" style="margin:8px">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Producto</th><th>PLU</th><th>Descripción original</th>
+              <th class="num">Cant..</th><th class="num">Costo unit.</th><th class="num">Total</th>
+            </tr></thead>
+            <tbody>`;
+    rows.forEach((r, i) => {
+      html += `<tr>
+        <td>${i+1}</td>
+        <td><strong>${r.nombre}</strong></td>
+        <td>${r.plu}</td>
+        <td style="color:var(--text2)">${r.descOriginal}</td>
+        <td class="num">${r.cantidad}</td>
+        <td class="num">${r.costo.toLocaleString('es-CO')}</td>
+        <td class="num">${(r.cantidad*r.costo).toLocaleString('es-CO')}</td>
+      </tr>`;
+    });
+    html += `<tr class="total-row">
+        <td colspan="4"><strong>TOTAL</strong></td>
+        <td class="num"><strong>${totalT}</strong></td>
+        <td></td>
+        <td class="num"><strong>${costoT.toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0})}</strong></td>
+      </tr></tbody></table></div></div></div>`;
+  }
+  cont.innerHTML = html;
+}
+
+function toggleTienda(id) {
+  const el = document.getElementById(id);
+  const arrow = document.getElementById('arrow_' + id);
+  el.classList.toggle('open');
+  if (arrow) arrow.textContent = el.classList.contains('open') ? '▲' : '▼';
+}
+
+function renderPivot(datos, tiendas) {
+  const productos = [...new Set(datos.map(d => d.plu))];
+  const prodMap = {};
+  datos.forEach(d => { if (!prodMap[d.plu]) prodMap[d.plu] = d.nombre; });
+  const prodList = productos.map(p => ({ plu: p, nombre: prodMap[p] })).sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+  let html = `<div class="table-wrapper"><table><thead><tr>
+    <th>PLU</th><th>Producto</th>`;
+  tiendas.forEach(t => { html += `<th class="num" style="font-size:10px;max-width:80px;white-space:normal">${t}</th>`; });
+  html += `<th class="num">TOTAL</th></tr></thead><tbody>`;
+
+  const colTotals = {};
+  tiendas.forEach(t => colTotals[t] = 0);
+  let grandTotal = 0;
+
+  prodList.forEach((p, i) => {
+    let rowTotal = 0;
+    let cells = '';
+    tiendas.forEach(t => {
+      const r = datos.find(d => d.plu === p.plu && d.tienda === t);
+      const v = r ? r.cantidad : 0;
+      colTotals[t] += v;
+      rowTotal += v;
+      cells += `<td class="num">${v > 0 ? `<strong>${v}</strong>` : '<span style="color:var(--text3)">—</span>'}</td>`;
+    });
+    grandTotal += rowTotal;
+    html += `<tr><td style="color:var(--text2)">${p.plu}</td><td><strong>${p.nombre}</strong></td>${cells}<td class="num"><strong>${rowTotal}</strong></td></tr>`;
+  });
+
+  html += `<tr class="total-row"><td colspan="2"><strong>TOTAL GENERAL</strong></td>`;
+  tiendas.forEach(t => { html += `<td class="num"><strong>${colTotals[t]}</strong></td>`; });
+  html += `<td class="num"><strong>${grandTotal}</strong></td></tr>`;
+  html += `</tbody></table></div>`;
+  document.getElementById('tab-pivot').innerHTML = html;
+}
+
+function renderCadenas(datos, tiendas) {
+  const cadenas = ['CARULLA', 'ÉXITO', 'SURTIMAYORISTA'];
+  let html = '';
+  const colores = { 'CARULLA': 'carulla', 'ÉXITO': 'exito', 'SURTIMAYORISTA': 'surtimay' };
+
+  for (const cadena of cadenas) {
+    const tiendasC = tiendas.filter(t => cadenaNombre(t) === cadena);
+    if (tiendasC.length === 0) continue;
+    const datosC = datos.filter(d => tiendasC.includes(d.tienda));
+    if (datosC.length === 0) continue;
+
+    const prodMap = {};
+    datosC.forEach(d => {
+      if (!prodMap[d.nombre]) prodMap[d.nombre] = { plu: d.plu, total: 0, tiendas: new Set() };
+      prodMap[d.nombre].total += d.cantidad;
+      prodMap[d.nombre].tiendas.add(d.tienda);
+    });
+
+    const totalC = datosC.reduce((a,d) => a + d.cantidad, 0);
+    const cls = colores[cadena];
+    html += `<div style="margin-bottom:24px">
+      <div class="tienda-header ${cls}" style="margin-bottom:12px; cursor:default; border-radius:var(--radius-sm)">
+        🏬 ${cadena} — ${tiendasC.length} tiendas — ${totalC.toLocaleString('es-CO')} unidades totales
+      </div>
+      <div class="table-wrapper"><table>
+        <thead><tr>
+          <th>Producto</th><th>PLU</th>
+          <th class="num">Cant. total</th>
+          <th class="num">% del total</th>
+          <th class="num">Tiendas</th>
+          <th class="num">Prom/tienda</th>
+        </tr></thead><tbody>`;
+
+    Object.entries(prodMap).sort((a,b) => b[1].total - a[1].total).forEach(([nombre, info]) => {
+      const pct = totalC > 0 ? (info.total / totalC * 100).toFixed(1) : '0.0';
+      const prom = (info.total / info.tiendas.size).toFixed(1);
+      html += `<tr>
+        <td><strong>${nombre}</strong></td>
+        <td style="color:var(--text2)">${info.plu}</td>
+        <td class="num">${info.total}</td>
+        <td class="num">${pct}%</td>
+        <td class="num">${info.tiendas.size}</td>
+        <td class="num">${prom}</td>
+      </tr>`;
+    });
+
+    html += `<tr class="total-row">
+        <td colspan="2"><strong>TOTAL ${cadena}</strong></td>
+        <td class="num"><strong>${totalC}</strong></td>
+        <td class="num">100.0%</td>
+        <td class="num">${tiendasC.length}</td>
+        <td></td>
+      </tr></tbody></table></div></div>`;
+  }
+  document.getElementById('tab-cadenas').innerHTML = html;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['tiendas','pivot','cadenas'][i] === tab);
+  });
+  document.querySelectorAll('#tab-content > div').forEach((d,i) => {
+    d.classList.toggle('active', ['tab-tiendas','tab-pivot','tab-cadenas'][i] === `tab-${tab}`);
+  });
+}
+
+// === Estilos por cadena para Excel ===
+const CADENA_STYLES = {
+  CARULLA: {
+    header: { fill: { fgColor: { rgb: '2D5A3D' } }, font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, alignment: { horizontal: 'center' } },
+    row:    { fill: { fgColor: { rgb: 'E8F5E9' } }, font: { color: { rgb: '1B5E20' }, sz: 10 } },
+    total:  { fill: { fgColor: { rgb: 'A5D6A7' } }, font: { bold: true, color: { rgb: '1B5E20' }, sz: 11 } }
+  },
+  'ÉXITO': {
+    header: { fill: { fgColor: { rgb: '5B2D8B' } }, font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, alignment: { horizontal: 'center' } },
+    row:    { fill: { fgColor: { rgb: 'F3E5F5' } }, font: { color: { rgb: '4A148C' }, sz: 10 } },
+    total:  { fill: { fgColor: { rgb: 'CE93D8' } }, font: { bold: true, color: { rgb: '4A148C' }, sz: 11 } }
+  },
+  SURTIMAYORISTA: {
+    header: { fill: { fgColor: { rgb: 'E65100' } }, font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, alignment: { horizontal: 'center' } },
+    row:    { fill: { fgColor: { rgb: 'FFF3E0' } }, font: { color: { rgb: 'BF360C' }, sz: 10 } },
+    total:  { fill: { fgColor: { rgb: 'FFCC80' } }, font: { bold: true, color: { rgb: 'BF360C' }, sz: 11 } }
+  }
+};
+
+const HEADER_STYLE = { fill: { fgColor: { rgb: '37474F' } }, font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, alignment: { horizontal: 'center' }, border: { bottom: { style: 'medium', color: { rgb: '263238' } } } };
+const TOTAL_GENERAL_STYLE = { fill: { fgColor: { rgb: '263238' } }, font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, border: { top: { style: 'medium', color: { rgb: '000000' } } } };
+const NUM_STYLE = { alignment: { horizontal: 'right' } };
+
+function applyStyle(ws, row, col, style) {
+  const addr = XLSX.utils.encode_cell({ r: row, c: col });
+  if (!ws[addr]) ws[addr] = { v: '', t: 's' };
+  ws[addr].s = { ...ws[addr].s, ...style };
+}
+
+function applyRowStyle(ws, row, numCols, style) {
+  for (let c = 0; c < numCols; c++) applyStyle(ws, row, c, style);
+}
+
+function setColWidths(ws, widths) {
+  ws['!cols'] = widths.map(w => ({ wch: w }));
+}
+
+function descargarExcel() {
+  if (!datosGlobales) return;
+  const datos = datosGlobales;
+  const tiendas = [...new Set(datos.map(d => d.tienda))].sort();
+  const wb = XLSX.utils.book_new();
+
+  // =============================================
+  // HOJA 1: Distribución por Tienda (con colores)
+  // =============================================
+  const headers1 = ['TIENDA','DEP','ORDEN','PLU','PRODUCTO','DESCRIPCIÓN ORIGINAL','CANTIDAD','COSTO UNIT.','COSTO TOTAL'];
+  const rows1 = [headers1];
+  const tiendaRowMeta = []; // track cadena per row for coloring
+
+  tiendas.forEach(t => {
+    const cadena = cadenaNombre(t);
+    const rowsT = datos.filter(d => d.tienda === t).sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+    // Tienda header row
+    rows1.push([`🏪 ${t} (${cadena})`, '', '', '', '', '', '', '', '']);
+    tiendaRowMeta.push({ type: 'tienda-header', cadena });
+
+    rowsT.forEach(r => {
+      rows1.push([t, r.dep, r.orden, r.plu, r.nombre, r.descOriginal, r.cantidad, r.costo, r.cantidad * r.costo]);
+      tiendaRowMeta.push({ type: 'data', cadena });
+    });
+
+    const tot = rowsT.reduce((a,r) => a + r.cantidad, 0);
+    const cosT = rowsT.reduce((a,r) => a + r.cantidad * r.costo, 0);
+    rows1.push(['', '', '', '', `TOTAL ${t}`, '', tot, '', cosT]);
+    tiendaRowMeta.push({ type: 'total', cadena });
+
+    rows1.push([]);
+    tiendaRowMeta.push({ type: 'blank', cadena: null });
+  });
+
+  const ws1 = XLSX.utils.aoa_to_sheet(rows1);
+  setColWidths(ws1, [35, 8, 12, 10, 30, 35, 12, 14, 16]);
+
+  // Style header row
+  applyRowStyle(ws1, 0, headers1.length, HEADER_STYLE);
+
+  // Style data rows by cadena
+  tiendaRowMeta.forEach((meta, idx) => {
+    const excelRow = idx + 1; // offset for header
+    if (meta.type === 'blank' || !meta.cadena) return;
+    const styles = CADENA_STYLES[meta.cadena];
+    if (!styles) return;
+
+    if (meta.type === 'tienda-header') {
+      applyRowStyle(ws1, excelRow, headers1.length, styles.header);
+    } else if (meta.type === 'data') {
+      applyRowStyle(ws1, excelRow, headers1.length, styles.row);
+    } else if (meta.type === 'total') {
+      applyRowStyle(ws1, excelRow, headers1.length, styles.total);
+    }
+  });
+
+  XLSX.utils.book_append_sheet(wb, ws1, 'Distribución por Tienda');
+
+  // =============================================
+  // HOJA 2: Tabla Cruzada (Pivot con colores)
+  // =============================================
+  const prods = [...new Set(datos.map(d => d.plu))];
+  const prodMap = {};
+  datos.forEach(d => { if (!prodMap[d.plu]) prodMap[d.plu] = d.nombre; });
+  const prodList = prods.map(p => ({ plu: p, nombre: prodMap[p] })).sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+  const pivotHeaders = ['PLU', 'PRODUCTO', ...tiendas, 'TOTAL'];
+  const pivotRows = [pivotHeaders];
+
+  prodList.forEach(p => {
+    const cells = tiendas.map(t => {
+      const r = datos.find(d => d.plu === p.plu && d.tienda === t);
+      return r ? r.cantidad : 0;
+    });
+    const tot = cells.reduce((a,v) => a+v, 0);
+    pivotRows.push([p.plu, p.nombre, ...cells, tot]);
+  });
+
+  const totRow = ['', 'TOTAL GENERAL', ...tiendas.map(t => datos.filter(d=>d.tienda===t).reduce((a,d)=>a+d.cantidad,0)), datos.reduce((a,d)=>a+d.cantidad,0)];
+  pivotRows.push(totRow);
+
+  const ws2 = XLSX.utils.aoa_to_sheet(pivotRows);
+  const pivotColWidths = [10, 28, ...tiendas.map(() => 12), 12];
+  setColWidths(ws2, pivotColWidths);
+
+  // Style pivot header — color each tienda column header by its cadena
+  applyStyle(ws2, 0, 0, HEADER_STYLE);
+  applyStyle(ws2, 0, 1, HEADER_STYLE);
+  tiendas.forEach((t, i) => {
+    const cadena = cadenaNombre(t);
+    const cStyles = CADENA_STYLES[cadena];
+    applyStyle(ws2, 0, i + 2, cStyles ? cStyles.header : HEADER_STYLE);
+  });
+  applyStyle(ws2, 0, pivotHeaders.length - 1, HEADER_STYLE);
+
+  // Style total row
+  const pivotTotalRow = pivotRows.length - 1;
+  applyRowStyle(ws2, pivotTotalRow, pivotHeaders.length, TOTAL_GENERAL_STYLE);
+
+  XLSX.utils.book_append_sheet(wb, ws2, 'Tabla Cruzada');
+
+  // =============================================
+  // HOJA 3: Resumen por Cadena (con colores)
+  // =============================================
+  const cadenas = ['CARULLA', 'ÉXITO', 'SURTIMAYORISTA'];
+  const headers3 = ['CADENA','PRODUCTO','PLU','CANTIDAD TOTAL','% DEL TOTAL','TIENDAS QUE LO PIDEN','PROMEDIO POR TIENDA'];
+  const rows3 = [headers3];
+  const cadenaRowMeta = [];
+
+  cadenas.forEach(cadena => {
+    const tiendasC = tiendas.filter(t => cadenaNombre(t) === cadena);
+    const datosC = datos.filter(d => tiendasC.includes(d.tienda));
+    if (!datosC.length) return;
+    const totalC = datosC.reduce((a,d) => a + d.cantidad, 0);
+    const prodMapC = {};
+    datosC.forEach(d => {
+      if (!prodMapC[d.nombre]) prodMapC[d.nombre] = { plu: d.plu, total: 0, tiendas: new Set() };
+      prodMapC[d.nombre].total += d.cantidad;
+      prodMapC[d.nombre].tiendas.add(d.tienda);
+    });
+    Object.entries(prodMapC).sort((a,b) => b[1].total - a[1].total).forEach(([nom, info]) => {
+      rows3.push([cadena, nom, info.plu, info.total, parseFloat((info.total/totalC*100).toFixed(1)), info.tiendas.size, parseFloat((info.total/info.tiendas.size).toFixed(1))]);
+      cadenaRowMeta.push({ type: 'data', cadena });
+    });
+    rows3.push([`TOTAL ${cadena}`, '', '', totalC, 100, tiendasC.length, '']);
+    cadenaRowMeta.push({ type: 'total', cadena });
+    rows3.push([]);
+    cadenaRowMeta.push({ type: 'blank', cadena: null });
+  });
+
+  const ws3 = XLSX.utils.aoa_to_sheet(rows3);
+  setColWidths(ws3, [18, 30, 10, 16, 14, 20, 18]);
+
+  // Style header
+  applyRowStyle(ws3, 0, headers3.length, HEADER_STYLE);
+
+  // Style data rows by cadena color
+  cadenaRowMeta.forEach((meta, idx) => {
+    const excelRow = idx + 1;
+    if (meta.type === 'blank' || !meta.cadena) return;
+    const styles = CADENA_STYLES[meta.cadena];
+    if (!styles) return;
+    if (meta.type === 'data') {
+      applyRowStyle(ws3, excelRow, headers3.length, styles.row);
+    } else if (meta.type === 'total') {
+      applyRowStyle(ws3, excelRow, headers3.length, styles.total);
+    }
+  });
+
+  XLSX.utils.book_append_sheet(wb, ws3, 'Resumen por Cadena');
+
+  const fecha = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  XLSX.writeFile(wb, `Distribucion_Cortes_${fecha}.xlsx`);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+.active-link {
+    background: linear-gradient(90deg, rgba(0, 255, 163, 0.1) 0%, transparent 100%);
+    color: #00ffa3 !important;
+}
+
+.active-link .active-indicator {
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: #00ffa3;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 15px rgba(0, 255, 163, 0.4);
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+
+:host ::ng-deep .p-avatar {
+    border-color: rgba(0, 255, 163, 0.2) !important;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.4s ease-out forwards;
+}

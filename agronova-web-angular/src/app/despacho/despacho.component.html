@@ -1,0 +1,98 @@
+<div class="space-y-10 animate-fade-in">
+    <!-- Header Industrial -->
+    <div class="glass-card p-10 flex justify-between items-center relative overflow-hidden">
+        <div class="flex items-center space-x-8 relative z-10">
+            <div class="w-16 h-16 bg-[#3d5a1a]/20 rounded-2xl flex items-center justify-center border border-[#a4c639]/30">
+                <i class="pi pi-truck text-[#a4c639] text-3xl"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-black text-white tracking-tighter uppercase">Logística de <span class="text-[#a4c639]">Despacho</span></h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-2">Gestión de Envíos y Trazabilidad en Tránsito</p>
+            </div>
+        </div>
+        
+        <div class="hidden md:flex items-center space-x-4 relative z-10">
+            <button class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all">
+                NUEVA GUÍA
+            </button>
+            <button class="bg-[#3d5a1a] hover:bg-[#a4c639] text-white hover:text-black px-6 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all border border-[#a4c639]/20">
+                CREAR DESPACHO
+            </button>
+        </div>
+    </div>
+
+    <!-- Active Shipments Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div *ngFor="let item of despachos" 
+             class="glass-card group hover:border-[#a4c639]/30 transition-all duration-500 overflow-hidden relative">
+            
+            <div class="p-8 border-b border-white/5 bg-white/[0.02]">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center space-x-6">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                            <i class="pi pi-map-marker"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black text-[#a4c639] uppercase tracking-[0.2em] mb-1">Guía #{{item.NumeroDespacho}}</span>
+                            <h3 class="text-2xl font-black text-white tracking-tight">{{item.cliente?.Nombre || 'Cliente General'}}</h3>
+                        </div>
+                    </div>
+                    <p-tag [value]="getStatusName(item.Estado || 0)" 
+                           [style]="{'background': 'rgba(164, 198, 57, 0.1)', 'color': '#a4c639', 'border': '1px solid rgba(164, 198, 57, 0.2)', 'font-size': '10px', 'font-weight': '900'}"></p-tag>
+                </div>
+            </div>
+
+            <div class="p-8 space-y-8">
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5">
+                        <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest block">Vehículo / Placa</span>
+                        <p class="text-lg font-black text-white mt-1 uppercase">{{item.PatentaVehiculo}}</p>
+                    </div>
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5">
+                        <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest block">Temperatura</span>
+                        <p class="text-lg font-black text-blue-400 mt-1">{{item.TemperaturaVehiculo}}°C</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        <i class="pi pi-user mr-3 text-[#a4c639]"></i>
+                        <span>Chofer: <span class="text-white ml-2">{{item.TransportistaNombre}}</span></span>
+                    </div>
+                    <div class="flex items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        <i class="pi pi-map mr-3 text-[#a4c639]"></i>
+                        <span>Destino: <span class="text-white ml-2 truncate">{{item.DireccionDestino || 'N/A'}}</span></span>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button *ngIf="item.Estado != 4" 
+                            (click)="confirmarEntrega(item)"
+                            class="flex-1 bg-[#3d5a1a] hover:bg-[#a4c639] text-white hover:text-black font-black uppercase text-[10px] tracking-[0.2em] py-5 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3">
+                        <i class="pi pi-check-circle"></i>
+                        <span>Confirmar Entrega</span>
+                    </button>
+                    <button class="w-16 h-16 rounded-2xl bg-white/5 text-slate-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all border border-white/5">
+                        <i class="pi pi-print"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hover decoration -->
+            <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#a4c639] group-hover:w-full transition-all duration-700"></div>
+        </div>
+
+        <!-- Empty State Industrial -->
+        <div *ngIf="despachos.length === 0" 
+             class="lg:col-span-2 glass-card border-dashed border-white/10 p-24 text-center">
+            <div class="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-8">
+                <i class="pi pi-truck text-slate-700 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-black text-white uppercase tracking-tight mb-2">No hay despachos activos</h3>
+            <p class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">Comienza creando un nuevo despacho para hoy</p>
+        </div>
+    </div>
+</div>
+
+<p-toast></p-toast>
+

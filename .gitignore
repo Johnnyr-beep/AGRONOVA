@@ -1,0 +1,32 @@
+# Root ignore
+.idea/
+.vscode/
+.DS_Store
+*.log
+
+# Laravel
+agronova-api/vendor/
+agronova-api/.env
+agronova-api/storage/*.key
+agronova-api/public/storage
+agronova-api/public/hot
+agronova-api/storage/framework/cache/data/*
+agronova-api/storage/framework/sessions/*
+agronova-api/storage/framework/testing/*
+agronova-api/storage/framework/views/*
+
+# Angular
+agronova-web-angular/node_modules/
+agronova-web-angular/dist/
+agronova-web-angular/.angular/
+agronova-web-angular/tmp/
+
+# Legacy and Large Files
+/DEPLOY/
+DEPLOY/
+**/*.exe
+*.exe
+**/*.msi
+*.msi
+**/*.zip
+*.zip

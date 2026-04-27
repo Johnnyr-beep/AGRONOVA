@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.104.1",
+    "primeicons": "^7.0.0",
+    "primeng": "^17.18.12"
+  }
+}

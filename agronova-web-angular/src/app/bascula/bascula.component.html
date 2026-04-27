@@ -1,0 +1,229 @@
+<div class="space-y-6 animate-fade-in">
+    <!-- Capturador de Datos Industrial -->
+    <div class="glass-card p-10 border border-[#a4c639]/10 relative overflow-hidden">
+        <!-- Decoration background -->
+        <div class="absolute -top-16 -right-16 w-64 h-64 bg-[#a4c639]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <form [formGroup]="basculaForm" class="space-y-6 relative z-10">
+            <!-- Toolbar superior -->
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center space-x-6">
+                    <div class="w-24 h-24 flex items-center justify-center p-2">
+                        <img src="/logo santacruz.png.png" alt="Logo" class="w-full h-auto drop-shadow-[0_0_20px_rgba(164,198,57,0.2)]" />
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black text-white tracking-tighter uppercase">AGRONOVA | <span class="text-[#a4c639]">Pesaje</span></h1>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-1">Terminal de Planta v2.5</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3 bg-black/40 p-2 rounded-2xl border border-white/5">
+                    <button type="button" (click)="save()" pTooltip="Guardar"
+                            class="w-12 h-12 rounded-xl bg-[#3d5a1a]/20 hover:bg-[#a4c639] text-[#a4c639] hover:text-black transition-all flex items-center justify-center border border-[#a4c639]/20 shadow-lg">
+                        <i class="pi pi-check text-xl"></i>
+                    </button>
+                    <button type="button" (click)="clear()" pTooltip="Limpiar"
+                            class="w-12 h-12 rounded-xl bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center border border-white/5">
+                        <i class="pi pi-eraser text-xl"></i>
+                    </button>
+                    <div class="w-px h-8 bg-white/10 mx-2"></div>
+                    <button type="button" (click)="register()" pTooltip="Registrar"
+                            [class.opacity-50]="!isFormComplete()"
+                            class="w-12 h-12 rounded-xl bg-white/5 text-slate-500 hover:text-black hover:bg-[#a4c639] transition-all flex items-center justify-center border border-white/5">
+                        <i class="pi pi-pencil text-lg"></i>
+                    </button>
+                    <button type="button" (click)="closeOrder()" pTooltip="Cerrar"
+                            class="w-10 h-10 rounded-lg bg-white/5 text-slate-500 hover:text-white hover:bg-rose-500/20 transition-all flex items-center justify-center border border-white/5">
+                        <i class="pi pi-lock text-base"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid de campos -->
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Columna Izquierda -->
+                <div class="col-span-12 lg:col-span-8 space-y-6">
+                    <div class="grid grid-cols-6 gap-4">
+                        <div class="col-span-2 space-y-1.5">
+                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Guía</label>
+                            <input type="text" pInputText formControlName="GuiaMovilizacion" 
+                                   class="w-full bg-black/40 border-white/5 rounded-lg py-3 font-black text-white text-xs tracking-widest outline-none" />
+                        </div>
+                        <div class="col-span-2 space-y-1.5">
+                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Nº Ticket</label>
+                            <input type="text" pInputText formControlName="NumeroTicket" 
+                                   class="w-full bg-black/40 border-white/5 rounded-lg py-3 font-black text-[#a4c639] text-xs tracking-widest outline-none" />
+                        </div>
+                        <div class="col-span-2 space-y-1.5">
+                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Referencia</label>
+                            <input type="text" pInputText formControlName="Referencia" 
+                                   class="w-full bg-black/40 border-white/5 rounded-lg py-3 font-black text-white text-xs tracking-widest outline-none" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Procedencia</label>
+                            <p-autoComplete formControlName="Procedencia" [suggestions]="suggestions['Procedencia']" 
+                                           (completeMethod)="searchSuggestions($event, 'Procedencia')"
+                                           styleClass="industrial-autocomplete" inputStyleClass="industrial-input-compact" />
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Proveedor / Planta</label>
+                            <p-autoComplete formControlName="ProveedorNombre" [suggestions]="suggestions['ProveedorNombre']" 
+                                           (completeMethod)="searchSuggestions($event, 'ProveedorNombre')"
+                                           styleClass="industrial-autocomplete" inputStyleClass="industrial-input-compact" />
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Cliente Destino / Consignatario</label>
+                        <p-autoComplete formControlName="ClienteNombre" [suggestions]="suggestions['ClienteNombre']" 
+                                       (completeMethod)="searchSuggestions($event, 'ClienteNombre')"
+                                       styleClass="industrial-autocomplete w-full" inputStyleClass="industrial-input-compact w-full" />
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Placa Vehículo</label>
+                            <p-autoComplete formControlName="PatentaVehiculo" [suggestions]="suggestions['PatentaVehiculo']" 
+                                           (completeMethod)="searchSuggestions($event, 'PatentaVehiculo')"
+                                           styleClass="industrial-autocomplete" inputStyleClass="industrial-input-compact uppercase tracking-[0.2em]" />
+                        </div>
+                        <div class="col-span-2 space-y-1.5">
+                            <label class="text-[8px] font-black text-slate-700 uppercase tracking-widest ml-1">Conductor / Transportista</label>
+                            <p-autoComplete formControlName="Conductor" [suggestions]="suggestions['Conductor']" 
+                                           (completeMethod)="searchSuggestions($event, 'Conductor')"
+                                           styleClass="industrial-autocomplete w-full" inputStyleClass="industrial-input-compact w-full" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha (Indicadores Numéricos) -->
+                <div class="col-span-12 lg:col-span-4 flex flex-col justify-between">
+                    <div class="grid grid-cols-2 gap-3 h-full">
+                        <!-- Cantidad -->
+                        <div class="bg-black/40 rounded-2xl p-4 border border-white/5 flex flex-col justify-center text-center">
+                            <span class="text-[7px] font-black text-slate-800 uppercase tracking-[0.2em] mb-2">Cabezas</span>
+                            <p-inputNumber formControlName="CantidadAnimales" [showButtons]="false" 
+                                          styleClass="industrial-number-input" inputStyleClass="text-2xl font-black text-white text-center bg-transparent border-none outline-none w-full" />
+                        </div>
+
+                        <!-- Entrada -->
+                        <div class="bg-cyan-500/5 rounded-2xl p-4 border border-cyan-500/10 flex flex-col justify-center text-center relative group">
+                            <span class="text-[7px] font-black text-cyan-900 uppercase tracking-[0.2em] mb-2">Entrada (kg)</span>
+                            <div class="text-2xl font-black text-cyan-500 tracking-tighter">{{ basculaForm.get('PesoLleno')?.value | number:'1.0-0' }}</div>
+                            <button type="button" (click)="captureWeight('PesoLleno')"
+                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all bg-cyan-500 text-black text-[7px] font-black px-3 py-1 rounded-full">
+                                CAPTURAR
+                            </button>
+                        </div>
+
+                        <!-- Salida -->
+                        <div class="bg-blue-500/5 rounded-2xl p-4 border border-blue-500/10 flex flex-col justify-center text-center relative group">
+                            <span class="text-[7px] font-black text-blue-900 uppercase tracking-[0.2em] mb-2">Salida (kg)</span>
+                            <div class="text-2xl font-black text-blue-500 tracking-tighter">{{ basculaForm.get('PesoVacio')?.value | number:'1.0-0' }}</div>
+                            <button type="button" (click)="captureWeight('PesoVacio')"
+                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all bg-blue-500 text-white text-[7px] font-black px-3 py-1 rounded-full">
+                                CAPTURAR
+                            </button>
+                        </div>
+
+                        <!-- Neto -->
+                        <div class="bg-[#3d5a1a]/10 rounded-2xl p-4 border border-[#a4c639]/20 flex flex-col justify-center text-center">
+                            <span class="text-[7px] font-black text-[#a4c639] uppercase tracking-[0.2em] mb-2">Neto (kg)</span>
+                            <div class="text-2xl font-black text-[#a4c639] tracking-tighter">{{ (basculaForm.get('PesoLleno')?.value - basculaForm.get('PesoVacio')?.value) | number:'1.0-0' }}</div>
+                        </div>
+
+                        <!-- Promedio -->
+                        <div class="col-span-2 bg-black/60 rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+                            <span class="text-[7px] font-black text-slate-800 uppercase tracking-[0.2em]">Promedio</span>
+                            <div class="text-xl font-black text-white tracking-tighter">
+                                {{ (basculaForm.get('CantidadAnimales')?.value > 0 ? (basculaForm.get('PesoLleno')?.value - basculaForm.get('PesoVacio')?.value) / basculaForm.get('CantidadAnimales')?.value : 0) | number:'1.1-1' }}
+                                <span class="text-[8px] text-slate-800 font-bold ml-1">KG/ANIM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs inferiores -->
+            <div class="mt-6">
+                <p-tabView styleClass="industrial-tabs-compact">
+                    <p-tabPanel [header]="'GUÍAS ABIERTAS (' + openGuides.length + ')'">
+                        <div *ngIf="openGuides.length === 0" class="py-6 text-center">
+                            <p class="text-[9px] text-slate-800 font-black uppercase tracking-[0.3em]">No hay pendientes</p>
+                        </div>
+                        <div *ngIf="openGuides.length > 0" class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-white/5">
+                                        <th class="py-3 text-[7px] font-black text-slate-800 uppercase tracking-widest">Guía</th>
+                                        <th class="py-3 text-[7px] font-black text-slate-800 uppercase tracking-widest">Ticket</th>
+                                        <th class="py-3 text-[7px] font-black text-slate-800 uppercase tracking-widest">Entrada</th>
+                                        <th class="py-3 text-[7px] font-black text-slate-800 uppercase tracking-widest"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let g of openGuides" class="border-b border-white/5 hover:bg-white/[0.02] transition-colors group text-xs">
+                                        <td class="py-3 font-bold text-white uppercase tracking-wider">{{g.GuiaMovilizacion || 'S/G'}}</td>
+                                        <td class="py-3 font-black text-[#a4c639]">#{{g.NumeroTicket}}</td>
+                                        <td class="py-3 font-bold text-slate-600">{{g.PesoLleno}} kg</td>
+                                        <td class="py-3 text-right">
+                                            <button type="button" (click)="basculaForm.patchValue(g)" 
+                                                    class="text-[7px] font-black text-[#a4c639] uppercase tracking-widest border border-[#a4c639]/20 px-2 py-1 rounded hover:bg-[#a4c639] hover:text-black transition-all">
+                                                Cargar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </p-tabPanel>
+                </p-tabView>
+            </div>
+        </form>
+    </div>
+
+    <!-- Historial de Pesajes Industrial -->
+    <div class="glass-card overflow-hidden">
+        <div class="p-6 border-b border-white/5 bg-white/[0.01]">
+            <h3 class="text-lg font-black text-white uppercase tracking-tight">Registro Histórico</h3>
+        </div>
+        
+        <p-table [value]="basculas" [loading]="loading" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="text-[9px] uppercase">ID</th>
+                    <th class="text-[9px] uppercase">Guía</th>
+                    <th class="text-[9px] uppercase">Vehículo</th>
+                    <th class="text-[9px] uppercase">Neto</th>
+                    <th class="text-[9px] uppercase">Cabezas</th>
+                    <th class="text-[9px] uppercase">Fecha</th>
+                    <th style="width: 50px"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr class="text-xs">
+                    <td class="font-black text-[#a4c639]">#{{item.NumeroTicket}}</td>
+                    <td class="text-white font-bold">{{item.GuiaMovilizacion || '---'}}</td>
+                    <td class="text-slate-600 uppercase">{{item.PatentaVehiculo}}</td>
+                    <td class="text-white">
+                        {{ (item.PesoLleno - item.PesoVacio) | number }} <span class="text-[9px] text-slate-800 ml-1">kg</span>
+                    </td>
+                    <td>
+                        <span class="bg-[#3d5a1a]/20 text-[#a4c639] px-2 py-0.5 rounded text-[10px] font-black border border-[#a4c639]/20">{{item.CantidadAnimales}}</span>
+                    </td>
+                    <td class="text-slate-700">{{item.FechaIngreso | date:'shortDate'}}</td>
+                    <td class="text-right">
+                        <button pButton icon="pi pi-search" class="p-button-text p-button-sm opacity-50 hover:opacity-100"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-toast></p-toast>
+
+<p-toast></p-toast>

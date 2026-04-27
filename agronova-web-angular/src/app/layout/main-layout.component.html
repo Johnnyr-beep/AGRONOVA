@@ -1,0 +1,76 @@
+<div class="flex h-screen bg-[#0a0c10] overflow-hidden">
+    <!-- Premium Neon Glow -->
+    <div class="fixed top-[-10%] left-[-5%] w-[40%] h-[40%] bg-[#a4c639]/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="fixed bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-[#a4c639]/3 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <!-- Sidebar Obsidian -->
+    <aside [class.w-64]="!isSidebarCollapsed" [class.w-20]="isSidebarCollapsed"
+           class="bg-[#05070a] text-slate-400 flex flex-col transition-all duration-500 ease-in-out z-20 border-r border-white/5 relative">
+        
+        <!-- Corporate Logo Area -->
+        <div class="h-32 flex items-center justify-center px-4">
+            <div class="w-24 h-24 flex items-center justify-center overflow-hidden p-2">
+                <img src="/logo santacruz.png.png" alt="Logo" class="w-full h-auto drop-shadow-[0_0_15px_rgba(164,198,57,0.2)]" />
+            </div>
+        </div>
+
+        <!-- Professional Navigation -->
+        <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+            <p *ngIf="!isSidebarCollapsed" class="text-[8px] font-black text-slate-800 uppercase tracking-[0.2em] px-3 mb-2">Planta</p>
+            
+            <a *ngFor="let item of menuItems" 
+               [routerLink]="item.route" 
+               routerLinkActive="active-link"
+               class="flex items-center p-3.5 rounded-xl hover:bg-white/[0.03] transition-all group relative overflow-hidden"
+               [pTooltip]="isSidebarCollapsed ? item.label : ''" tooltipPosition="right">
+                <i [class]="item.icon" class="text-base min-w-[20px] group-hover:text-[#a4c639] transition-colors"></i>
+                <span *ngIf="!isSidebarCollapsed" class="ml-3 font-bold text-[12px] group-hover:text-white transition-colors animate-fade-in uppercase tracking-wide">{{item.label}}</span>
+                <div class="active-indicator"></div>
+            </a>
+        </nav>
+
+        <!-- User Profile Premium -->
+        <div class="p-4 border-t border-white/5 bg-black/20">
+            <div class="flex items-center p-2 rounded-xl bg-white/[0.02] border border-white/5" [class.justify-center]="isSidebarCollapsed">
+                <p-avatar [label]="(user$ | async)?.Nombre?.substring(0,1)" shape="circle" 
+                          styleClass="bg-[#a4c639] text-black border-2 border-white/10" size="normal"></p-avatar>
+                <div *ngIf="!isSidebarCollapsed" class="ml-2 overflow-hidden animate-fade-in">
+                    <p class="text-[11px] font-black text-white truncate uppercase">{{ (user$ | async)?.Nombre || 'Usuario' }}</p>
+                    <p class="text-[8px] text-slate-700 font-bold uppercase tracking-widest">Supervisor</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-w-0 relative">
+        <header class="h-16 glass-header flex items-center justify-between px-8 z-10">
+            <div>
+                <h2 class="text-xl font-black text-white tracking-tight animate-fade-in uppercase">AGRONOVA Panel</h2>
+                <div class="flex items-center space-x-3 mt-0.5">
+                    <p class="text-[9px] text-slate-700 font-bold uppercase tracking-widest">{{ today | date:'dd MMM yyyy' | uppercase }}</p>
+                    <span class="w-1 h-1 rounded-full bg-[#a4c639]"></span>
+                    <p class="text-[9px] text-[#a4c639] font-black uppercase tracking-widest">En Línea</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden lg:block">
+                    <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 text-xs"></i>
+                    <input type="text" pInputText placeholder="BUSCAR..." 
+                           class="bg-black/40 border-white/5 rounded-xl w-48 pl-10 py-2 text-[9px] focus:w-64 transition-all uppercase tracking-widest font-black text-white outline-none" />
+                </div>
+                <div class="flex items-center space-x-2 bg-black/40 p-1 rounded-xl border border-white/5">
+                    <button pButton icon="pi pi-bell" class="p-button-rounded p-button-text p-button-secondary text-slate-700 hover:text-[#a4c639] h-8 w-8"></button>
+                    <button (click)="logout()" icon="pi pi-power-off" class="p-button-rounded p-button-text p-button-danger h-8 w-8 opacity-70 hover:opacity-100"></button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 custom-scrollbar relative">
+            <div class="max-w-[1400px] mx-auto animate-fade-in">
+                <router-outlet></router-outlet>
+            </div>
+        </main>
+    </div>
+</div>

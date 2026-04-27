@@ -1,0 +1,147 @@
+<div class="space-y-10 animate-fade-in">
+    <!-- Header Industrial -->
+    <div class="glass-card p-10 flex justify-between items-center relative overflow-hidden">
+        <div class="flex items-center space-x-8 relative z-10">
+            <div class="w-16 h-16 bg-[#3d5a1a]/20 rounded-2xl flex items-center justify-center border border-[#a4c639]/30">
+                <i class="pi pi-chart-bar text-[#a4c639] text-3xl"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-black text-white tracking-tighter uppercase">Centro de <span class="text-[#a4c639]">Reportes</span></h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-2">Análisis Operativo y Trazabilidad Profunda</p>
+            </div>
+        </div>
+        
+        <div class="hidden md:flex items-center space-x-4 relative z-10">
+            <p-calendar [(ngModel)]="dateRange" selectionMode="range" [showIcon]="true" placeholder="Rango de fechas"
+                        styleClass="industrial-calendar" (onSelect)="loadReports()"></p-calendar>
+            <button (click)="exportExcel()" 
+                    class="bg-[#3d5a1a] hover:bg-[#a4c639] text-white hover:text-black px-6 py-4 rounded-xl font-black text-[10px] tracking-widest transition-all border border-[#a4c639]/20 flex items-center">
+                <i class="pi pi-file-excel mr-2 text-lg"></i>
+                EXPORTAR EXCEL
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Tabs Industrial -->
+    <div class="bg-black/20 p-2 rounded-2xl border border-white/5 flex space-x-2">
+        <button (click)="activeTab = 'faena'" 
+                class="flex-1 py-4 px-6 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center justify-center space-x-3"
+                [ngClass]="activeTab === 'faena' ? 'bg-[#3d5a1a] text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'">
+            <i class="pi pi-list"></i>
+            <span>Faena & Beneficio</span>
+        </button>
+        
+        <button (click)="activeTab = 'desposte'" 
+                class="flex-1 py-4 px-6 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center justify-center space-x-3"
+                [ngClass]="activeTab === 'desposte' ? 'bg-[#3d5a1a] text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'">
+            <i class="pi pi-clone"></i>
+            <span>Rendimiento Desposte</span>
+        </button>
+        
+        <button (click)="activeTab = 'trazabilidad'" 
+                class="flex-1 py-4 px-6 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center justify-center space-x-3"
+                [ngClass]="activeTab === 'trazabilidad' ? 'bg-[#3d5a1a] text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'">
+            <i class="pi pi-qrcode"></i>
+            <span>Trazabilidad QR</span>
+        </button>
+    </div>
+
+    <!-- Reports Content Industrial -->
+    <div class="glass-card overflow-hidden">
+        <!-- Faena Tab -->
+        <div *ngIf="activeTab === 'faena'" class="animate-fade-in">
+            <p-table [value]="faenaData" [loading]="loadingFaena" [paginator]="true" [rows]="10" styleClass="p-datatable-lg">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Canal ID</th>
+                        <th>Fecha Proceso</th>
+                        <th>Tipo Animal</th>
+                        <th>Peso Entrada</th>
+                        <th>Peso Canal</th>
+                        <th>Estado Final</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td class="font-black text-[#a4c639] uppercase tracking-tighter">#{{item.NumeroFaena}}</td>
+                        <td class="text-xs text-white">{{item.HoraInicio | date:'shortDate'}}</td>
+                        <td class="text-xs text-slate-400 font-bold uppercase">{{item.TipoAnimal}}</td>
+                        <td class="font-bold text-white">{{item.PesoEntrada}} <span class="text-[10px] text-slate-600 ml-1">kg</span></td>
+                        <td class="font-bold text-white">{{item.PesoCanal || '---'}} <span class="text-[10px] text-slate-600 ml-1">kg</span></td>
+                        <td>
+                            <span [class]="'px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest border ' + 
+                                          (item.Estado == 8 ? 'bg-green-500/5 text-green-500 border-green-500/20' : 'bg-slate-500/5 text-slate-500 border-slate-500/20')">
+                                {{item.Estado == 8 ? 'Aprobado' : 'Procesando'}}
+                            </span>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Desposte Tab -->
+        <div *ngIf="activeTab === 'desposte'" class="animate-fade-in">
+            <p-table [value]="desposteData" [loading]="loadingDesposte" [paginator]="true" [rows]="10" styleClass="p-datatable-lg">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th># Desposte</th>
+                        <th>Canal Ref.</th>
+                        <th>Peso Original</th>
+                        <th>Peso Final</th>
+                        <th>Merma Proceso</th>
+                        <th>Rendimiento %</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td class="font-black text-[#a4c639] uppercase tracking-tighter">#{{item.NumeroDesposte}}</td>
+                        <td>
+                            <span class="bg-white/5 border border-white/10 px-3 py-1 rounded text-[10px] font-black text-slate-400">
+                                CANAL-{{item.canal?.NumeroCanal}}
+                            </span>
+                        </td>
+                        <td class="font-bold text-white">{{item.PesoCanalOriginal}} <span class="text-[10px] text-slate-600 ml-1">kg</span></td>
+                        <td class="font-black text-blue-400">{{item.PesoTotalProductos}} <span class="text-[10px] text-slate-600 ml-1">kg</span></td>
+                        <td class="font-bold text-red-500">{{item.PerdidaProcesoKg}} <span class="text-[10px] text-slate-600 ml-1">kg</span></td>
+                        <td>
+                            <div class="flex items-center space-x-3">
+                                <span class="font-black text-white text-lg">
+                                    {{ (item.PesoTotalProductos / item.PesoCanalOriginal * 100) | number:'1.1-1' }}%
+                                </span>
+                                <div class="w-16 h-1.5 bg-black/40 rounded-full overflow-hidden">
+                                    <div class="h-full bg-[#a4c639]" [style.width.%]="(item.PesoTotalProductos / item.PesoCanalOriginal * 100)"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Trazabilidad Tab -->
+        <div *ngIf="activeTab === 'trazabilidad'" class="animate-fade-in">
+            <div class="p-32 text-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="w-24 h-24 rounded-3xl bg-[#3d5a1a]/10 border border-[#a4c639]/20 flex items-center justify-center mx-auto mb-8">
+                        <i class="pi pi-qrcode text-[#a4c639] text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-white uppercase tracking-tight mb-3">Módulo de Búsqueda de Trazabilidad</h3>
+                    <p class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em] mb-12">Escanee o ingrese el número de lote para historial completo</p>
+                    
+                    <div class="max-w-xl mx-auto relative group">
+                        <i class="pi pi-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-[#a4c639] transition-colors"></i>
+                        <input type="text" placeholder="INGRESE # LOTE O ESCANEE CÓDIGO QR..." 
+                               class="w-full bg-black/40 p-6 pl-16 rounded-2xl border border-white/5 outline-none focus:border-[#a4c639]/50 focus:bg-black/60 transition-all text-white font-black text-sm tracking-widest placeholder:text-slate-800" />
+                    </div>
+                </div>
+
+                <!-- Background patterns -->
+                <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-[#3d5a1a]/5 rounded-full blur-3xl"></div>
+                <div class="absolute -top-20 -left-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-toast></p-toast>
+

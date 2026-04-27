@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Desposte;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+
+class DesposteController extends Controller
+{
+    public function index()
+    {
+        return Desposte::where('Eliminado', false)
+            ->with(['canal', 'operario'])
+            ->orderBy('FechaDesposte', 'desc')
+            ->get();
+    }
+
+    public function show($id)
+    {
+        $desposte = Desposte::with(['canal', 'operario', 'productosDesposte', 'acondicionamientos'])
+            ->findOrFail($id);
+        
+        return response()->json($desposte);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'CanalId' => 'required|exists:Canales,Id',
+            'NumeroDesposte' => 'required|unique:Despostes',
+            'OperarioId' => 'required|exists:Usuarios,Id',
+            'PesoCanalOriginal' => 'required|numeric',
+        ]);
+
+        $validated['Estado'] = 0; // Pendiente
+        $validated['FechaDesposte'] = Carbon::now();
+        $validated['HoraInicio'] = Carbon::now();
+        $validated['CreadoPor'] = auth()->user()->Id;
+
+        $desposte = Desposte::create($validated);
+
+        return response()->json($desposte, 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $desposte = Desposte::findOrFail($id);
+        $validated = $request->validate([
+            'Estado' => 'integer',
+            'PesoTotalProductos' => 'numeric',
+            'PerdidaProcesoKg' => 'numeric',
+            'ObservacionesCalidad' => 'string',
+            'AptilizadoControlCalidad' => 'boolean',
+        ]);
+
+        if (isset($validated['Estado']) && $validated['Estado'] == 2) { // Completado
+            $validated['HoraFin'] = Carbon::now();
+        }
+
+        $desposte->update($validated);
+
+        return response()->json($desposte);
+    }
+
+    public function destroy($id)
+    {
+        $desposte = Desposte::findOrFail($id);
+        $desposte->update(['Eliminado' => true]);
+
+        return response()->json(null, 204);
+    }
+
+    public function report(Request $request)
+    {
+        $fechaInicio = $request->query('fechaInicio');
+        $fechaFin = $request->query('fechaFin');
+
+        $despostes = Desposte::whereBetween('FechaDesposte', [$fechaInicio, $fechaFin])
+            ->where('Eliminado', false)
+            ->get();
+
+        return response()->json([
+            'totalDespostes' => $despostes->count(),
+            'pesoTotalProcesado' => $despostes->sum('PesoCanalOriginal'),
+            'pesoTotalProductos' => $despostes->sum('PesoTotalProductos'),
+            'totalMermas' => $despostes->sum('PerdidaProcesoKg'),
+            'promedioRendimiento' => $despostes->avg(function ($d) {
+                return $d->PesoCanalOriginal > 0 ? ($d->PesoTotalProductos / $d->PesoCanalOriginal) * 100 : 0;
+            }),
+        ]);
+    }
+}

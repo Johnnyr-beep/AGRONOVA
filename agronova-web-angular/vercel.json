@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "public": true,
+  "name": "agronova-frontend",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

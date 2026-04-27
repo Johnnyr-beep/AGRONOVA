@@ -1,0 +1,117 @@
+<div class="space-y-10 animate-fade-in">
+    <!-- Header Industrial -->
+    <div class="glass-card p-10 flex justify-between items-center relative overflow-hidden">
+        <div class="flex items-center space-x-8 relative z-10">
+            <div class="w-16 h-16 bg-[#3d5a1a]/20 rounded-2xl flex items-center justify-center border border-[#a4c639]/30">
+                <i class="pi pi-th-large text-[#a4c639] text-3xl"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-black text-white tracking-tighter uppercase">Gestión de <span class="text-[#a4c639]">Desposte</span></h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-2">Control de Cortes, Rendimientos y Mermas</p>
+            </div>
+        </div>
+        
+        <div class="hidden md:flex items-center space-x-4 relative z-10">
+            <button (click)="loadData()" class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all">
+                REFRESCAR
+            </button>
+            <button class="bg-[#3d5a1a] hover:bg-[#a4c639] text-white hover:text-black px-6 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all border border-[#a4c639]/20">
+                NUEVO DESPOSTE
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Grid Industrial -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6" *ngIf="reportStats">
+        <div class="glass-card p-8 border-l-4 border-l-slate-700">
+            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Total Procesado</span>
+            <div class="flex items-baseline space-x-2 mt-4">
+                <span class="text-4xl font-black text-white tracking-tighter">{{reportStats.pesoTotalProcesado}}</span>
+                <span class="text-xs font-bold text-slate-600 uppercase">KG</span>
+            </div>
+        </div>
+        <div class="glass-card p-8 border-l-4 border-l-blue-500">
+            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Productos Finales</span>
+            <div class="flex items-baseline space-x-2 mt-4">
+                <span class="text-4xl font-black text-blue-400 tracking-tighter">{{reportStats.pesoTotalProductos}}</span>
+                <span class="text-xs font-bold text-slate-600 uppercase">KG</span>
+            </div>
+        </div>
+        <div class="glass-card p-8 border-l-4 border-l-red-500">
+            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Mermas Críticas</span>
+            <div class="flex items-baseline space-x-2 mt-4">
+                <span class="text-4xl font-black text-red-500 tracking-tighter">{{reportStats.totalMermas}}</span>
+                <span class="text-xs font-bold text-slate-600 uppercase">KG</span>
+            </div>
+        </div>
+        <div class="glass-card p-8 border-l-4 border-l-[#a4c639] bg-[#3d5a1a]/5">
+            <span class="text-[9px] text-[#a4c639] font-black uppercase tracking-widest">Rendimiento Real</span>
+            <div class="flex items-baseline space-x-2 mt-4">
+                <span class="text-4xl font-black text-white tracking-tighter">{{reportStats.promedioRendimiento | number:'1.2-2'}}</span>
+                <span class="text-xs font-bold text-[#a4c639] uppercase">%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Industrial Table Section -->
+    <div class="glass-card overflow-hidden">
+        <p-table [value]="despostes" [loading]="loading" [rows]="10" [paginator]="true" 
+                 responsiveLayout="scroll" styleClass="p-datatable-lg">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th># Desposte</th>
+                    <th>Canal Ref.</th>
+                    <th>Operario Responsable</th>
+                    <th>Peso Original</th>
+                    <th>Estado</th>
+                    <th>Progreso</th>
+                    <th style="width: 120px"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr class="group">
+                    <td class="font-black text-[#a4c639] uppercase tracking-tighter">#{{item.NumeroDesposte}}</td>
+                    <td>
+                        <span class="bg-white/5 border border-white/10 px-3 py-1 rounded text-[10px] font-black text-slate-400">
+                            CANAL-{{item.canal?.NumeroCanal || 'N/A'}}
+                        </span>
+                    </td>
+                    <td class="text-sm text-white font-bold">{{item.operario?.Nombre}}</td>
+                    <td class="font-black text-white">{{item.PesoCanalOriginal}} <span class="text-[10px] text-slate-600 ml-1">kg</span></td>
+                    <td>
+                        <span [class]="'px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest border ' + 
+                                      (item.Estado == 2 ? 'bg-green-500/5 text-green-500 border-green-500/20' : 
+                                       item.Estado == 1 ? 'bg-amber-500/5 text-amber-500 border-amber-500/20' : 
+                                       'bg-blue-500/5 text-blue-500 border-blue-500/20')">
+                          {{ getStatusName(item.Estado || 0) }}
+                        </span>
+                    </td>
+                    <td class="w-48">
+                        <div class="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
+                            <div class="h-full bg-[#a4c639] transition-all duration-700" 
+                                 [style.width.%]="item.Estado == 2 ? 100 : (item.Estado == 1 ? 50 : 0)"></div>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-all">
+                            <button *ngIf="item.Estado == 0" (click)="startDesposte(item)"
+                                    class="w-8 h-8 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
+                                <i class="pi pi-play text-xs"></i>
+                            </button>
+                            <button *ngIf="item.Estado == 1" (click)="completeDesposte(item)"
+                                    class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-50 hover:text-white transition-all">
+                                <i class="pi pi-check text-xs"></i>
+                            </button>
+                            <button class="w-8 h-8 rounded-lg bg-white/5 text-slate-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all">
+                                <i class="pi pi-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-toast></p-toast>
+>
