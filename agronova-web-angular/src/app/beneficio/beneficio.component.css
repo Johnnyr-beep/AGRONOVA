@@ -1,17 +1,2 @@
-:host {
-    display: block;
-    height: 100%;
-    overflow-y: auto;
-    padding: 2rem;
-}
-
-.glass-card {
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.glass-card:hover {
-    transform: translateY(-5px);
-    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-}
-
+/* Beneficio Component — Vanguardia */
+:host ::ng-deep .p-card { background: transparent; border: none; }

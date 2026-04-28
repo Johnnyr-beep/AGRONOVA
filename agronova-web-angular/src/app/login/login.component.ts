@@ -34,6 +34,17 @@ export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
   errorMessage = '';
+  
+  passwordInputStyle = {
+    'width': '100%',
+    'background': 'rgba(14, 16, 21, 0.9)',
+    'border': '1px solid rgba(255, 255, 255, 0.06)',
+    'color': 'white',
+    'padding': '14px 18px',
+    'border-radius': '12px',
+    'font-weight': '500',
+    'font-size': '14px'
+  };
 
   constructor(
     private fb: FormBuilder,

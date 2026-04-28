@@ -1,1 +1,9 @@
-/* Bascula Component Styles */
+/* Bascula Component — Vanguardia */
+:host ::ng-deep .industrial-number-input .p-inputtext {
+    background: transparent !important;
+    border: none !important;
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: white !important;
+}

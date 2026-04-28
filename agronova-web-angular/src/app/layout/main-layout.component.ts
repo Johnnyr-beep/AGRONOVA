@@ -35,10 +35,10 @@ export class MainLayoutComponent {
 
   menuItems = [
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard' },
-    { label: 'Báscula', icon: 'pi pi-box', route: '/bascula' },
-    { label: 'Beneficio', icon: 'pi pi-list', route: '/beneficio' },
-    { label: 'Desposte', icon: 'pi pi-clone', route: '/desposte' },
-    { label: 'Acondicionamiento', icon: 'pi pi-snowflake', route: '/acondicionamiento' },
+    { label: 'Báscula', icon: 'pi pi-server', route: '/bascula' },
+    { label: 'Beneficio', icon: 'pi pi-bolt', route: '/beneficio' },
+    { label: 'Desposte', icon: 'pi pi-objects-column', route: '/desposte' },
+    { label: 'Acondicionamiento', icon: 'pi pi-box', route: '/acondicionamiento' },
     { label: 'Despacho', icon: 'pi pi-truck', route: '/despacho' },
     { label: 'Reportes', icon: 'pi pi-chart-bar', route: '/reportes' },
     { label: 'Configuración', icon: 'pi pi-cog', route: '/config' },

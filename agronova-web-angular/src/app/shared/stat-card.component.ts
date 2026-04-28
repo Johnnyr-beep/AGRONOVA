@@ -6,54 +6,90 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="glass-card p-6 border-l-4 transition-all duration-300 group" 
-         [ngClass]="getBorderColor()" [style.backgroundColor]="getBgColor()">
-      <span class="text-[9px] font-black uppercase tracking-widest" [ngClass]="getTextColor()">{{ title }}</span>
-      <div class="flex items-baseline space-x-2 mt-2">
-        <span class="text-3xl font-black text-white tracking-tighter">{{ value }}</span>
-        <span *ngIf="unit" class="text-[10px] font-bold text-slate-600 uppercase">{{ unit }}</span>
+    <div class="stat-card" [class]="'stat-card severity-' + severity">
+      <div class="stat-glow"></div>
+      <div class="stat-icon-wrap">
+        <i [class]="icon || defaultIcon" class="stat-icon-i"></i>
       </div>
-      <div *ngIf="subtitle" class="mt-2 text-[8px] font-bold text-slate-500 uppercase tracking-wider">
-        {{ subtitle }}
+      <div class="stat-value">{{ value }}</div>
+      <div class="stat-info">
+        <span class="stat-title">{{ title }}</span>
+        <span class="stat-unit" *ngIf="unit">{{ unit }}</span>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .stat-card {
+      background: rgba(16, 18, 24, 0.75);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .stat-card:hover {
+      border-color: rgba(108, 92, 231, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .stat-glow {
+      position: absolute;
+      top: -15px; right: -15px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      filter: blur(30px);
+      opacity: 0.2;
+    }
+    .stat-icon-wrap {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px; font-size: 18px;
+    }
+    .stat-value {
+      font-size: 28px; font-weight: 800; color: #F0F1F5;
+      letter-spacing: -0.5px; margin-bottom: 4px;
+    }
+    .stat-info { display: flex; align-items: center; gap: 6px; }
+    .stat-title { font-size: 11px; font-weight: 500; color: #7C8190; }
+    .stat-unit { font-size: 10px; font-weight: 700; color: #3D4050; text-transform: uppercase; }
+
+    /* Severity variants */
+    .severity-slate .stat-icon-wrap { background: rgba(108, 92, 231, 0.12); color: #6C5CE7; }
+    .severity-slate .stat-glow { background: #6C5CE7; }
+
+    .severity-info .stat-icon-wrap { background: rgba(0, 206, 201, 0.12); color: #00CEC9; }
+    .severity-info .stat-glow { background: #00CEC9; }
+
+    .severity-warning .stat-icon-wrap { background: rgba(253, 121, 168, 0.12); color: #FD79A8; }
+    .severity-warning .stat-glow { background: #FD79A8; }
+
+    .severity-success .stat-icon-wrap { background: rgba(0, 184, 148, 0.1); color: #00B894; }
+    .severity-success .stat-glow { background: #00B894; }
+
+    .severity-danger .stat-icon-wrap { background: rgba(214, 48, 49, 0.1); color: #D63031; }
+    .severity-danger .stat-glow { background: #D63031; }
+
+    :host ::ng-deep .p-card { background: transparent; border: none; }
+  `]
 })
 export class StatCardComponent {
-  @Input() title: string = '';
-  @Input() value: string | number = 0;
-  @Input() unit?: string;
-  @Input() subtitle?: string;
-  @Input() severity: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'slate' = 'slate';
+  @Input() title = '';
+  @Input() value: string | number = '';
+  @Input() unit = '';
+  @Input() severity: 'slate' | 'info' | 'warning' | 'success' | 'danger' = 'slate';
+  @Input() icon = '';
 
-  getBorderColor() {
-    switch (this.severity) {
-      case 'success': return 'border-l-[#a4c639]';
-      case 'danger': return 'border-l-rose-500';
-      case 'warning': return 'border-l-amber-500';
-      case 'info': return 'border-l-blue-500';
-      case 'primary': return 'border-l-[#a4c639]';
-      default: return 'border-l-slate-700';
-    }
-  }
-
-  getBgColor() {
-    switch (this.severity) {
-      case 'success': return 'rgba(164, 198, 57, 0.05)';
-      case 'danger': return 'rgba(244, 63, 94, 0.05)';
-      case 'warning': return 'rgba(245, 158, 11, 0.05)';
-      case 'info': return 'rgba(59, 130, 246, 0.05)';
-      default: return 'rgba(255, 255, 255, 0.02)';
-    }
-  }
-
-  getTextColor() {
-    switch (this.severity) {
-      case 'success': return 'text-[#a4c639]';
-      case 'danger': return 'text-rose-500';
-      case 'warning': return 'text-amber-500';
-      case 'info': return 'text-blue-500';
-      default: return 'text-slate-500';
-    }
+  get defaultIcon(): string {
+    const icons: Record<string, string> = {
+      slate: 'pi pi-box',
+      info: 'pi pi-chart-line',
+      warning: 'pi pi-percentage',
+      success: 'pi pi-truck',
+      danger: 'pi pi-times-circle'
+    };
+    return icons[this.severity] || 'pi pi-box';
   }
 }

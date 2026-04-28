@@ -1,77 +1,48 @@
-<div class="space-y-10 animate-fade-in">
-    <!-- Header Industrial -->
-    <div class="glass-card p-10 flex justify-between items-center relative overflow-hidden">
-        <div class="flex items-center space-x-8 relative z-10">
-            <div class="w-16 h-16 bg-[#3d5a1a]/20 rounded-2xl flex items-center justify-center border border-[#a4c639]/30">
-                <i class="pi pi-cog text-[#a4c639] text-3xl"></i>
+<div class="space-y-6 animate-fade-in">
+    <div class="glass-card p-7 flex justify-between items-center relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full" style="background: rgba(16,185,129,0.04); filter: blur(60px);"></div>
+        <div class="flex items-center space-x-5 relative z-10">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9);">
+                <i class="pi pi-cog text-white text-xl"></i>
             </div>
             <div>
-                <h1 class="text-4xl font-black text-white tracking-tighter uppercase">Configuración <span class="text-[#a4c639]">Global</span></h1>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-2">Gestión de Seguridad y Parámetros de Planta</p>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">Configuración <span style="color: #6C5CE7;">Global</span></h1>
+                <p class="text-[10px] mt-0.5" style="color: #475569;">Seguridad y Parámetros de Planta</p>
             </div>
         </div>
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <!-- Sidebar Config Industrial -->
-        <div class="lg:col-span-1 space-y-4">
-            <div class="bg-black/20 p-2 rounded-2xl border border-white/5 space-y-2">
-                <button class="w-full text-left py-4 px-6 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center space-x-4 bg-[#3d5a1a] text-white">
-                    <i class="pi pi-users"></i>
-                    <span>Usuarios y Accesos</span>
-                </button>
-                <button class="w-full text-left py-4 px-6 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center space-x-4 text-slate-500 hover:text-white hover:bg-white/5">
-                    <i class="pi pi-lock"></i>
-                    <span>Roles y Permisos</span>
-                </button>
-                <button class="w-full text-left py-4 px-6 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center space-x-4 text-slate-500 hover:text-white hover:bg-white/5">
-                    <i class="pi pi-sliders-h"></i>
-                    <span>Parámetros Planta</span>
-                </button>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="lg:col-span-1 space-y-3">
+            <div class="p-1.5 rounded-xl space-y-1" style="background: rgba(2,6,23,0.5); border: 1px solid rgba(148,163,184,0.06);">
+                <button class="w-full text-left py-3 px-5 rounded-lg font-bold text-[10px] tracking-wider uppercase transition-all flex items-center space-x-3" style="background: rgba(16,185,129,0.08); color: #6C5CE7;"><i class="pi pi-users"></i><span>Usuarios</span></button>
+                <button class="w-full text-left py-3 px-5 rounded-lg font-bold text-[10px] tracking-wider uppercase transition-all flex items-center space-x-3 hover:bg-white/5" style="color: #64748B;"><i class="pi pi-lock"></i><span>Roles</span></button>
+                <button class="w-full text-left py-3 px-5 rounded-lg font-bold text-[10px] tracking-wider uppercase transition-all flex items-center space-x-3 hover:bg-white/5" style="color: #64748B;"><i class="pi pi-sliders-h"></i><span>Planta</span></button>
             </div>
         </div>
-
-        <!-- Main Config Area Industrial -->
         <div class="lg:col-span-3">
             <div class="glass-card overflow-hidden">
-                <div class="p-8 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
+                <div class="p-6 flex justify-between items-center" style="border-bottom: 1px solid rgba(148,163,184,0.06); background: rgba(2,6,23,0.3);">
                     <div>
-                        <h3 class="text-xl font-black text-white uppercase tracking-tight">Directorio de Usuarios</h3>
-                        <p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest mt-1">Control de accesos y credenciales</p>
+                        <h3 class="text-base font-bold text-white">Directorio de Usuarios</h3>
+                        <p class="text-[9px] mt-0.5" style="color: #475569;">Control de accesos y credenciales</p>
                     </div>
-                    <button class="bg-[#3d5a1a] hover:bg-[#a4c639] text-white hover:text-black px-6 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all border border-[#a4c639]/20">
-                        NUEVO USUARIO
-                    </button>
+                    <button class="px-5 py-2.5 rounded-xl font-bold text-[10px] tracking-wider" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9); color: white;">NUEVO USUARIO</button>
                 </div>
-                
                 <p-table [value]="users" [loading]="loading" styleClass="p-datatable-lg">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Nombre Completo</th>
-                            <th>Identificador</th>
-                            <th>Estado</th>
-                            <th style="width: 80px"></th>
-                        </tr>
-                    </ng-template>
+                    <ng-template pTemplate="header"><tr><th>Nombre</th><th>Identificador</th><th>Estado</th><th style="width: 80px"></th></tr></ng-template>
                     <ng-template pTemplate="body" let-user>
                         <tr class="group">
                             <td class="p-4">
-                                <div class="flex items-center space-x-4">
-                                    <p-avatar [label]="user.Nombre[0]" shape="circle" 
-                                              styleClass="bg-white/5 text-[#a4c639] border border-white/10 font-black"></p-avatar>
-                                    <span class="font-black text-white text-sm uppercase tracking-tight">{{user.Nombre}} {{user.Apellido}}</span>
+                                <div class="flex items-center space-x-3">
+                                    <p-avatar [label]="user.Nombre[0]" shape="circle" [style]="{'background': 'linear-gradient(135deg, #6C5CE7, #00CEC9)', 'color': 'white', 'font-weight': '700', 'font-size': '11px'}"></p-avatar>
+                                    <span class="font-bold text-white text-sm">{{user.Nombre}} {{user.Apellido}}</span>
                                 </div>
                             </td>
-                            <td class="text-xs text-slate-500 font-bold uppercase">{{user.NombreUsuario}}</td>
+                            <td class="text-xs font-medium uppercase" style="color: #64748B;">{{user.NombreUsuario}}</td>
                             <td>
-                                <span [class]="'px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest border ' + 
-                                              (user.Activo ? 'bg-green-500/5 text-green-500 border-green-500/20' : 'bg-red-500/5 text-red-500 border-red-500/20')">
-                                    {{user.Activo ? 'ACTIVO' : 'RESTRINGIDO'}}
-                                </span>
+                                <span class="px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider" [style.background]="user.Activo ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)'" [style.color]="user.Activo ? '#6C5CE7' : '#EF4444'" [style.border]="'1px solid ' + (user.Activo ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)')">{{user.Activo ? 'ACTIVO' : 'RESTRINGIDO'}}</span>
                             </td>
-                            <td class="text-right">
-                                <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary opacity-0 group-hover:opacity-100 transition-all"></button>
-                            </td>
+                            <td class="text-right"><button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary opacity-0 group-hover:opacity-100 transition-all"></button></td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -79,6 +50,4 @@
         </div>
     </div>
 </div>
-
 <p-toast></p-toast>
-

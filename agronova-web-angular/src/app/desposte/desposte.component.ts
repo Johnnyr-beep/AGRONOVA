@@ -9,13 +9,14 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
+import { StatCardComponent } from '../shared/stat-card.component';
 
 @Component({
   selector: 'app-desposte',
   standalone: true,
   imports: [
     CommonModule, TableModule, ButtonModule, TagModule, ProgressBarModule, 
-    CardModule, ToastModule, FormsModule
+    CardModule, ToastModule, FormsModule, StatCardComponent
   ],
   providers: [MessageService],
   templateUrl: './desposte.component.html',

@@ -1,98 +1,73 @@
-<div class="space-y-10 animate-fade-in">
-    <!-- Header Industrial -->
-    <div class="glass-card p-10 flex justify-between items-center relative overflow-hidden">
-        <div class="flex items-center space-x-8 relative z-10">
-            <div class="w-16 h-16 bg-[#3d5a1a]/20 rounded-2xl flex items-center justify-center border border-[#a4c639]/30">
-                <i class="pi pi-truck text-[#a4c639] text-3xl"></i>
+<div class="space-y-6 animate-fade-in">
+    <div class="glass-card p-7 flex justify-between items-center relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full" style="background: rgba(16,185,129,0.04); filter: blur(60px);"></div>
+        <div class="flex items-center space-x-5 relative z-10">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9);">
+                <i class="pi pi-truck text-white text-xl"></i>
             </div>
             <div>
-                <h1 class="text-4xl font-black text-white tracking-tighter uppercase">Logística de <span class="text-[#a4c639]">Despacho</span></h1>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-2">Gestión de Envíos y Trazabilidad en Tránsito</p>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">Logística de <span style="color: #6C5CE7;">Despacho</span></h1>
+                <p class="text-[10px] mt-0.5" style="color: #475569;">Gestión de Envíos y Trazabilidad</p>
             </div>
         </div>
-        
-        <div class="hidden md:flex items-center space-x-4 relative z-10">
-            <button class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all">
-                NUEVA GUÍA
-            </button>
-            <button class="bg-[#3d5a1a] hover:bg-[#a4c639] text-white hover:text-black px-6 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all border border-[#a4c639]/20">
-                CREAR DESPACHO
-            </button>
+        <div class="hidden md:flex items-center space-x-3 relative z-10">
+            <button class="px-5 py-2.5 rounded-xl font-bold text-[10px] tracking-wider hover:bg-white/5 transition-all" style="color: #94A3B8; border: 1px solid rgba(148,163,184,0.06);">NUEVA GUÍA</button>
+            <button class="px-5 py-2.5 rounded-xl font-bold text-[10px] tracking-wider" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9); color: white;">CREAR DESPACHO</button>
         </div>
     </div>
-
-    <!-- Active Shipments Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div *ngFor="let item of despachos" 
-             class="glass-card group hover:border-[#a4c639]/30 transition-all duration-500 overflow-hidden relative">
-            
-            <div class="p-8 border-b border-white/5 bg-white/[0.02]">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="flex items-center space-x-6">
-                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div *ngFor="let item of despachos" class="glass-card group transition-all duration-500 overflow-hidden relative">
+            <div class="p-6" style="border-bottom: 1px solid rgba(148,163,184,0.04); background: rgba(2,6,23,0.2);">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(6,182,212,0.08); color: #06B6D4; border: 1px solid rgba(6,182,212,0.12);">
                             <i class="pi pi-map-marker"></i>
                         </div>
                         <div>
-                            <span class="text-[10px] font-black text-[#a4c639] uppercase tracking-[0.2em] mb-1">Guía #{{item.NumeroDespacho}}</span>
-                            <h3 class="text-2xl font-black text-white tracking-tight">{{item.cliente?.Nombre || 'Cliente General'}}</h3>
+                            <span class="text-[10px] font-bold uppercase tracking-wider" style="color: #6C5CE7;">Guía #{{item.NumeroDespacho}}</span>
+                            <h3 class="text-lg font-extrabold text-white tracking-tight">{{item.cliente?.Nombre || 'Cliente General'}}</h3>
                         </div>
                     </div>
-                    <p-tag [value]="getStatusName(item.Estado || 0)" 
-                           [style]="{'background': 'rgba(164, 198, 57, 0.1)', 'color': '#a4c639', 'border': '1px solid rgba(164, 198, 57, 0.2)', 'font-size': '10px', 'font-weight': '900'}"></p-tag>
+                    <p-tag [value]="getStatusName(item.Estado || 0)" [style]="{'background': 'rgba(16,185,129,0.06)', 'color': '#6C5CE7', 'border': '1px solid rgba(16,185,129,0.12)', 'font-size': '9px', 'font-weight': '700'}"></p-tag>
                 </div>
             </div>
-
-            <div class="p-8 space-y-8">
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5">
-                        <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest block">Vehículo / Placa</span>
-                        <p class="text-lg font-black text-white mt-1 uppercase">{{item.PatentaVehiculo}}</p>
+            <div class="p-6 space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl" style="background: rgba(2,6,23,0.4); border: 1px solid rgba(148,163,184,0.06);">
+                        <span class="text-[9px] font-semibold uppercase tracking-widest block" style="color: #64748B;">Vehículo</span>
+                        <p class="text-base font-extrabold text-white mt-1 uppercase">{{item.PatentaVehiculo}}</p>
                     </div>
-                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5">
-                        <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest block">Temperatura</span>
-                        <p class="text-lg font-black text-blue-400 mt-1">{{item.TemperaturaVehiculo}}°C</p>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="flex items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        <i class="pi pi-user mr-3 text-[#a4c639]"></i>
-                        <span>Chofer: <span class="text-white ml-2">{{item.TransportistaNombre}}</span></span>
-                    </div>
-                    <div class="flex items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        <i class="pi pi-map mr-3 text-[#a4c639]"></i>
-                        <span>Destino: <span class="text-white ml-2 truncate">{{item.DireccionDestino || 'N/A'}}</span></span>
+                    <div class="p-4 rounded-xl" style="background: rgba(2,6,23,0.4); border: 1px solid rgba(148,163,184,0.06);">
+                        <span class="text-[9px] font-semibold uppercase tracking-widest block" style="color: #64748B;">Temperatura</span>
+                        <p class="text-base font-extrabold mt-1" style="color: #06B6D4;">{{item.TemperaturaVehiculo}}°C</p>
                     </div>
                 </div>
-
-                <div class="flex space-x-4">
-                    <button *ngIf="item.Estado != 4" 
-                            (click)="confirmarEntrega(item)"
-                            class="flex-1 bg-[#3d5a1a] hover:bg-[#a4c639] text-white hover:text-black font-black uppercase text-[10px] tracking-[0.2em] py-5 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3">
-                        <i class="pi pi-check-circle"></i>
-                        <span>Confirmar Entrega</span>
+                <div class="space-y-3">
+                    <div class="flex items-center text-[10px] font-medium" style="color: #64748B;">
+                        <i class="pi pi-user mr-3" style="color: #6C5CE7;"></i>Chofer: <span class="text-white ml-2 font-semibold">{{item.TransportistaNombre}}</span>
+                    </div>
+                    <div class="flex items-center text-[10px] font-medium" style="color: #64748B;">
+                        <i class="pi pi-map mr-3" style="color: #6C5CE7;"></i>Destino: <span class="text-white ml-2 font-semibold truncate">{{item.DireccionDestino || 'N/A'}}</span>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button *ngIf="item.Estado != 4" (click)="confirmarEntrega(item)" class="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-wider transition-all flex items-center justify-center space-x-2" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9); color: white;">
+                        <i class="pi pi-check-circle"></i><span>Confirmar Entrega</span>
                     </button>
-                    <button class="w-16 h-16 rounded-2xl bg-white/5 text-slate-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all border border-white/5">
+                    <button class="w-14 h-14 rounded-xl flex items-center justify-center transition-all hover:bg-white/5" style="color: #64748B; border: 1px solid rgba(148,163,184,0.06);">
                         <i class="pi pi-print"></i>
                     </button>
                 </div>
             </div>
-
-            <!-- Hover decoration -->
-            <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#a4c639] group-hover:w-full transition-all duration-700"></div>
+            <div class="absolute bottom-0 left-0 w-0 h-[2px] group-hover:w-full transition-all duration-700" style="background: linear-gradient(90deg, #6C5CE7, #06B6D4);"></div>
         </div>
-
-        <!-- Empty State Industrial -->
-        <div *ngIf="despachos.length === 0" 
-             class="lg:col-span-2 glass-card border-dashed border-white/10 p-24 text-center">
-            <div class="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-8">
-                <i class="pi pi-truck text-slate-700 text-4xl"></i>
+        <div *ngIf="despachos.length === 0" class="lg:col-span-2 glass-card border-dashed p-20 text-center" style="border-color: rgba(148,163,184,0.08);">
+            <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background: rgba(2,6,23,0.5);">
+                <i class="pi pi-truck text-3xl" style="color: #334155;"></i>
             </div>
-            <h3 class="text-xl font-black text-white uppercase tracking-tight mb-2">No hay despachos activos</h3>
-            <p class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">Comienza creando un nuevo despacho para hoy</p>
+            <h3 class="text-lg font-bold text-white mb-2">No hay despachos activos</h3>
+            <p class="text-[10px] font-medium" style="color: #475569;">Comienza creando un nuevo despacho</p>
         </div>
     </div>
 </div>
-
 <p-toast></p-toast>
-

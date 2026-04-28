@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>AGRONOVA — Preview Vanguardia</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/primeicons@7.0.0/primeicons.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090C;--bg2:#0E1015;--card:rgba(16,18,24,.75);
+  --glass:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);
+  --g1:#6C5CE7;--g2:#00CEC9;--g3:#FD79A8;--g4:#FDCB6E;
+  --t1:#F0F1F5;--t2:#7C8190;--t3:#3D4050;
+  --success:#00B894;--warn:#E17055;--danger:#D63031;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Sora',sans-serif}
+body{background:var(--bg);color:var(--t1);height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sb{width:72px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;z-index:10}
+.sb-logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;margin-bottom:24px;box-shadow:0 4px 20px rgba(108,92,231,.3)}
+.sb-nav{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sb-item{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:18px;cursor:pointer;transition:all .3s;position:relative}
+.sb-item:hover{background:var(--glass);color:var(--t2)}
+.sb-item.active{background:linear-gradient(135deg,rgba(108,92,231,.15),rgba(0,206,201,.1));color:var(--g1)}
+.sb-item.active::after{content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:3px;height:20px;background:linear-gradient(180deg,var(--g1),var(--g2));border-radius:3px 0 0 3px}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--success);position:absolute;top:8px;right:8px;box-shadow:0 0 6px rgba(0,184,148,.5)}
+.sb-bottom{margin-top:auto}
+.sb-avatar{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--g3),var(--g1));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;overflow:hidden}
+.main::before{content:'';position:absolute;top:-20%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(108,92,231,.06) 0%,transparent 70%);pointer-events:none}
+.main::after{content:'';position:absolute;bottom:-20%;left:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(0,206,201,.04) 0%,transparent 70%);pointer-events:none}
+
+/* TOPBAR */
+.top{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--border);background:rgba(8,9,12,.8);backdrop-filter:blur(20px);position:relative;z-index:5}
+.top-left{display:flex;align-items:center;gap:14px}
+.top-left h2{font-size:13px;font-weight:700}
+.top-left h2 span{background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.chip{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:var(--glass);border:1px solid var(--border);font-size:10px;color:var(--t2);font-weight:500}
+.chip .dot{width:5px;height:5px;border-radius:50%;background:var(--success);animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.4}}
+.top-right{display:flex;gap:6px}
+.top-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--t3);cursor:pointer;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.top-btn:hover{border-color:rgba(108,92,231,.3);color:var(--g1);background:rgba(108,92,231,.05)}
+
+/* CONTENT */
+.cnt{flex:1;overflow-y:auto;padding:20px 24px;position:relative;z-index:1}
+.cnt::-webkit-scrollbar{width:4px}
+.cnt::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+
+/* BENTO GRID */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:auto;gap:14px;margin-bottom:14px}
+
+/* HERO CARD */
+.hero{grid-column:1/3;padding:28px;border-radius:20px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(108,92,231,.12) 0%,rgba(0,206,201,.06) 50%,var(--card) 100%);
+  border:1px solid rgba(108,92,231,.15)}
+.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(108,92,231,.15),transparent 70%);pointer-events:none}
+.hero h1{font-size:22px;font-weight:800;margin-bottom:4px;position:relative}
+.hero h1 span{background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:12px;color:var(--t2);margin-bottom:16px;position:relative}
+.hero-btns{display:flex;gap:8px;position:relative}
+.btn-g{padding:10px 22px;border-radius:12px;border:none;cursor:pointer;font-weight:700;font-size:11px;display:flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;box-shadow:0 4px 20px rgba(108,92,231,.3);transition:all .3s}
+.btn-g:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(108,92,231,.4)}
+.btn-o{padding:10px 22px;border-radius:12px;border:1px solid var(--border);background:var(--glass);color:var(--t2);font-weight:600;font-size:11px;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:6px}
+.btn-o:hover{border-color:rgba(108,92,231,.3);color:var(--t1)}
+
+/* MINI STATS */
+.mstat{padding:20px;border-radius:18px;background:var(--card);border:1px solid var(--border);backdrop-filter:blur(20px);position:relative;overflow:hidden;transition:all .35s}
+.mstat:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.1);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.mstat-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px}
+.mstat .glow{position:absolute;top:-15px;right:-15px;width:80px;height:80px;border-radius:50%;filter:blur(30px);opacity:.2}
+.mstat-val{font-size:26px;font-weight:800;margin-bottom:2px;letter-spacing:-.5px}
+.mstat-lbl{font-size:10.5px;color:var(--t2);font-weight:500}
+.ic-purple .mstat-icon{background:rgba(108,92,231,.12);color:var(--g1)}
+.ic-purple .glow{background:var(--g1)}
+.ic-teal .mstat-icon{background:rgba(0,206,201,.12);color:var(--g2)}
+.ic-teal .glow{background:var(--g2)}
+
+/* CHART CARD */
+.chart-card{grid-column:1/3;padding:22px;border-radius:18px;background:var(--card);border:1px solid var(--border);backdrop-filter:blur(20px)}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card-head h3{font-size:13px;font-weight:700}
+.tabs{display:flex;gap:2px;background:rgba(255,255,255,.03);border-radius:10px;padding:3px}
+.tab{padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-size:10px;font-weight:600;color:var(--t3);background:transparent;transition:all .2s;font-family:'Sora'}
+.tab.on{background:linear-gradient(135deg,rgba(108,92,231,.15),rgba(0,206,201,.1));color:var(--g1)}
+.legend{display:flex;gap:16px;margin-bottom:12px}
+.legend span{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--t2);font-weight:500}
+.legend .ld{width:8px;height:3px;border-radius:2px}
+.ld-bov{background:var(--g1)}
+.ld-por{background:var(--g3)}
+
+/* ACTIVITY */
+.act-card{grid-column:3/5;padding:22px;border-radius:18px;background:var(--card);border:1px solid var(--border);backdrop-filter:blur(20px)}
+.act{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.act:last-child{border:none}
+.act-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.act-dot.bov{background:var(--g1);box-shadow:0 0 8px rgba(108,92,231,.4)}
+.act-dot.por{background:var(--g3);box-shadow:0 0 8px rgba(253,121,168,.4)}
+.act-txt{font-size:11.5px;color:var(--t2);flex:1;line-height:1.5}
+.act-txt b{color:var(--t1);font-weight:700}
+.act-time{font-size:9.5px;color:var(--t3);white-space:nowrap;margin-top:2px}
+
+/* TABLE CARD */
+.tbl-card{grid-column:1/5;padding:22px;border-radius:18px;background:var(--card);border:1px solid var(--border);backdrop-filter:blur(20px)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);padding:10px 14px;border-bottom:1px solid var(--border)}
+td{padding:12px 14px;font-size:12px;color:var(--t2);border-bottom:1px solid rgba(255,255,255,.03)}
+tr:hover td{background:rgba(108,92,231,.02)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:9.5px;font-weight:700}
+.b-bov{background:rgba(108,92,231,.1);color:var(--g1)}
+.b-por{background:rgba(253,121,168,.1);color:var(--g3)}
+.b-ok{background:rgba(0,184,148,.1);color:var(--success)}
+.b-pen{background:rgba(225,112,85,.1);color:var(--warn)}
+.w{font-weight:800;color:var(--t1);font-variant-numeric:tabular-nums}
+.id{color:var(--t1);font-weight:700}
+
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.a{animation:fu .5s ease both}.a1{animation-delay:.05s}.a2{animation-delay:.1s}.a3{animation-delay:.15s}.a4{animation-delay:.2s}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sb">
+    <div class="sb-logo">A</div>
+    <div class="sb-nav">
+      <div class="sb-item active"><i class="pi pi-home"></i></div>
+      <div class="sb-item"><i class="pi pi-server"></i><div class="sb-dot"></div></div>
+      <div class="sb-item"><i class="pi pi-bolt"></i></div>
+      <div class="sb-item"><i class="pi pi-objects-column"></i></div>
+      <div class="sb-item"><i class="pi pi-box"></i></div>
+      <div class="sb-item"><i class="pi pi-truck"></i></div>
+      <div class="sb-item"><i class="pi pi-chart-bar"></i></div>
+      <div class="sb-item"><i class="pi pi-cog"></i></div>
+    </div>
+    <div class="sb-bottom"><div class="sb-avatar">JP</div></div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="top-left">
+        <h2><span>AGRONOVA</span> — Panel de Control</h2>
+        <div class="chip"><div class="dot"></div>Planta Activa · Turno Mañana</div>
+      </div>
+      <div class="top-right">
+        <button class="top-btn"><i class="pi pi-search"></i></button>
+        <button class="top-btn"><i class="pi pi-bell"></i></button>
+        <button class="top-btn"><i class="pi pi-power-off"></i></button>
+      </div>
+    </header>
+
+    <div class="cnt">
+      <div class="bento">
+        <!-- Hero -->
+        <div class="hero a">
+          <h1>Planta de Beneficio <span>AGRONOVA</span></h1>
+          <p>Procesamiento bovino y porcino — 28 Abril 2026</p>
+          <div class="hero-btns">
+            <button class="btn-g"><i class="pi pi-plus" style="font-size:12px"></i>Nuevo Lote</button>
+            <button class="btn-o"><i class="pi pi-download" style="font-size:12px"></i>Exportar</button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="mstat ic-purple a a1">
+          <div class="glow"></div>
+          <div class="mstat-icon"><i class="pi pi-box"></i></div>
+          <div class="mstat-val">243</div>
+          <div class="mstat-lbl">Cabezas Hoy</div>
+        </div>
+        <div class="mstat ic-teal a a2">
+          <div class="glow"></div>
+          <div class="mstat-icon"><i class="pi pi-percentage"></i></div>
+          <div class="mstat-val">52.4%</div>
+          <div class="mstat-lbl">Rendimiento Canal</div>
+        </div>
+
+        <!-- Row 2: 2 more stats -->
+        <div class="mstat ic-purple a a2" style="grid-column:1/2">
+          <div class="glow"></div>
+          <div class="mstat-icon" style="background:rgba(253,121,168,.12);color:var(--g3)"><i class="pi pi-chart-line"></i></div>
+          <div class="mstat-val">18,740<span style="font-size:14px;color:var(--t2);font-weight:500"> kg</span></div>
+          <div class="mstat-lbl">Peso en Báscula</div>
+        </div>
+        <div class="mstat ic-teal a a3">
+          <div class="glow" style="background:var(--g4)"></div>
+          <div class="mstat-icon" style="background:rgba(253,203,110,.12);color:var(--g4)"><i class="pi pi-truck"></i></div>
+          <div class="mstat-val">8</div>
+          <div class="mstat-lbl">Despachos del Día</div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-card a a3">
+          <div class="card-head">
+            <h3>Producción por Especie</h3>
+            <div class="tabs">
+              <button class="tab on">Semanal</button>
+              <button class="tab">Mensual</button>
+            </div>
+          </div>
+          <div class="legend">
+            <span><div class="ld ld-bov"></div>Bovino</span>
+            <span><div class="ld ld-por"></div>Porcino</span>
+          </div>
+          <svg viewBox="0 0 700 160" preserveAspectRatio="none" style="width:100%;height:160px">
+            <defs>
+              <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6C5CE7" stop-opacity=".3"/><stop offset="100%" stop-color="#6C5CE7" stop-opacity=".01"/></linearGradient>
+              <linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FD79A8" stop-opacity=".2"/><stop offset="100%" stop-color="#FD79A8" stop-opacity=".01"/></linearGradient>
+            </defs>
+            <path d="M0,130 C70,115 130,80 220,85 C310,90 370,55 460,45 C550,35 620,60 700,30 L700,160 L0,160Z" fill="url(#gb)"/>
+            <path d="M0,130 C70,115 130,80 220,85 C310,90 370,55 460,45 C550,35 620,60 700,30" fill="none" stroke="#6C5CE7" stroke-width="2.5"/>
+            <path d="M0,145 C70,138 130,120 220,125 C310,130 370,108 460,100 C550,92 620,105 700,80 L700,160 L0,160Z" fill="url(#gp)"/>
+            <path d="M0,145 C70,138 130,120 220,125 C310,130 370,108 460,100 C550,92 620,105 700,80" fill="none" stroke="#FD79A8" stroke-width="2" stroke-dasharray="6,3"/>
+          </svg>
+        </div>
+
+        <!-- Activity -->
+        <div class="act-card a a3">
+          <div class="card-head"><h3>Actividad Reciente</h3></div>
+          <div class="act"><div class="act-dot bov"></div><div class="act-txt"><b>Lote B-0428</b> — 45 bovinos pesados en báscula</div><div class="act-time">12 min</div></div>
+          <div class="act"><div class="act-dot por"></div><div class="act-txt"><b>Lote P-0427</b> — 80 porcinos completaron beneficio</div><div class="act-time">45 min</div></div>
+          <div class="act"><div class="act-dot bov"></div><div class="act-txt"><b>Despacho #312</b> — 2,400 kg enviados</div><div class="act-time">1h</div></div>
+          <div class="act"><div class="act-dot por"></div><div class="act-txt"><b>Desposte</b> — Lote P-0426 en proceso</div><div class="act-time">2h</div></div>
+        </div>
+
+        <!-- Table -->
+        <div class="tbl-card a a4">
+          <div class="card-head">
+            <h3>Últimos Pesajes</h3>
+            <button class="btn-o" style="padding:6px 14px;font-size:10px"><i class="pi pi-filter" style="font-size:11px"></i>Filtrar</button>
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>Fecha</th><th>Especie</th><th>Proveedor</th><th>Cant.</th><th>Peso</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td class="id">#1042</td><td>28/04/2026</td><td><span class="badge b-bov">🐄 Bovino</span></td><td>Hda. Santa Cruz</td><td>45</td><td class="w">4,230 kg</td><td><span class="badge b-ok">Completado</span></td></tr>
+              <tr><td class="id">#1041</td><td>28/04/2026</td><td><span class="badge b-por">🐷 Porcino</span></td><td>Granja Los Robles</td><td>80</td><td class="w">6,120 kg</td><td><span class="badge b-ok">Completado</span></td></tr>
+              <tr><td class="id">#1040</td><td>28/04/2026</td><td><span class="badge b-bov">🐄 Bovino</span></td><td>Finca El Progreso</td><td>32</td><td class="w">3,840 kg</td><td><span class="badge b-pen">En Proceso</span></td></tr>
+              <tr><td class="id">#1039</td><td>27/04/2026</td><td><span class="badge b-por">🐷 Porcino</span></td><td>Porkcol S.A.S</td><td>60</td><td class="w">4,550 kg</td><td><span class="badge b-ok">Completado</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
