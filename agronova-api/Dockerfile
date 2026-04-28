@@ -28,6 +28,9 @@ WORKDIR /var/www
 # Copiar código
 COPY . .
 
+# Crear .env minimo para que artisan funcione durante el build
+RUN cp .env.example .env 2>/dev/null || echo "APP_NAME=AGRONOVA\nAPP_ENV=production\nAPP_KEY=\nDB_CONNECTION=pgsql\nLOG_CHANNEL=stderr" > .env
+
 # Instalar dependencias (sin dev, optimizado)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
