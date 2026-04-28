@@ -167,25 +167,30 @@
 
                         <!-- Promedio con alerta biológica -->
                         <div class="col-span-2 rounded-2xl p-4 border flex items-center justify-between transition-all"
-                             [class.bg-black/60]="alertaPromedio === 'none' || alertaPromedio === 'ok'"
-                             [class.border-white/5]="alertaPromedio === 'none' || alertaPromedio === 'ok'"
-                             [class.bg-amber-500/10]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'"
-                             [class.border-amber-500/30]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'">
+                             [ngClass]="{
+                               'bg-black/60': alertaPromedio === 'none' || alertaPromedio === 'ok',
+                               'border-white/5': alertaPromedio === 'none' || alertaPromedio === 'ok',
+                               'bg-amber-500/10': alertaPromedio === 'bajo' || alertaPromedio === 'alto',
+                               'border-amber-500/30': alertaPromedio === 'bajo' || alertaPromedio === 'alto'
+                             }">
                             <div>
                                 <span class="text-[7px] font-black uppercase tracking-[0.2em]"
-                                      [class.text-slate-800]="alertaPromedio === 'none'"
-                                      [class.text-[#a4c639]]="alertaPromedio === 'ok'"
-                                      [class.text-amber-400]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'"
-                                >Promedio</span>
+                                      [ngClass]="{
+                                        'text-slate-500': alertaPromedio === 'none',
+                                        'text-lime-400': alertaPromedio === 'ok',
+                                        'text-amber-400': alertaPromedio === 'bajo' || alertaPromedio === 'alto'
+                                      }">Promedio</span>
                                 <p *ngIf="alertaPromedio === 'bajo'" class="text-[7px] text-amber-400 font-bold mt-0.5">⚠ PESO BAJO — verifique</p>
                                 <p *ngIf="alertaPromedio === 'alto'" class="text-[7px] text-amber-400 font-bold mt-0.5">⚠ PESO ALTO — verifique</p>
                             </div>
                             <div class="text-xl font-black tracking-tighter"
-                                 [class.text-white]="alertaPromedio === 'none'"
-                                 [class.text-[#a4c639]]="alertaPromedio === 'ok'"
-                                 [class.text-amber-400]="alertaPromedio === 'bajo' || alertaPromedio === 'alto'">
+                                 [ngClass]="{
+                                   'text-white': alertaPromedio === 'none',
+                                   'text-lime-400': alertaPromedio === 'ok',
+                                   'text-amber-400': alertaPromedio === 'bajo' || alertaPromedio === 'alto'
+                                 }">
                                 {{ promedioKgAnimal | number:'1.1-1' }}
-                                <span class="text-[8px] text-slate-800 font-bold ml-1">KG/ANIM</span>
+                                <span class="text-[8px] text-slate-500 font-bold ml-1">KG/ANIM</span>
                             </div>
                         </div>
                     </div>
