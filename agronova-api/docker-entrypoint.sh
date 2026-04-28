@@ -55,9 +55,9 @@ php artisan config:clear
 php artisan config:cache || true
 php artisan route:cache || true
 
-# Migraciones
-echo "[3/4] Ejecutando migraciones..."
-php artisan migrate --force
+# Migraciones (fresh para recrear tablas con esquema corregido)
+echo "[3/4] Ejecutando migraciones fresh..."
+php artisan migrate:fresh --force
 
 # Seeder
 echo "[4/4] Creando usuario administrador..."
