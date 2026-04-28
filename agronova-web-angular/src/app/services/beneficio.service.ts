@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Beneficio {
   Id?: string;
@@ -22,7 +23,7 @@ export interface Beneficio {
   providedIn: 'root'
 })
 export class BeneficioService {
-  private apiUrl = 'http://localhost:8000/api/beneficio';
+  private apiUrl = environment.apiUrl + '/beneficio';
 
   constructor(private http: HttpClient) { }
 

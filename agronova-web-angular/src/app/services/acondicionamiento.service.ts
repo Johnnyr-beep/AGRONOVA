@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Acondicionamiento {
   Id?: string;
@@ -26,7 +27,7 @@ export interface Acondicionamiento {
   providedIn: 'root'
 })
 export class AcondicionamientoService {
-  private apiUrl = 'http://localhost:8000/api/acondicionamiento';
+  private apiUrl = environment.apiUrl + '/acondicionamiento';
 
   constructor(private http: HttpClient) { }
 

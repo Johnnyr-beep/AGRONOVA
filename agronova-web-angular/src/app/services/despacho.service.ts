@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Despacho {
   Id?: string;
@@ -31,7 +32,7 @@ export interface Despacho {
   providedIn: 'root'
 })
 export class DespachoService {
-  private apiUrl = 'http://localhost:8000/api/despacho';
+  private apiUrl = environment.apiUrl + '/despacho';
 
   constructor(private http: HttpClient) { }
 

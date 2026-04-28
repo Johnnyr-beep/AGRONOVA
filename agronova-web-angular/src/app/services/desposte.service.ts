@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Desposte {
   Id?: string;
@@ -24,7 +25,7 @@ export interface Desposte {
   providedIn: 'root'
 })
 export class DesposteService {
-  private apiUrl = 'http://localhost:8000/api/desposte';
+  private apiUrl = environment.apiUrl + '/desposte';
 
   constructor(private http: HttpClient) { }
 

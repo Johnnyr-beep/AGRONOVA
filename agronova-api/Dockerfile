@@ -9,13 +9,15 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libpq-dev
+    libpq-dev \
+    nginx \
+    supervisor
 
 # Limpiar cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalar extensiones de PHP necesarias (incluyendo PostgreSQL)
-RUN docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd
+# Instalar extensiones de PHP (PostgreSQL + SQLite para fallback)
+RUN docker-php-ext-install pdo pdo_pgsql pdo_mysql mbstring exif pcntl bcmath gd
 
 # Obtener Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -23,15 +25,21 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Directorio de trabajo
 WORKDIR /var/www
 
-# Copiar el código
+# Copiar código
 COPY . .
 
-# Instalar dependencias de Composer
-RUN composer install --no-dev --optimize-autoloader
+# Instalar dependencias (sin dev, optimizado)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Permisos
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Permisos de storage y cache
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
+# Puerto que Railway asigna dinámicamente
 EXPOSE 8000
 
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Script de arranque
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
