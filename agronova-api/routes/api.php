@@ -15,6 +15,38 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 
+// Temporal debug route
+Route::get('/debug', function () {
+    try {
+        $tables = \Illuminate\Support\Facades\DB::select(
+            "SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename"
+        );
+        $tableNames = array_map(fn($t) => $t->tablename, $tables);
+
+        $test = null;
+        try {
+            $test = \App\Models\Bascula::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
+        } catch (\Exception $e) {
+            $test = $e->getMessage();
+        }
+
+        $pesoTest = null;
+        try {
+            $pesoTest = \App\Models\PesoEnPie::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
+        } catch (\Exception $e) {
+            $pesoTest = $e->getMessage();
+        }
+
+        return response()->json([
+            'tables' => $tableNames,
+            'bascula_test' => $test,
+            'peso_en_pie_test' => $pesoTest,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+});
+
 // Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
 
