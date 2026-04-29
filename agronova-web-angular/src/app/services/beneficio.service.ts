@@ -3,31 +3,43 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export interface Beneficio {
+export interface AnimalBeneficio {
   Id?: string;
-  CanalId: string;
-  BasculaId?: string;
-  NumeroFaena: string;
-  NumeroCanal: string;
-  TipoAnimal: string;
-  NumeroIdentificacion: string;
-  PesoEntrada: number;
-  PesoCanal?: number;
-  Estado?: number;
-  HoraInicio?: string;
-  HoraFin?: string;
-  // ... otros campos
+  BeneficioId?: string;
+  Turno: number;
+  NumeroAnimal?: number;
+  TipoAnimal?: string;
+  PesoKg?: number;
+  Estado?: 'Vivo' | 'Tumbado';
+  ObservacionesCamionera?: string;
+  Eliminado?: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface Beneficio {
+  Id?: string;
+  NumeroOrden: string;
+  Fecha: string;
+  ClienteNit?: string;
+  ClienteNombre: string;
+  ModoImpresion?: 'MANUAL' | 'AUTO';
+  Estado?: string;
+  Eliminado?: boolean;
+  animales?: AnimalBeneficio[];
+  TotalAnimales?: number;
+  TotalVivos?: number;
+  TotalTumbados?: number;
+}
+
+@Injectable({ providedIn: 'root' })
 export class BeneficioService {
   private apiUrl = environment.apiUrl + '/beneficio';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Beneficio[]> {
+  getAll(fecha?: string): Observable<Beneficio[]> {
+    if (fecha) {
+      return this.http.get<Beneficio[]>(this.apiUrl, { params: { fecha } });
+    }
     return this.http.get<Beneficio[]>(this.apiUrl);
   }
 
@@ -35,36 +47,35 @@ export class BeneficioService {
     return this.http.get<Beneficio>(`${this.apiUrl}/${id}`);
   }
 
-  create(data: Beneficio): Observable<Beneficio> {
+  create(data: Partial<Beneficio>): Observable<Beneficio> {
     return this.http.post<Beneficio>(this.apiUrl, data);
   }
 
-  // Métodos de proceso
-  insensibilizar(id: string, metodo: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/insensibilizar`, { metodo });
+  update(id: string, data: Partial<Beneficio>): Observable<Beneficio> {
+    return this.http.put<Beneficio>(`${this.apiUrl}/${id}`, data);
   }
 
-  desangrar(id: string, data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/desangrar`, data);
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  pelar(id: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/pelar`, {});
+  aprobar(id: string): Observable<Beneficio> {
+    return this.http.post<Beneficio>(`${this.apiUrl}/${id}/aprobar`, {});
   }
 
-  eviscerar(id: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/eviscerar`, {});
+  rechazar(id: string): Observable<Beneficio> {
+    return this.http.post<Beneficio>(`${this.apiUrl}/${id}/rechazar`, {});
   }
 
-  dividir(id: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/dividir`, {});
+  addAnimal(beneficioId: string, data: Partial<AnimalBeneficio>): Observable<AnimalBeneficio> {
+    return this.http.post<AnimalBeneficio>(`${this.apiUrl}/${beneficioId}/animales`, data);
   }
 
-  aprobar(id: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/aprobar`, {});
+  updateAnimal(beneficioId: string, animalId: string, data: Partial<AnimalBeneficio>): Observable<AnimalBeneficio> {
+    return this.http.put<AnimalBeneficio>(`${this.apiUrl}/${beneficioId}/animales/${animalId}`, data);
   }
 
-  rechazar(id: string, razonRechazo: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/rechazar`, { razonRechazo });
+  removeAnimal(beneficioId: string, animalId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${beneficioId}/animales/${animalId}`);
   }
 }

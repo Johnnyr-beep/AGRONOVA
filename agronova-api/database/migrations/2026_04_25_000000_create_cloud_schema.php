@@ -45,16 +45,29 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabla de Beneficio (Antes Faena)
+        // Tabla de Beneficio — Órdenes de Servicio
         Schema::create('Beneficios', function (Blueprint $table) {
             $table->uuid('Id')->primary();
-            $table->uuid('BasculaId')->nullable();
-            $table->string('NumeroFaena');
-            $table->string('NumeroCanal');
-            $table->string('TipoAnimal');
-            $table->decimal('PesoEntrada', 10, 2);
-            $table->integer('Estado')->default(0); // 0: Pendiente, 1: Insensibilizado, etc.
-            $table->text('Observaciones')->nullable();
+            $table->string('NumeroOrden')->unique();
+            $table->date('Fecha');
+            $table->string('ClienteNit')->nullable();
+            $table->string('ClienteNombre');
+            $table->string('ModoImpresion')->default('MANUAL');
+            $table->string('Estado')->default('Abierto');
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Animales por Orden de Beneficio
+        Schema::create('AnimalesBeneficio', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('BeneficioId');
+            $table->integer('Turno');
+            $table->integer('NumeroAnimal')->nullable();
+            $table->string('TipoAnimal')->nullable();
+            $table->decimal('PesoKg', 10, 2)->default(0);
+            $table->string('Estado')->default('Vivo'); // Vivo, Tumbado
+            $table->text('ObservacionesCamionera')->nullable();
             $table->boolean('Eliminado')->default(false);
             $table->timestamps();
         });
@@ -69,6 +82,7 @@ return new class extends Migration
             $table->boolean('EtiquetadoCompleto')->default(false);
             $table->boolean('AprobadoControlCalidad')->default(false);
             $table->integer('Estado')->default(0);
+            $table->boolean('Eliminado')->default(false);
             $table->timestamps();
         });
     }
@@ -76,6 +90,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('Acondicionamientos');
+        Schema::dropIfExists('AnimalesBeneficio');
         Schema::dropIfExists('Beneficios');
         Schema::dropIfExists('Basculas');
         Schema::dropIfExists('Usuarios');

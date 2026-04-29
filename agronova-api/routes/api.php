@@ -22,15 +22,14 @@ Route::post('/login', [AuthController::class, 'login']);
     Route::get('bascula/suggestions', [BasculaController::class, 'suggestions']);
     Route::apiResource('bascula', BasculaController::class);
 
-    // Beneficio (Antes Faena)
+    // Beneficio — Órdenes de Servicio
     Route::apiResource('beneficio', BeneficioController::class);
-    Route::post('beneficio/{id}/insensibilizar', [BeneficioController::class, 'insensibilizar']);
-    Route::post('beneficio/{id}/desangrar', [BeneficioController::class, 'desangrar']);
-    Route::post('beneficio/{id}/pelar', [BeneficioController::class, 'pelar']);
-    Route::post('beneficio/{id}/eviscerar', [BeneficioController::class, 'eviscerar']);
-    Route::post('beneficio/{id}/dividir', [BeneficioController::class, 'dividir']);
     Route::post('beneficio/{id}/aprobar', [BeneficioController::class, 'aprobar']);
     Route::post('beneficio/{id}/rechazar', [BeneficioController::class, 'rechazar']);
+    // Animales por Orden
+    Route::post('beneficio/{id}/animales', [BeneficioController::class, 'addAnimal']);
+    Route::put('beneficio/{id}/animales/{animalId}', [BeneficioController::class, 'updateAnimal']);
+    Route::delete('beneficio/{id}/animales/{animalId}', [BeneficioController::class, 'removeAnimal']);
 
     // Inspecciones y Bienestar
     Route::post('inspeccion-veterinaria', [InspeccionVeterinarioController::class, 'store']);
