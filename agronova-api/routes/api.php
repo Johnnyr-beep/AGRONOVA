@@ -18,50 +18,22 @@ Route::post('/login', [AuthController::class, 'login']);
 // Temporal debug route
 Route::get('/debug', function () {
     try {
-        $tables = \Illuminate\Support\Facades\DB::select(
-            "SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename"
-        );
+        $DB = \Illuminate\Support\Facades\DB::class;
+
+        $tables = $DB::select("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename");
         $tableNames = array_map(fn($t) => $t->tablename, $tables);
 
-        $bTest = 'not tried';
-        try {
-            $b = \Illuminate\Support\Facades\DB::select('SELECT COUNT(*) as cnt FROM "Basculas"');
-            $bTest = 'raw ok: ' . $b[0]->cnt;
-        } catch (\Throwable $e) {
-            $bTest = 'raw error: ' . $e->getMessage();
+        $cols = [];
+        foreach (['Basculas', 'PesosEnPie', 'Acondicionamientos'] as $tbl) {
+            try {
+                $c = $DB::select("SELECT column_name FROM information_schema.columns WHERE table_name = ? ORDER BY ordinal_position", [$tbl]);
+                $cols[$tbl] = array_map(fn($r) => $r->column_name, $c);
+            } catch (\Throwable $e) {
+                $cols[$tbl] = 'error: ' . $e->getMessage();
+            }
         }
 
-        $bEloquent = 'not tried';
-        try {
-            $res = \App\Models\Bascula::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
-            $bEloquent = 'ok: ' . $res->count() . ' rows';
-        } catch (\Throwable $e) {
-            $bEloquent = get_class($e) . ': ' . $e->getMessage();
-        }
-
-        $pTest = 'not tried';
-        try {
-            $p = \Illuminate\Support\Facades\DB::select('SELECT COUNT(*) as cnt FROM "PesosEnPie"');
-            $pTest = 'raw ok: ' . $p[0]->cnt;
-        } catch (\Throwable $e) {
-            $pTest = 'raw error: ' . $e->getMessage();
-        }
-
-        $pEloquent = 'not tried';
-        try {
-            $res = \App\Models\PesoEnPie::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
-            $pEloquent = 'ok: ' . $res->count() . ' rows';
-        } catch (\Throwable $e) {
-            $pEloquent = get_class($e) . ': ' . $e->getMessage();
-        }
-
-        return response()->json([
-            'tables' => $tableNames,
-            'bascula_raw' => $bTest,
-            'bascula_eloquent' => $bEloquent,
-            'peso_en_pie_raw' => $pTest,
-            'peso_en_pie_eloquent' => $pEloquent,
-        ]);
+        return response()->json(['tables' => $tableNames, 'columns' => $cols]);
     } catch (\Throwable $e) {
         return response()->json(['error' => $e->getMessage(), 'class' => get_class($e)]);
     }
