@@ -9,18 +9,7 @@ class BasculaController extends Controller
 {
     public function index()
     {
-        try {
-            return Bascula::where('Eliminado', false)
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } catch (\Throwable $e) {
-            return response()->json([
-                'debug_error' => $e->getMessage(),
-                'class' => get_class($e),
-                'line' => $e->getLine(),
-                'file' => basename($e->getFile()),
-            ], 500);
-        }
+        return response()->json(['test' => 'controller_loaded', 'ts' => time()]);
     }
 
     public function store(Request $request)
