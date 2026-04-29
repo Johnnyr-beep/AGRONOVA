@@ -23,27 +23,29 @@ Route::get('/debug', function () {
         );
         $tableNames = array_map(fn($t) => $t->tablename, $tables);
 
-        $test = null;
+        $bTest = 'not tried';
         try {
-            $test = \App\Models\Bascula::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
-        } catch (\Exception $e) {
-            $test = $e->getMessage();
+            $b = \Illuminate\Support\Facades\DB::select('SELECT COUNT(*) as cnt FROM "Basculas"');
+            $bTest = 'ok: ' . $b[0]->cnt . ' rows';
+        } catch (\Throwable $e) {
+            $bTest = 'error: ' . $e->getMessage();
         }
 
-        $pesoTest = null;
+        $pTest = 'not tried';
         try {
-            $pesoTest = \App\Models\PesoEnPie::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
-        } catch (\Exception $e) {
-            $pesoTest = $e->getMessage();
+            $p = \Illuminate\Support\Facades\DB::select('SELECT COUNT(*) as cnt FROM "PesosEnPie"');
+            $pTest = 'ok: ' . $p[0]->cnt . ' rows';
+        } catch (\Throwable $e) {
+            $pTest = 'error: ' . $e->getMessage();
         }
 
         return response()->json([
             'tables' => $tableNames,
-            'bascula_test' => $test,
-            'peso_en_pie_test' => $pesoTest,
+            'bascula_raw' => $bTest,
+            'peso_en_pie_raw' => $pTest,
         ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()]);
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage(), 'class' => get_class($e)]);
     }
 });
 
