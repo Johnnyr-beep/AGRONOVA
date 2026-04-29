@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -10,6 +10,7 @@ class UsuarioRol extends Pivot
     use HasUuids;
 
     protected $table = 'UsuarioRoles';
+    protected $primaryKey = 'Id';
 
     protected $fillable = [
         'UsuarioId',

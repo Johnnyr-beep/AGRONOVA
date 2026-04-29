@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -11,6 +11,7 @@ class Canal extends Model
     use HasFactory, HasUuids;
 
     protected $table = 'Canales';
+    protected $primaryKey = 'Id';
 
     protected $fillable = [
         'NumeroCanal',

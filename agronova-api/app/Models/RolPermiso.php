@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -10,6 +10,7 @@ class RolPermiso extends Pivot
     use HasUuids;
 
     protected $table = 'RolPermisos';
+    protected $primaryKey = 'Id';
 
     protected $fillable = [
         'RolId',

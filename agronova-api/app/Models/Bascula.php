@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -11,6 +11,7 @@ class Bascula extends Model
     use HasFactory, HasUuids;
 
     protected $table = 'Basculas';
+    protected $primaryKey = 'Id';
 
     protected $fillable = [
         'NumeroTicket',

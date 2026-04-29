@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -11,6 +11,7 @@ class Cliente extends Model
     use HasFactory, HasUuids;
 
     protected $table = 'Clientes';
+    protected $primaryKey = 'Id';
 
     protected $fillable = [
         'Nombre',
