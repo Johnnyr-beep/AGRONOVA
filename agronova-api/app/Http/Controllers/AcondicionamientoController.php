@@ -11,8 +11,7 @@ class AcondicionamientoController extends Controller
     public function index()
     {
         return Acondicionamiento::where('Eliminado', false)
-            ->with(['desposte', 'operario', 'aprobadoPor'])
-            ->orderBy('FechaAcondicionamiento', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 

@@ -10,8 +10,7 @@ class BasculaController extends Controller
     public function index()
     {
         return Bascula::where('Eliminado', false)
-            ->with(['proveedor', 'operario'])
-            ->orderBy('FechaIngreso', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
