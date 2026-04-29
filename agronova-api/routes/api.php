@@ -9,6 +9,7 @@ use App\Http\Controllers\AcondicionamientoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\InspeccionVeterinarioController;
 use App\Http\Controllers\ControlBienestarAnimalController;
+use App\Http\Controllers\PesoEnPieController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,11 @@ Route::post('/login', [AuthController::class, 'login']);
 
     // Usuarios (Configuración)
     Route::get('users', [\App\Http\Controllers\UserController::class, 'index']);
+
+    // Peso en Pie
+    Route::get('peso-en-pie/suggestions', [PesoEnPieController::class, 'suggestions']);
+    Route::get('peso-en-pie/stats', [PesoEnPieController::class, 'stats']);
+    Route::apiResource('peso-en-pie', PesoEnPieController::class);
 
     // Reportes
     Route::get('reportes/dashboard', [ReporteController::class, 'dashboardStats']);

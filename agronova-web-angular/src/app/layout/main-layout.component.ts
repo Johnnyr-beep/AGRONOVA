@@ -36,6 +36,7 @@ export class MainLayoutComponent {
   menuItems = [
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard' },
     { label: 'Báscula', icon: 'pi pi-server', route: '/bascula' },
+    { label: 'Peso en Pie', icon: 'pi pi-chart-line', route: '/peso-en-pie' },
     { label: 'Beneficio', icon: 'pi pi-bolt', route: '/beneficio' },
     { label: 'Desposte', icon: 'pi pi-objects-column', route: '/desposte' },
     { label: 'Acondicionamiento', icon: 'pi pi-box', route: '/acondicionamiento' },

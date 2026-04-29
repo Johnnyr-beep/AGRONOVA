@@ -1,0 +1,265 @@
+<div class="space-y-5 animate-fade-in">
+
+  <!-- Module Header + Form -->
+  <div class="glass-card p-7 relative overflow-hidden">
+    <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full"
+         style="background: rgba(0, 206, 201, 0.04); filter: blur(60px);"></div>
+
+    <form [formGroup]="form" class="space-y-5 relative z-10">
+
+      <!-- Top Bar -->
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-5">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+               style="background: linear-gradient(135deg, #00CEC9, #6C5CE7); box-shadow: 0 4px 16px rgba(0, 206, 201, 0.2);">
+            <i class="pi pi-chart-line text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">
+              Peso <span class="gradient-text">en Pie</span>
+            </h1>
+            <p class="text-[10px] mt-0.5" style="color:#3D4050">Registro de animales en corral · v1.0</p>
+          </div>
+        </div>
+
+        <!-- Action Toolbar -->
+        <div class="flex items-center space-x-2 p-1.5 rounded-xl"
+             style="background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);">
+          <button type="button" (click)="save()" pTooltip="Registrar"
+                  class="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                  style="background: rgba(0, 206, 201, 0.1); color: #00CEC9; border: 1px solid rgba(0, 206, 201, 0.2);">
+            <i class="pi pi-check text-lg"></i>
+          </button>
+          <button type="button" (click)="clear()" pTooltip="Limpiar"
+                  class="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:bg-white/5"
+                  style="color: #3D4050; border: 1px solid rgba(255,255,255,.06);">
+            <i class="pi pi-eraser text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Strip -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="rounded-2xl p-4 text-center"
+             style="background: rgba(0, 206, 201, 0.04); border: 1px solid rgba(0, 206, 201, 0.1);">
+          <span class="text-[8px] font-bold uppercase tracking-widest block mb-1" style="color: rgba(0,206,201,.6);">Animales Hoy</span>
+          <span class="text-2xl font-extrabold" style="color: #00CEC9;">{{ stats.totalAnimales }}</span>
+        </div>
+        <div class="rounded-2xl p-4 text-center"
+             style="background: rgba(108, 92, 231, 0.04); border: 1px solid rgba(108, 92, 231, 0.1);">
+          <span class="text-[8px] font-bold uppercase tracking-widest block mb-1" style="color: rgba(108,92,231,.6);">Peso Total (kg)</span>
+          <span class="text-2xl font-extrabold" style="color: #6C5CE7;">{{ stats.pesoTotal | number:'1.0-0' }}</span>
+        </div>
+        <div class="rounded-2xl p-4 text-center"
+             style="background: rgba(0, 184, 148, 0.04); border: 1px solid rgba(0, 184, 148, 0.1);">
+          <span class="text-[8px] font-bold uppercase tracking-widest block mb-1" style="color: rgba(0,184,148,.6);">Guías Abiertas</span>
+          <span class="text-2xl font-extrabold" style="color: #00B894;">{{ stats.guiasAbiertas }}</span>
+        </div>
+      </div>
+
+      <!-- Form Grid -->
+      <div class="grid grid-cols-12 gap-4">
+
+        <!-- Left: Main fields -->
+        <div class="col-span-12 lg:col-span-8 space-y-4">
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-widest ml-1"
+                     [style.color]="fieldInvalid('Fecha') ? '#D63031' : '#3D4050'">Fecha *</label>
+              <p-calendar formControlName="Fecha" dateFormat="dd/mm/yy"
+                          [showIcon]="true"
+                          inputStyleClass="w-full !bg-[rgba(14,16,21,0.8)] !border-white/[0.06] !rounded-xl !py-2.5 !text-white !text-xs !font-semibold"
+                          styleClass="w-full" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-widest ml-1"
+                     [style.color]="fieldInvalid('GuiaMovilizacion') ? '#D63031' : '#3D4050'">Guía de Movilización *</label>
+              <p-autoComplete formControlName="GuiaMovilizacion"
+                              [suggestions]="suggestions['GuiaMovilizacion']"
+                              (completeMethod)="searchSuggestions($event, 'GuiaMovilizacion')"
+                              [inputStyleClass]="fieldInvalid('GuiaMovilizacion') ? 'industrial-input-compact border-rose-500' : 'industrial-input-compact'"
+                              styleClass="industrial-autocomplete w-full" />
+              <p *ngIf="fieldInvalid('GuiaMovilizacion')" class="text-[8px] ml-1" style="color: #D63031;">Obligatorio</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-widest ml-1"
+                     [style.color]="fieldInvalid('ProveedorNombre') ? '#D63031' : '#3D4050'">Proveedor / Ganadero *</label>
+              <p-autoComplete formControlName="ProveedorNombre"
+                              [suggestions]="suggestions['ProveedorNombre']"
+                              (completeMethod)="searchSuggestions($event, 'ProveedorNombre')"
+                              [inputStyleClass]="fieldInvalid('ProveedorNombre') ? 'industrial-input-compact border-rose-500' : 'industrial-input-compact'"
+                              styleClass="industrial-autocomplete w-full" />
+              <p *ngIf="fieldInvalid('ProveedorNombre')" class="text-[8px] ml-1" style="color: #D63031;">Obligatorio</p>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-widest ml-1"
+                     [style.color]="fieldInvalid('ClienteNombre') ? '#D63031' : '#3D4050'">Cliente Destino *</label>
+              <p-autoComplete formControlName="ClienteNombre"
+                              [suggestions]="suggestions['ClienteNombre']"
+                              (completeMethod)="searchSuggestions($event, 'ClienteNombre')"
+                              [inputStyleClass]="fieldInvalid('ClienteNombre') ? 'industrial-input-compact border-rose-500' : 'industrial-input-compact'"
+                              styleClass="industrial-autocomplete w-full" />
+              <p *ngIf="fieldInvalid('ClienteNombre')" class="text-[8px] ml-1" style="color: #D63031;">Obligatorio</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-widest ml-1"
+                     [style.color]="fieldInvalid('UbicacionCorral') ? '#D63031' : '#3D4050'">Ubicación Corral *</label>
+              <input type="text" pInputText formControlName="UbicacionCorral"
+                     [class.border-red-500]="fieldInvalid('UbicacionCorral')"
+                     placeholder="Ej: Corral A-3"
+                     class="w-full !bg-[rgba(14,16,21,0.8)] !border-white/[0.06] !rounded-xl !py-2.5 !font-semibold !text-white !text-xs !tracking-wider" />
+              <p *ngIf="fieldInvalid('UbicacionCorral')" class="text-[8px] ml-1" style="color: #D63031;">Obligatorio</p>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-widest ml-1" style="color: #3D4050;">Observaciones</label>
+              <input type="text" pInputText formControlName="Observaciones"
+                     class="w-full !bg-[rgba(14,16,21,0.8)] !border-white/[0.06] !rounded-xl !py-2.5 !text-white !text-xs" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Tiles -->
+        <div class="col-span-12 lg:col-span-4 flex flex-col gap-3">
+
+          <!-- Tipo Animal -->
+          <div class="rounded-2xl p-4" style="background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);">
+            <span class="text-[8px] font-bold uppercase tracking-widest block mb-3" style="color: #3D4050;">Tipo Animal *</span>
+            <div class="grid grid-cols-2 gap-2">
+              <button *ngFor="let t of tiposAnimal" type="button"
+                      (click)="form.get('TipoAnimal')?.setValue(t.value)"
+                      class="py-2 px-3 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all"
+                      [style.background]="form.get('TipoAnimal')?.value === t.value ? tipoAnimalColor(t.value) + '22' : 'rgba(255,255,255,.02)'"
+                      [style.color]="form.get('TipoAnimal')?.value === t.value ? tipoAnimalColor(t.value) : '#3D4050'"
+                      [style.border]="'1px solid ' + (form.get('TipoAnimal')?.value === t.value ? tipoAnimalColor(t.value) + '44' : 'rgba(255,255,255,.06)')">
+                {{ t.label }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Peso -->
+          <div class="rounded-2xl p-4 flex flex-col justify-center text-center flex-1"
+               style="background: rgba(0, 206, 201, 0.04); border: 1px solid rgba(0, 206, 201, 0.12);">
+            <span class="text-[8px] font-bold uppercase tracking-widest mb-2" style="color: rgba(0,206,201,.6);">Peso Vivo (kg) *</span>
+            <p-inputNumber formControlName="PesoKg" [showButtons]="false"
+                           [minFractionDigits]="1" [maxFractionDigits]="2"
+                           styleClass="industrial-number-input"
+                           inputStyleClass="text-3xl font-extrabold text-center bg-transparent border-none outline-none w-full"
+                           [inputStyle]="{'color': '#00CEC9'}" />
+            <p *ngIf="fieldInvalid('PesoKg')" class="text-[8px] mt-1" style="color: #D63031;">Peso obligatorio (mayor a 0)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registros Abiertos -->
+      <div *ngIf="registrosAbiertos.length > 0" class="mt-2">
+        <p class="text-[9px] font-bold uppercase tracking-widest mb-2" style="color: #3D4050;">Pendientes de cierre</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(148, 163, 184, 0.06);">
+                <th class="py-2 text-[8px] font-bold uppercase tracking-widest" style="color: #475569;">Consec.</th>
+                <th class="py-2 text-[8px] font-bold uppercase tracking-widest" style="color: #475569;">Guía</th>
+                <th class="py-2 text-[8px] font-bold uppercase tracking-widest" style="color: #475569;">Animal</th>
+                <th class="py-2 text-[8px] font-bold uppercase tracking-widest" style="color: #475569;">Peso</th>
+                <th class="py-2 text-[8px] font-bold uppercase tracking-widest" style="color: #475569;">Corral</th>
+                <th class="py-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of registrosAbiertos" class="text-xs hover:bg-white/[0.02] transition-colors"
+                  style="border-bottom: 1px solid rgba(148, 163, 184, 0.04);">
+                <td class="py-2 font-bold" style="color: #00CEC9;">{{ r.Consecutivo }}</td>
+                <td class="py-2 font-semibold text-white">{{ r.GuiaMovilizacion }}</td>
+                <td class="py-2">
+                  <span class="px-2 py-0.5 rounded text-[9px] font-bold"
+                        [style.background]="tipoAnimalColor(r.TipoAnimal) + '15'"
+                        [style.color]="tipoAnimalColor(r.TipoAnimal)"
+                        [style.border]="'1px solid ' + tipoAnimalColor(r.TipoAnimal) + '30'">
+                    {{ r.TipoAnimal }}
+                  </span>
+                </td>
+                <td class="py-2 text-white font-medium">{{ r.PesoKg | number:'1.1-2' }} kg</td>
+                <td class="py-2" style="color: #64748B;">{{ r.UbicacionCorral }}</td>
+                <td class="py-2 text-right">
+                  <button type="button" (click)="cerrar(r)"
+                          class="text-[8px] font-bold uppercase tracking-wider px-3 py-1 rounded-lg transition-all"
+                          style="color: #E17055; border: 1px solid rgba(225, 112, 85, 0.15); background: rgba(225, 112, 85, 0.06);">
+                    Cerrar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- History Table -->
+  <div class="glass-card overflow-hidden">
+    <div class="p-5 flex justify-between items-center"
+         style="border-bottom: 1px solid rgba(148, 163, 184, 0.06); background: rgba(2, 6, 23, 0.3);">
+      <div>
+        <h3 class="text-base font-bold text-white">Registro Histórico</h3>
+        <p class="text-[9px] mt-0.5" style="color: #475569;">Pesajes en pie procesados</p>
+      </div>
+    </div>
+
+    <p-table [value]="registros" [loading]="loading" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="text-[9px] uppercase">Consec.</th>
+          <th class="text-[9px] uppercase">Fecha</th>
+          <th class="text-[9px] uppercase">Guía</th>
+          <th class="text-[9px] uppercase">Proveedor</th>
+          <th class="text-[9px] uppercase">Animal</th>
+          <th class="text-[9px] uppercase">Corral</th>
+          <th class="text-[9px] uppercase">Peso (kg)</th>
+          <th class="text-[9px] uppercase">Estado</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr class="text-xs">
+          <td class="font-bold" style="color: #00CEC9;">{{ item.Consecutivo }}</td>
+          <td style="color: #64748B;">{{ item.Fecha | date:'dd/MM/yy' }}</td>
+          <td class="text-white font-medium">{{ item.GuiaMovilizacion }}</td>
+          <td style="color: #94A3B8;">{{ item.ProveedorNombre }}</td>
+          <td>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold"
+                  [style.background]="tipoAnimalColor(item.TipoAnimal) + '15'"
+                  [style.color]="tipoAnimalColor(item.TipoAnimal)"
+                  [style.border]="'1px solid ' + tipoAnimalColor(item.TipoAnimal) + '30'">
+              {{ item.TipoAnimal }}
+            </span>
+          </td>
+          <td style="color: #64748B;">{{ item.UbicacionCorral }}</td>
+          <td class="font-bold text-white">{{ item.PesoKg | number:'1.1-2' }}</td>
+          <td>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold"
+                  [style.background]="item.Estado === 'Cerrado' ? 'rgba(100,116,139,.1)' : 'rgba(0,184,148,.08)'"
+                  [style.color]="item.Estado === 'Cerrado' ? '#64748B' : '#00B894'"
+                  [style.border]="item.Estado === 'Cerrado' ? '1px solid rgba(100,116,139,.15)' : '1px solid rgba(0,184,148,.15)'">
+              {{ item.Estado }}
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center py-8">
+            <p class="text-[10px] font-semibold uppercase tracking-widest" style="color: #334155;">Sin registros</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-toast></p-toast>

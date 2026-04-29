@@ -12,6 +12,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent) },
       { path: 'bascula', loadComponent: () => import('./bascula/bascula.component').then(m => m.BasculaComponent) },
+      { path: 'peso-en-pie', loadComponent: () => import('./peso-en-pie/peso-en-pie.component').then(m => m.PesoEnPieComponent) },
       { path: 'beneficio', loadComponent: () => import('./beneficio/beneficio.component').then(m => m.BeneficioComponent) },
       { path: 'desposte', loadComponent: () => import('./desposte/desposte.component').then(m => m.DesposteComponent) },
       { path: 'despacho', loadComponent: () => import('./despacho/despacho.component').then(m => m.DespachoComponent) },
