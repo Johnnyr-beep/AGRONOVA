@@ -51,7 +51,7 @@ fi
 
 # Limpiar cache viejo y reoptimizar
 echo "[2/4] Optimizando..."
-php artisan config:clear
+php artisan optimize:clear
 php artisan config:cache || true
 php artisan route:cache || true
 

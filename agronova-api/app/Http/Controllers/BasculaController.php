@@ -9,7 +9,9 @@ class BasculaController extends Controller
 {
     public function index()
     {
-        return response()->json(['test' => 'controller_loaded', 'ts' => time()]);
+        return Bascula::where('Eliminado', false)
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     public function store(Request $request)

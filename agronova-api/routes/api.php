@@ -10,49 +10,8 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\InspeccionVeterinarioController;
 use App\Http\Controllers\ControlBienestarAnimalController;
 use App\Http\Controllers\PesoEnPieController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login']);
-
-// Temporal debug route
-Route::get('/debug', function () {
-    try {
-        $DB = \Illuminate\Support\Facades\DB::class;
-
-        $tables = $DB::select("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename");
-        $tableNames = array_map(fn($t) => $t->tablename, $tables);
-
-        $cols = [];
-        foreach (['Basculas', 'PesosEnPie', 'Acondicionamientos'] as $tbl) {
-            try {
-                $c = $DB::select("SELECT column_name FROM information_schema.columns WHERE table_name = ? ORDER BY ordinal_position", [$tbl]);
-                $cols[$tbl] = array_map(fn($r) => $r->column_name, $c);
-            } catch (\Throwable $e) {
-                $cols[$tbl] = 'error: ' . $e->getMessage();
-            }
-        }
-
-        $eloquent = [];
-        foreach ([
-            'bascula' => \App\Models\Bascula::class,
-            'peso_en_pie' => \App\Models\PesoEnPie::class,
-        ] as $key => $model) {
-            try {
-                $cnt = $model::where('Eliminado', false)->count();
-                $eloquent[$key] = 'ok: ' . $cnt;
-            } catch (\Throwable $e) {
-                $eloquent[$key] = get_class($e) . ': ' . substr($e->getMessage(), 0, 300);
-            }
-        }
-
-        return response()->json(['tables' => $tableNames, 'columns' => $cols, 'eloquent' => $eloquent]);
-    } catch (\Throwable $e) {
-        return response()->json(['error' => $e->getMessage(), 'class' => get_class($e)]);
-    }
-});
-
-// Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
 
 // Route::middleware('auth:sanctum')->group(function () {
