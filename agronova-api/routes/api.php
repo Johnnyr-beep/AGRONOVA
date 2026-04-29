@@ -33,7 +33,20 @@ Route::get('/debug', function () {
             }
         }
 
-        return response()->json(['tables' => $tableNames, 'columns' => $cols]);
+        $eloquent = [];
+        foreach ([
+            'bascula' => \App\Models\Bascula::class,
+            'peso_en_pie' => \App\Models\PesoEnPie::class,
+        ] as $key => $model) {
+            try {
+                $cnt = $model::where('Eliminado', false)->count();
+                $eloquent[$key] = 'ok: ' . $cnt;
+            } catch (\Throwable $e) {
+                $eloquent[$key] = get_class($e) . ': ' . substr($e->getMessage(), 0, 300);
+            }
+        }
+
+        return response()->json(['tables' => $tableNames, 'columns' => $cols, 'eloquent' => $eloquent]);
     } catch (\Throwable $e) {
         return response()->json(['error' => $e->getMessage(), 'class' => get_class($e)]);
     }
