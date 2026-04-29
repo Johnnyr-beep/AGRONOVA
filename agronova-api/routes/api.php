@@ -26,23 +26,41 @@ Route::get('/debug', function () {
         $bTest = 'not tried';
         try {
             $b = \Illuminate\Support\Facades\DB::select('SELECT COUNT(*) as cnt FROM "Basculas"');
-            $bTest = 'ok: ' . $b[0]->cnt . ' rows';
+            $bTest = 'raw ok: ' . $b[0]->cnt;
         } catch (\Throwable $e) {
-            $bTest = 'error: ' . $e->getMessage();
+            $bTest = 'raw error: ' . $e->getMessage();
+        }
+
+        $bEloquent = 'not tried';
+        try {
+            $res = \App\Models\Bascula::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
+            $bEloquent = 'ok: ' . $res->count() . ' rows';
+        } catch (\Throwable $e) {
+            $bEloquent = get_class($e) . ': ' . $e->getMessage();
         }
 
         $pTest = 'not tried';
         try {
             $p = \Illuminate\Support\Facades\DB::select('SELECT COUNT(*) as cnt FROM "PesosEnPie"');
-            $pTest = 'ok: ' . $p[0]->cnt . ' rows';
+            $pTest = 'raw ok: ' . $p[0]->cnt;
         } catch (\Throwable $e) {
-            $pTest = 'error: ' . $e->getMessage();
+            $pTest = 'raw error: ' . $e->getMessage();
+        }
+
+        $pEloquent = 'not tried';
+        try {
+            $res = \App\Models\PesoEnPie::where('Eliminado', false)->orderBy('created_at', 'desc')->get();
+            $pEloquent = 'ok: ' . $res->count() . ' rows';
+        } catch (\Throwable $e) {
+            $pEloquent = get_class($e) . ': ' . $e->getMessage();
         }
 
         return response()->json([
             'tables' => $tableNames,
             'bascula_raw' => $bTest,
+            'bascula_eloquent' => $bEloquent,
             'peso_en_pie_raw' => $pTest,
+            'peso_en_pie_eloquent' => $pEloquent,
         ]);
     } catch (\Throwable $e) {
         return response()->json(['error' => $e->getMessage(), 'class' => get_class($e)]);
