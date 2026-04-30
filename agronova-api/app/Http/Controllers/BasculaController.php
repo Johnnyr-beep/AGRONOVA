@@ -17,24 +17,24 @@ class BasculaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'NumeroTicket' => 'required|unique:Basculas',
-            'NumeroBascula' => 'required|integer',
+            'NumeroTicket'     => 'required|unique:Basculas',
+            'NumeroBascula'    => 'required|integer',
             'GuiaMovilizacion' => 'nullable|string|unique:Basculas',
-            'Referencia' => 'nullable|string',
-            'Procedencia' => 'nullable|string',
-            'ProveedorNombre' => 'nullable|string',
-            'ClienteNombre' => 'nullable|string',
-            'PatentaVehiculo' => 'required|string',
-            'Conductor' => 'nullable|string',
-            'Transportista' => 'nullable|string',
-            'PesoLleno' => 'required|numeric',
-            'PesoVacio' => 'required|numeric',
+            'Referencia'       => 'nullable|string',
+            'Procedencia'      => 'nullable|string',
+            'ProveedorNombre'  => 'nullable|string',
+            'ClienteNombre'    => 'nullable|string',
+            'PatentaCamion'    => 'required|string',
+            'Conductor'        => 'nullable|string',
+            'Transportista'    => 'nullable|string',
+            'PesoLleno'        => 'required|numeric',
+            'PesoVacio'        => 'required|numeric',
             'CantidadAnimales' => 'required|integer',
-            'Observaciones' => 'nullable|string',
-            'ProveedorId' => 'nullable|exists:Proveedores,Id',
+            'Observaciones'    => 'nullable|string',
+            'ProveedorId'      => 'nullable|uuid',
         ]);
 
-        if ($request->PesoVacio >= $request->PesoLleno) {
+        if ($validated['PesoVacio'] >= $validated['PesoLleno']) {
             return response()->json([
                 'message' => 'El peso de salida (vacío) debe ser menor al peso de entrada (lleno)'
             ], 422);
@@ -56,12 +56,12 @@ class BasculaController extends Controller
     public function update(Request $request, $id)
     {
         $bascula = Bascula::findOrFail($id);
-        
+
         $validated = $request->validate([
-            'NumeroTicket' => 'string|unique:Basculas,NumeroTicket,' . $id,
-            'GuiaMovilizacion' => 'string|unique:Basculas,GuiaMovilizacion,' . $id,
-            'PesoSalidaKg' => 'numeric',
-            'Estado' => 'string',
+            'NumeroTicket'     => "string|unique:Basculas,NumeroTicket,{$id}",
+            'GuiaMovilizacion' => "string|unique:Basculas,GuiaMovilizacion,{$id}",
+            'PesoSalidaKg'     => 'numeric',
+            'Estado'           => 'string',
         ]);
 
         $bascula->update($validated);
@@ -71,12 +71,16 @@ class BasculaController extends Controller
 
     public function suggestions(Request $request)
     {
-        $field = $request->get('field');
-        if (!in_array($field, ['Procedencia', 'ProveedorNombre', 'ClienteNombre', 'PatentaVehiculo', 'Conductor'])) {
+        $field = $request->input('field');
+        $allowed = ['Procedencia', 'ProveedorNombre', 'ClienteNombre', 'PatentaCamion', 'Conductor'];
+        if (!\in_array($field, $allowed, true)) {
             return response()->json([], 400);
         }
 
-        return Bascula::where($field, 'like', '%' . $request->get('query') . '%')
+        // Escapar caracteres especiales de LIKE para evitar table scans por abuso
+        $term = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], (string) $request->input('query', ''));
+
+        return Bascula::where($field, 'like', "%{$term}%")
             ->distinct()
             ->orderBy($field)
             ->limit(10)

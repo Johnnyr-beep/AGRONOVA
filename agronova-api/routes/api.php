@@ -12,9 +12,11 @@ use App\Http\Controllers\ControlBienestarAnimalController;
 use App\Http\Controllers\PesoEnPieController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login']);
+// Login público con rate limiting: máximo 5 intentos por minuto por IP
+Route::middleware('throttle:5,1')->post('/login', [AuthController::class, 'login']);
 
-// Route::middleware('auth:sanctum')->group(function () {
+// Todas las demás rutas requieren token Sanctum válido
+Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
@@ -61,4 +63,4 @@ Route::post('/login', [AuthController::class, 'login']);
     Route::get('reportes/dashboard', [ReporteController::class, 'dashboardStats']);
     Route::get('reportes/faena', [ReporteController::class, 'faenaReport']);
     Route::get('reportes/desposte', [ReporteController::class, 'desposteReport']);
-// });
+});

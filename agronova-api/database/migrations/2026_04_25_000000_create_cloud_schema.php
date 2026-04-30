@@ -30,16 +30,22 @@ return new class extends Migration
             $table->uuid('Id')->primary();
             $table->string('NumeroTicket')->unique();
             $table->integer('NumeroBascula')->default(1);
-            $table->string('GuiaMovilizacion')->nullable();
+            $table->string('GuiaMovilizacion')->nullable()->unique();
+            $table->string('Referencia')->nullable();
             $table->string('Procedencia')->nullable();
             $table->string('ProveedorNombre')->nullable();
             $table->string('ClienteNombre')->nullable();
-            $table->string('PatentaVehiculo');
+            $table->string('PatentaCamion');
             $table->string('Conductor')->nullable();
             $table->string('Transportista')->nullable();
             $table->decimal('PesoLleno', 12, 2);
             $table->decimal('PesoVacio', 12, 2);
             $table->integer('CantidadAnimales');
+            $table->uuid('ProveedorId')->nullable();
+            $table->uuid('OperarioId')->nullable();
+            $table->timestamp('FechaIngreso')->nullable();
+            $table->timestamp('FechaSalida')->nullable();
+            $table->text('Observaciones')->nullable();
             $table->string('Estado')->default('Abierto');
             $table->boolean('Eliminado')->default(false);
             $table->timestamps();
@@ -72,6 +78,23 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Tabla de Pesos en Pie (pesaje individual de animales en corral)
+        Schema::create('PesosEnPie', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Consecutivo')->unique();
+            $table->date('Fecha');
+            $table->string('GuiaMovilizacion');
+            $table->string('ProveedorNombre');
+            $table->string('ClienteNombre');
+            $table->string('TipoAnimal'); // MACHO, HEMBRA, BUFALO, BUFALA
+            $table->string('UbicacionCorral');
+            $table->decimal('PesoKg', 10, 2);
+            $table->text('Observaciones')->nullable();
+            $table->string('Estado')->default('Abierto');
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
         // Tabla de Acondicionamiento
         Schema::create('Acondicionamientos', function (Blueprint $table) {
             $table->uuid('Id')->primary();
@@ -90,6 +113,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('Acondicionamientos');
+        Schema::dropIfExists('PesosEnPie');
         Schema::dropIfExists('AnimalesBeneficio');
         Schema::dropIfExists('Beneficios');
         Schema::dropIfExists('Basculas');

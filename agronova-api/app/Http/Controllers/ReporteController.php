@@ -2,48 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Faena;
+use App\Models\Beneficio;
+use App\Models\AnimalBeneficio;
 use App\Models\Desposte;
-use App\Models\Despacho;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ReporteController extends Controller
 {
     public function dashboardStats()
     {
-        $hoy = now()->startOfDay();
-        
         return response()->json([
-            'faenas_hoy' => Faena::where('HoraInicio', '>=', $hoy)->count(),
-            'despachos_hoy' => Despacho::where('FechaDespacho', '>=', $hoy)->count(),
-            'total_kilos_hoy' => Faena::where('HoraInicio', '>=', $hoy)->sum('PesoEntrada'),
-            'mermas_promedio' => Desposte::avg('PerdidaProcesoKg') ?? 0,
+            'beneficios_hoy'     => Beneficio::whereDate('Fecha', today())
+                ->where('Eliminado', false)
+                ->count(),
+            'animales_hoy'       => AnimalBeneficio::whereHas(
+                    'beneficio',
+                    fn($q) => $q->whereDate('Fecha', today())
+                )
+                ->where('Eliminado', false)
+                ->count(),
+            'beneficios_abiertos' => Beneficio::where('Estado', 'Abierto')
+                ->where('Eliminado', false)
+                ->count(),
+            'mermas_promedio'    => (float) (Desposte::avg('PerdidaProcesoKg') ?? 0),
         ]);
     }
 
     public function faenaReport(Request $request)
     {
-        $query = Faena::with(['canal', 'bascula', 'veterinarioInspector']);
+        $request->validate([
+            'fecha_inicio' => 'nullable|date',
+            'fecha_fin'    => 'nullable|date|after_or_equal:fecha_inicio',
+        ]);
 
-        if ($request->fecha_inicio) {
-            $query->where('HoraInicio', '>=', $request->fecha_inicio);
+        $query = Beneficio::with(['animales' => fn($q) => $q->where('Eliminado', false)])
+            ->where('Eliminado', false);
+
+        if ($request->input('fecha_inicio')) {
+            $query->where('Fecha', '>=', $request->input('fecha_inicio'));
         }
-        if ($request->fecha_fin) {
-            $query->where('HoraInicio', '<=', $request->fecha_fin);
+        if ($request->input('fecha_fin')) {
+            $query->where('Fecha', '<=', $request->input('fecha_fin'));
         }
 
-        return $query->get();
+        return response()->json($query->get());
     }
 
     public function desposteReport(Request $request)
     {
+        $request->validate([
+            'fecha_inicio' => 'nullable|date',
+        ]);
+
         $query = Desposte::with(['canal', 'operario', 'productosDesposte']);
 
-        if ($request->fecha_inicio) {
-            $query->where('FechaDesposte', '>=', $request->fecha_inicio);
+        if ($request->input('fecha_inicio')) {
+            $query->where('FechaDesposte', '>=', $request->input('fecha_inicio'));
         }
 
-        return $query->get();
+        return response()->json($query->get());
     }
 }

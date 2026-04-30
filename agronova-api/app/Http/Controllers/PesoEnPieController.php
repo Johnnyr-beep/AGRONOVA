@@ -27,10 +27,9 @@ class PesoEnPieController extends Controller
             'Observaciones' => 'nullable|string',
         ]);
 
-        // Auto-generar consecutivo
         $lastRecord = PesoEnPie::orderBy('created_at', 'desc')->first();
-        $nextNum = $lastRecord ? (intval(substr($lastRecord->Consecutivo, 3)) + 1) : 1;
-        $validated['Consecutivo'] = 'PP-' . str_pad($nextNum, 5, '0', STR_PAD_LEFT);
+        $lastNum = $lastRecord ? \intval(\substr((string) $lastRecord->getAttribute('Consecutivo'), 3)) : 0;
+        $validated['Consecutivo'] = 'PP-' . \str_pad((string) ($lastNum + 1), 5, '0', STR_PAD_LEFT);
 
         $pesoEnPie = PesoEnPie::create($validated);
 
@@ -73,12 +72,15 @@ class PesoEnPieController extends Controller
 
     public function suggestions(Request $request)
     {
-        $field = $request->get('field');
-        if (!in_array($field, ['GuiaMovilizacion', 'ProveedorNombre', 'ClienteNombre'])) {
+        $field = $request->input('field');
+        $allowed = ['GuiaMovilizacion', 'ProveedorNombre', 'ClienteNombre'];
+        if (!\in_array($field, $allowed, true)) {
             return response()->json([], 400);
         }
 
-        return PesoEnPie::where($field, 'like', '%' . $request->get('query') . '%')
+        $term = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], (string) $request->input('query', ''));
+
+        return PesoEnPie::where($field, 'like', "%{$term}%")
             ->distinct()
             ->orderBy($field)
             ->limit(10)

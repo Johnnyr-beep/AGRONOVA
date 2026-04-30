@@ -36,7 +36,7 @@ class DesposteController extends Controller
         $validated['Estado'] = 0; // Pendiente
         $validated['FechaDesposte'] = Carbon::now();
         $validated['HoraInicio'] = Carbon::now();
-        $validated['CreadoPor'] = auth()->user()->Id;
+        $validated['CreadoPor'] = auth()->user()->getKey();
 
         $desposte = Desposte::create($validated);
 
@@ -73,20 +73,27 @@ class DesposteController extends Controller
 
     public function report(Request $request)
     {
-        $fechaInicio = $request->query('fechaInicio');
-        $fechaFin = $request->query('fechaFin');
+        $request->validate([
+            'fechaInicio' => 'required|date',
+            'fechaFin'    => 'required|date|after_or_equal:fechaInicio',
+        ]);
 
-        $despostes = Desposte::whereBetween('FechaDesposte', [$fechaInicio, $fechaFin])
+        $despostes = Desposte::whereBetween('FechaDesposte', [
+                $request->input('fechaInicio'),
+                $request->input('fechaFin'),
+            ])
             ->where('Eliminado', false)
             ->get();
 
         return response()->json([
-            'totalDespostes' => $despostes->count(),
-            'pesoTotalProcesado' => $despostes->sum('PesoCanalOriginal'),
-            'pesoTotalProductos' => $despostes->sum('PesoTotalProductos'),
-            'totalMermas' => $despostes->sum('PerdidaProcesoKg'),
+            'totalDespostes'      => $despostes->count(),
+            'pesoTotalProcesado'  => $despostes->sum('PesoCanalOriginal'),
+            'pesoTotalProductos'  => $despostes->sum('PesoTotalProductos'),
+            'totalMermas'         => $despostes->sum('PerdidaProcesoKg'),
             'promedioRendimiento' => $despostes->avg(function ($d) {
-                return $d->PesoCanalOriginal > 0 ? ($d->PesoTotalProductos / $d->PesoCanalOriginal) * 100 : 0;
+                $original = (float) $d->getAttribute('PesoCanalOriginal');
+                $productos = (float) $d->getAttribute('PesoTotalProductos');
+                return $original > 0 ? ($productos / $original) * 100 : 0;
             }),
         ]);
     }
