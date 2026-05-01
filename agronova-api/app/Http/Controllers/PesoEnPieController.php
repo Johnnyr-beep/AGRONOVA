@@ -9,13 +9,9 @@ class PesoEnPieController extends Controller
 {
     public function index()
     {
-        try {
-            return PesoEnPie::where('Eliminado', false)
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } catch (\Throwable $e) {
-            return response()->json(['_debug_error' => $e->getMessage(), '_file' => basename($e->getFile()), '_line' => $e->getLine()], 500);
-        }
+        return PesoEnPie::where('Eliminado', false)
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     public function store(Request $request)
