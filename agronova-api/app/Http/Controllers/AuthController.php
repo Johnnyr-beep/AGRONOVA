@@ -11,17 +11,17 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+        $validated = $request->validate([
+            'NombreUsuario' => 'required|string',
+            'Password'      => 'required|string',
         ]);
 
-        $user = User::where('NombreUsuario', $request->username)
+        $user = User::where('NombreUsuario', $validated['NombreUsuario'])
             ->where('Eliminado', false)
             ->where('Activo', true)
             ->first();
 
-        if (!$user || !Hash::check($request->password, $user->PasswordHash)) {
+        if (!$user || !Hash::check($validated['Password'], $user->getAttribute('PasswordHash'))) {
             throw ValidationException::withMessages([
                 'username' => ['Las credenciales proporcionadas son incorrectas.'],
             ]);
