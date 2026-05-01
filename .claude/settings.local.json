@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:\\\\Users\\\\LIDER AGROPECUARIA\\\\Documents\\\\AGRONOVA\" status)",
+      "Bash(git -C \"c:\\\\Users\\\\LIDER AGROPECUARIA\\\\Documents\\\\AGRONOVA\" diff --stat)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Read(//c/Users/LIDER AGROPECUARIA/AppData/Local/Temp/claude/c--Users-LIDER-AGROPECUARIA-Documents-AGRONOVA/27585093-b7e7-4e0b-8881-c577e0eb4cb3/tasks/**)"
+    ]
+  }
+}
