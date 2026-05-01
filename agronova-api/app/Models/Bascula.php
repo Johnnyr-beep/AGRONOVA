@@ -20,8 +20,6 @@ class Bascula extends Model
         'Referencia',
         'PatentaCamion',
         'Transportista',
-        'PesoEntradaKg',
-        'PesoSalidaKg',
         'PesoVacio',
         'PesoLleno',
         'CantidadAnimales',
@@ -37,8 +35,6 @@ class Bascula extends Model
     ];
 
     protected $casts = [
-        'PesoEntradaKg' => 'decimal:2',
-        'PesoSalidaKg' => 'decimal:2',
         'PesoVacio' => 'decimal:2',
         'PesoLleno' => 'decimal:2',
         'FechaIngreso' => 'datetime',

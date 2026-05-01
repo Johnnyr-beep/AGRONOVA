@@ -60,8 +60,8 @@ class BasculaController extends Controller
         $validated = $request->validate([
             'NumeroTicket'     => "string|unique:Basculas,NumeroTicket,{$id}",
             'GuiaMovilizacion' => "string|unique:Basculas,GuiaMovilizacion,{$id}",
-            'PesoSalidaKg'     => 'numeric',
             'Estado'           => 'string',
+            'Observaciones'    => 'nullable|string',
         ]);
 
         $bascula->update($validated);
