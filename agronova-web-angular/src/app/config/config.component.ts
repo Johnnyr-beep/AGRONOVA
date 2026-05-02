@@ -33,6 +33,8 @@ export class ConfigComponent implements OnInit {
   activeTab = 'usuarios';
 
   users: any[] = [];      usersLoading = false;
+  usersDialog = false;    usersEditId: string|null = null;  usersForm!: FormGroup;
+  changePasswordDialog = false; changePasswordUserId: string|null = null; changePasswordForm!: FormGroup;
   vehiculos: any[] = [];  vehiculosLoading = false;  vehiculosDialog = false;  vehiculosEditId: string|null = null;  vehiculosForm!: FormGroup;
   conductores: any[] = []; conductoresLoading = false; conductoresDialog = false; conductoresEditId: string|null = null; conductoresForm!: FormGroup;
   tarifas: any[] = [];    tarifasLoading = false;    tarifasDialog = false;    tarifasEditId: string|null = null;    tarifasForm!: FormGroup;
@@ -46,6 +48,7 @@ export class ConfigComponent implements OnInit {
   pedidos: any[] = [];    pedidosLoading = false;    pedidosDialog = false;    pedidosEditId: string|null = null;    pedidosForm!: FormGroup;
 
   opcionesActivo = [{label:'Activo',value:true},{label:'Inactivo',value:false}];
+  opcionesTipoEmpleado = ['Administrador','Veterinario','Supervisor','Operario','Auxiliar','Conductor','Vendedor'];
   opcionesTipoVehiculo = ['Refrigerado','Normal','Furgón','Moto'];
   opcionesTipoBodega = ['Canal','Producto','Insumo','Mixto'];
   opcionesEstadoBodega = ['Disponible','Ocupado','Mantenimiento'];
@@ -67,6 +70,22 @@ export class ConfigComponent implements OnInit {
   }
 
   buildForms() {
+    this.usersForm = this.fb.group({
+      Nombre:        ['', Validators.required],
+      Apellido:      [''],
+      NombreUsuario: ['', Validators.required],
+      PasswordHash:  [''],
+      Email:         ['', Validators.email],
+      Cedula:        [''],
+      Telefono:      [''],
+      TipoEmpleado:  [''],
+      FechaIngreso:  [''],
+      Activo:        [true],
+    });
+    this.changePasswordForm = this.fb.group({
+      NuevaPassword: ['', [Validators.required, Validators.minLength(6)]],
+      Confirmar:     ['', Validators.required],
+    });
     this.vehiculosForm = this.fb.group({ Placa:['',Validators.required], Marca:[''], Modelo:[''], Tipo:[''], CapacidadKg:[null], Activo:[true] });
     this.conductoresForm = this.fb.group({ Nombre:['',Validators.required], Apellido:[''], Cedula:[''], Telefono:[''], LicenciaCategoria:[''], FechaVencimientoLicencia:[''], Activo:[true] });
     this.tarifasForm = this.fb.group({ Nombre:['',Validators.required], TipoServicio:[''], ValorBase:[null], ValorPorKm:[null], Activo:[true] });
@@ -156,6 +175,76 @@ export class ConfigComponent implements OnInit {
         this.http.delete(`${environment.apiUrl}/${this.ep(tab)}/${item.Id}`).subscribe({
           next: () => { this.msg.add({ severity:'success', summary:'Eliminado', detail:'Registro eliminado' }); this.loadTab(tab); },
           error: () => this.msg.add({ severity:'error', summary:'Error', detail:'No se pudo eliminar' }),
+        });
+      },
+    });
+  }
+
+  // ---- USUARIOS ----
+  openNewUser() {
+    this.usersForm.reset({ Activo: true });
+    this.usersForm.get('PasswordHash')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.usersForm.get('PasswordHash')?.updateValueAndValidity();
+    this.usersEditId = null;
+    this.usersDialog = true;
+  }
+
+  openEditUser(u: any) {
+    this.usersForm.patchValue({ ...u, PasswordHash: '' });
+    this.usersForm.get('PasswordHash')?.clearValidators();
+    this.usersForm.get('PasswordHash')?.updateValueAndValidity();
+    this.usersEditId = u.Id;
+    this.usersDialog = true;
+  }
+
+  saveUser() {
+    if (this.usersForm.invalid) { this.usersForm.markAllAsTouched(); return; }
+    const payload: any = { ...this.usersForm.value };
+    if (this.usersEditId && !payload.PasswordHash) delete payload.PasswordHash;
+    const req$ = this.usersEditId
+      ? this.http.put(`${environment.apiUrl}/users/${this.usersEditId}`, payload)
+      : this.http.post(`${environment.apiUrl}/users`, payload);
+    req$.subscribe({
+      next: () => {
+        this.msg.add({ severity: 'success', summary: 'Guardado', detail: 'Usuario guardado' });
+        this.usersDialog = false;
+        this.loadUsers();
+      },
+      error: (e: any) => this.msg.add({ severity: 'error', summary: 'Error', detail: e?.error?.message || 'No se pudo guardar' }),
+    });
+  }
+
+  openChangePassword(u: any) {
+    this.changePasswordForm.reset();
+    this.changePasswordUserId = u.Id;
+    this.changePasswordDialog = true;
+  }
+
+  saveChangePassword() {
+    if (this.changePasswordForm.invalid) { this.changePasswordForm.markAllAsTouched(); return; }
+    const { NuevaPassword, Confirmar } = this.changePasswordForm.value;
+    if (NuevaPassword !== Confirmar) {
+      this.msg.add({ severity: 'warn', summary: 'Advertencia', detail: 'Las contraseñas no coinciden' });
+      return;
+    }
+    this.http.post(`${environment.apiUrl}/users/${this.changePasswordUserId}/cambiar-password`, { NuevaPassword }).subscribe({
+      next: () => {
+        this.msg.add({ severity: 'success', summary: 'Actualizado', detail: 'Contraseña cambiada' });
+        this.changePasswordDialog = false;
+      },
+      error: (e: any) => this.msg.add({ severity: 'error', summary: 'Error', detail: e?.error?.message || 'Error al cambiar contraseña' }),
+    });
+  }
+
+  confirmDeleteUser(u: any) {
+    this.confirm.confirm({
+      message: `¿Eliminar usuario "${u.NombreUsuario}"?`,
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.http.delete(`${environment.apiUrl}/users/${u.Id}`).subscribe({
+          next: () => { this.msg.add({ severity: 'success', summary: 'Eliminado', detail: 'Usuario eliminado' }); this.loadUsers(); },
+          error: () => this.msg.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar' }),
         });
       },
     });

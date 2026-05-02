@@ -81,18 +81,25 @@
       <div *ngIf="activeTab==='usuarios'" class="glass-card p-0 overflow-hidden">
         <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
           <div><h3 class="font-bold text-white">Directorio de Usuarios</h3><p class="text-xs mt-0.5" style="color:#3D4050">Control de accesos y credenciales</p></div>
+          <button pButton icon="pi pi-plus" label="Nuevo Usuario" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNewUser()"></button>
         </div>
-        <p-table [value]="users" [loading]="usersLoading" styleClass="p-datatable-sm">
-          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Usuario</th><th>Tipo</th><th>Estado</th></tr></ng-template>
+        <p-table [value]="users" [loading]="usersLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Usuario</th><th>Tipo</th><th>Email</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
           <ng-template pTemplate="body" let-u>
             <tr>
               <td class="font-bold text-white">{{ u.Nombre }} {{ u.Apellido }}</td>
-              <td style="color:#8892A4">{{ u.NombreUsuario }}</td>
-              <td style="color:#8892A4">{{ u.TipoEmpleado }}</td>
+              <td style="color:#6C5CE7;font-weight:600">{{ u.NombreUsuario }}</td>
+              <td style="color:#8892A4;font-size:11px">{{ u.TipoEmpleado || '—' }}</td>
+              <td style="color:#8892A4;font-size:11px">{{ u.Email || '—' }}</td>
               <td><p-tag [value]="u.Activo?'Activo':'Inactivo'" [severity]="u.Activo?'success':'danger'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-1">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" pTooltip="Editar" (click)="openEditUser(u)"></button>
+                <button pButton icon="pi pi-key" class="p-button-sm p-button-text p-button-warning" pTooltip="Cambiar contraseña" (click)="openChangePassword(u)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" pTooltip="Eliminar" (click)="confirmDeleteUser(u)"></button>
+              </div></td>
             </tr>
           </ng-template>
-          <ng-template pTemplate="emptymessage"><tr><td colspan="4" class="text-center py-8" style="color:#3D4050">Sin usuarios registrados</td></tr></ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">Sin usuarios registrados</td></tr></ng-template>
         </p-table>
       </div>
 
@@ -551,6 +558,48 @@
   <ng-template pTemplate="footer">
     <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="bodegasDialog=false"></button>
     <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('bodegas')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Usuarios dialog -->
+<p-dialog [(visible)]="usersDialog" [modal]="true" [style]="{width:'520px'}" [header]="usersEditId?'Editar Usuario':'Nuevo Usuario'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="usersForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fi(usersForm,'Nombre')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Apellido</label><input pInputText formControlName="Apellido" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Usuario *</label><input pInputText formControlName="NombreUsuario" class="w-full" /><small *ngIf="fi(usersForm,'NombreUsuario')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Contraseña {{ usersEditId ? '(dejar vacío = no cambiar)' : '*' }}</label><input type="password" pInputText formControlName="PasswordHash" class="w-full" /><small *ngIf="fi(usersForm,'PasswordHash')" class="text-red-400">Mínimo 6 caracteres</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Email</label><input pInputText formControlName="Email" class="w-full" type="email" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Tipo Empleado</label><p-dropdown formControlName="TipoEmpleado" [options]="opcionesTipoEmpleado" class="w-full" [showClear]="true" placeholder="Seleccionar"></p-dropdown></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Cédula</label><input pInputText formControlName="Cedula" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Teléfono</label><input pInputText formControlName="Telefono" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Ingreso</label><input type="date" pInputText formControlName="FechaIngreso" class="w-full" /></div>
+      <div class="space-y-1 flex items-center gap-3 pt-4"><p-checkbox formControlName="Activo" [binary]="true" inputId="usuActivo"></p-checkbox><label for="usuActivo" class="text-xs font-bold" style="color:#3D4050">Usuario activo</label></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="usersDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="saveUser()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Cambiar Contraseña dialog -->
+<p-dialog [(visible)]="changePasswordDialog" [modal]="true" [style]="{width:'400px'}" header="Cambiar Contraseña" [draggable]="false" [resizable]="false">
+  <form [formGroup]="changePasswordForm" class="space-y-4 pt-2">
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nueva Contraseña *</label>
+      <input type="password" pInputText formControlName="NuevaPassword" class="w-full" />
+      <small *ngIf="fi(changePasswordForm,'NuevaPassword')" class="text-red-400">Mínimo 6 caracteres</small>
+    </div>
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Confirmar Contraseña *</label>
+      <input type="password" pInputText formControlName="Confirmar" class="w-full" />
+      <small *ngIf="fi(changePasswordForm,'Confirmar')" class="text-red-400">Obligatorio</small>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="changePasswordDialog=false"></button>
+    <button pButton label="Cambiar" icon="pi pi-key" style="background:linear-gradient(135deg,#FDCB6E,#E17055);border:none" (click)="saveChangePassword()"></button>
   </ng-template>
 </p-dialog>
 

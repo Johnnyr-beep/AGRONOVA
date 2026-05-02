@@ -83,6 +83,10 @@ Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
 
     // Usuarios (Configuración)
     Route::get('users', [\App\Http\Controllers\UserController::class, 'index']);
+    Route::post('users', [\App\Http\Controllers\UserController::class, 'store']);
+    Route::put('users/{id}', [\App\Http\Controllers\UserController::class, 'update']);
+    Route::delete('users/{id}', [\App\Http\Controllers\UserController::class, 'destroy']);
+    Route::post('users/{id}/cambiar-password', [\App\Http\Controllers\UserController::class, 'cambiarPassword']);
 
     // Peso en Pie
     Route::get('peso-en-pie/suggestions', [PesoEnPieController::class, 'suggestions']);
