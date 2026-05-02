@@ -95,16 +95,164 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabla de Acondicionamiento
+        // Tabla de Acondicionamiento (expandida)
         Schema::create('Acondicionamientos', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->string('NumeroAcondicionamiento');
             $table->uuid('DesposteId')->nullable();
-            $table->decimal('TemperaturaProductos', 5, 2);
-            $table->decimal('PesoTotalAcondicionado', 10, 2);
+            $table->uuid('OperarioId')->nullable();
+            $table->uuid('AprobadoPorId')->nullable();
+            $table->timestamp('FechaAcondicionamiento')->nullable();
+            $table->timestamp('HoraInicio')->nullable();
+            $table->timestamp('HoraFin')->nullable();
+            $table->decimal('TemperaturaProductos', 5, 2)->nullable();
+            $table->decimal('PesoTotalAcondicionado', 10, 2)->nullable();
             $table->boolean('EtiquetadoCompleto')->default(false);
             $table->boolean('AprobadoControlCalidad')->default(false);
+            $table->timestamp('FechaAprobacion')->nullable();
             $table->integer('Estado')->default(0);
+            $table->uuid('CreadoPor')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Proveedores
+        Schema::create('Proveedores', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('RazonSocial')->nullable();
+            $table->string('NIT')->nullable()->unique();
+            $table->string('Telefono')->nullable();
+            $table->string('Email')->nullable();
+            $table->string('Direccion')->nullable();
+            $table->string('Ciudad')->nullable();
+            $table->string('Contacto')->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Clientes
+        Schema::create('Clientes', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('RazonSocial')->nullable();
+            $table->string('NIT')->nullable()->unique();
+            $table->string('Telefono')->nullable();
+            $table->string('Email')->nullable();
+            $table->string('Direccion')->nullable();
+            $table->string('Ciudad')->nullable();
+            $table->string('Contacto')->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Canales (resultado del beneficio/sacrificio)
+        Schema::create('Canales', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroCanal')->unique();
+            $table->string('NumeroOreja')->nullable();
+            $table->uuid('BasculaId')->nullable();
+            $table->uuid('BeneficioId')->nullable();
+            $table->uuid('ProveedorId')->nullable();
+            $table->string('TipoAnimal')->nullable();
+            $table->decimal('PesoVivo', 10, 2)->nullable();
+            $table->decimal('PesoCanalCaliente', 10, 2)->nullable();
+            $table->decimal('PesoCanalFria', 10, 2)->nullable();
+            $table->timestamp('FechaFaena')->nullable();
+            $table->timestamp('FechaRefrigeracion')->nullable();
+            $table->string('Estado')->default('Activo');
+            $table->boolean('AptilizadoFaena')->default(false);
+            $table->text('ObservacionesFaena')->nullable();
+            $table->string('CodigoQR')->nullable();
+            $table->uuid('CreadoPor')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Despostes
+        Schema::create('Despostes', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroDesposte')->unique();
+            $table->uuid('CanalId')->nullable();
+            $table->uuid('OperarioId')->nullable();
+            $table->timestamp('FechaDesposte');
+            $table->timestamp('HoraInicio')->nullable();
+            $table->timestamp('HoraFin')->nullable();
+            $table->decimal('PesoCanalOriginal', 10, 2);
+            $table->decimal('PesoTotalProductos', 10, 2)->nullable();
+            $table->decimal('PerdidaProcesoKg', 10, 2)->nullable();
+            $table->text('ObservacionesCalidad')->nullable();
+            $table->boolean('AptilizadoControlCalidad')->default(false);
+            $table->integer('Estado')->default(0);
+            $table->uuid('CreadoPor')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Tipos de Productos (catálogo)
+        Schema::create('TiposProductos', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('Codigo')->nullable()->unique();
+            $table->string('Clasificacion')->nullable();
+            $table->text('Descripcion')->nullable();
+            $table->decimal('PrecioBaseKg', 10, 2)->nullable();
+            $table->decimal('PesoMinimo', 10, 2)->nullable();
+            $table->decimal('PesoMaximo', 10, 2)->nullable();
+            $table->decimal('TemperaturaOptima', 5, 2)->nullable();
+            $table->integer('DiasVidaUtil')->nullable();
+            $table->boolean('RequiereControlCalidad')->default(false);
+            $table->boolean('Activo')->default(true);
+            $table->timestamps();
+        });
+
+        // Productos generados por el Desposte
+        Schema::create('ProductosDesposte', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('DesposteId')->nullable();
+            $table->uuid('TipoProductoId')->nullable();
+            $table->uuid('DespachoId')->nullable();
+            $table->string('NumeroProducto')->nullable();
+            $table->string('CodigoLote')->nullable();
+            $table->decimal('PesoKg', 10, 2);
+            $table->string('Lote')->nullable();
+            $table->string('Destino')->nullable();
+            $table->string('Estado')->default('Disponible');
+            $table->timestamp('FechaGeneracion')->nullable();
+            $table->decimal('TemperaturaAlmacenamiento', 5, 2)->nullable();
+            $table->timestamp('FechaLimiteProcesamiento')->nullable();
+            $table->uuid('CreadoPor')->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->timestamps();
+        });
+
+        // Despachos
+        Schema::create('Despachos', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroDespacho')->unique();
+            $table->uuid('ClienteId')->nullable();
+            $table->uuid('ResponsableDespachoId')->nullable();
+            $table->timestamp('FechaDespacho');
+            $table->timestamp('FechaSalida')->nullable();
+            $table->timestamp('FechaEntregaConfirmada')->nullable();
+            $table->string('PatentaVehiculo')->nullable();
+            $table->string('TransportistaNombre')->nullable();
+            $table->string('DireccionDestino')->nullable();
+            $table->decimal('PesoTotalKg', 10, 2)->nullable();
+            $table->integer('CantidadProductos')->nullable();
+            $table->decimal('MontoTotal', 12, 2)->nullable();
+            $table->decimal('TemperaturaVehiculo', 5, 2)->nullable();
+            $table->string('NumeroSelloRefrigeracion')->nullable();
+            $table->string('NumeroGuiaTransporte')->nullable();
+            $table->string('NumeroFactura')->nullable();
+            $table->boolean('AprobadoDespacho')->default(false);
+            $table->text('ObservacionesDespacho')->nullable();
+            $table->integer('Estado')->default(0);
+            $table->uuid('CreadoPor')->nullable();
             $table->boolean('Eliminado')->default(false);
             $table->timestamps();
         });
@@ -112,6 +260,13 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::dropIfExists('Despachos');
+        Schema::dropIfExists('ProductosDesposte');
+        Schema::dropIfExists('TiposProductos');
+        Schema::dropIfExists('Despostes');
+        Schema::dropIfExists('Canales');
+        Schema::dropIfExists('Clientes');
+        Schema::dropIfExists('Proveedores');
         Schema::dropIfExists('Acondicionamientos');
         Schema::dropIfExists('PesosEnPie');
         Schema::dropIfExists('AnimalesBeneficio');

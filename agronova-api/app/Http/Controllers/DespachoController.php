@@ -27,17 +27,17 @@ class DespachoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'NumeroDespacho' => 'required|unique:Despachos',
-            'ClienteId' => 'required|exists:Clientes,Id',
-            'PatentaVehiculo' => 'required',
-            'TransportistaNombre' => 'required',
-            'TemperaturaVehiculo' => 'required|numeric|max:5',
+            'NumeroDespacho'      => 'required|unique:Despachos',
+            'ClienteId'           => 'nullable|uuid',
+            'PatentaVehiculo'     => 'required|string',
+            'TransportistaNombre' => 'required|string',
+            'TemperaturaVehiculo' => 'nullable|numeric',
         ]);
 
-        $validated['Estado'] = 0; // Pendiente
+        $validated['Estado'] = 0;
         $validated['FechaDespacho'] = Carbon::now();
-        $validated['CreadoPor'] = auth()->user()->Id;
-        $validated['ResponsableDespachoId'] = auth()->user()->Id;
+        $validated['CreadoPor'] = auth()->user()->getKey();
+        $validated['ResponsableDespachoId'] = auth()->user()->getKey();
 
         $despacho = Despacho::create($validated);
 

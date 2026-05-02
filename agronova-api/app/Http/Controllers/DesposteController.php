@@ -27,13 +27,13 @@ class DesposteController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'CanalId' => 'required|exists:Canales,Id',
-            'NumeroDesposte' => 'required|unique:Despostes',
-            'OperarioId' => 'required|exists:Usuarios,Id',
+            'NumeroDesposte'   => 'required|unique:Despostes',
+            'CanalId'          => 'nullable|uuid',
+            'OperarioId'       => 'nullable|uuid',
             'PesoCanalOriginal' => 'required|numeric',
         ]);
 
-        $validated['Estado'] = 0; // Pendiente
+        $validated['Estado'] = 0;
         $validated['FechaDesposte'] = Carbon::now();
         $validated['HoraInicio'] = Carbon::now();
         $validated['CreadoPor'] = auth()->user()->getKey();

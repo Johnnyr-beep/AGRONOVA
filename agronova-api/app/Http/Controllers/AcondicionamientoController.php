@@ -31,15 +31,15 @@ class AcondicionamientoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'DesposteId' => 'required|exists:Despostes,Id',
             'NumeroAcondicionamiento' => 'required|unique:Acondicionamientos',
-            'OperarioId' => 'required|exists:Usuarios,Id',
+            'DesposteId'              => 'nullable|uuid',
+            'OperarioId'              => 'nullable|uuid',
         ]);
 
-        $validated['Estado'] = 0; // Pendiente
+        $validated['Estado'] = 0;
         $validated['FechaAcondicionamiento'] = Carbon::now();
         $validated['HoraInicio'] = Carbon::now();
-        $validated['CreadoPor'] = auth()->user()->Id;
+        $validated['CreadoPor'] = auth()->user()->getKey();
 
         $acondicionamiento = Acondicionamiento::create($validated);
 
@@ -72,7 +72,7 @@ class AcondicionamientoController extends Controller
         $acondicionamiento->update([
             'AprobadoControlCalidad' => true,
             'FechaAprobacion' => Carbon::now(),
-            'AprobadoPorId' => auth()->user()->Id,
+            'AprobadoPorId' => auth()->user()->getKey(),
             'Estado' => 3, // Aprobado
         ]);
 

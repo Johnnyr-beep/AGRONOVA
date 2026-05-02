@@ -10,6 +10,9 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\InspeccionVeterinarioController;
 use App\Http\Controllers\ControlBienestarAnimalController;
 use App\Http\Controllers\PesoEnPieController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\TipoProductoController;
 use Illuminate\Support\Facades\Route;
 
 // Login público con rate limiting: máximo 5 intentos por minuto por IP
@@ -58,6 +61,17 @@ Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
     Route::get('peso-en-pie/suggestions', [PesoEnPieController::class, 'suggestions']);
     Route::get('peso-en-pie/stats', [PesoEnPieController::class, 'stats']);
     Route::apiResource('peso-en-pie', PesoEnPieController::class);
+
+    // Clientes
+    Route::get('clientes/suggestions', [ClienteController::class, 'suggestions']);
+    Route::apiResource('clientes', ClienteController::class);
+
+    // Proveedores
+    Route::get('proveedores/suggestions', [ProveedorController::class, 'suggestions']);
+    Route::apiResource('proveedores', ProveedorController::class);
+
+    // Tipos de Producto (catálogo)
+    Route::apiResource('tipos-producto', TipoProductoController::class);
 
     // Reportes
     Route::get('reportes/dashboard', [ReporteController::class, 'dashboardStats']);
