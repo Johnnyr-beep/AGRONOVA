@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BasculaController;
 use App\Http\Controllers\BeneficioController;
 use App\Http\Controllers\DesposteController;
+use App\Http\Controllers\ProductoDesposteController;
 use App\Http\Controllers\DespachoController;
 use App\Http\Controllers\AcondicionamientoController;
 use App\Http\Controllers\ReporteController;
@@ -66,6 +67,11 @@ Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
     // Desposte
     Route::apiResource('desposte', DesposteController::class);
     Route::get('desposte-reporte', [DesposteController::class, 'report']);
+    // Productos del Desposte
+    Route::get('desposte/{id}/productos', [ProductoDesposteController::class, 'byDesposte']);
+    Route::post('productos-desposte', [ProductoDesposteController::class, 'store']);
+    Route::put('productos-desposte/{id}', [ProductoDesposteController::class, 'update']);
+    Route::delete('productos-desposte/{id}', [ProductoDesposteController::class, 'destroy']);
 
     // Despacho
     Route::apiResource('despacho', DespachoController::class);

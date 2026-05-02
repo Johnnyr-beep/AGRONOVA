@@ -1,41 +1,258 @@
-<div class="space-y-6 animate-fade-in">
-    <div class="glass-card p-7 flex justify-between items-center relative overflow-hidden">
-        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full" style="background: rgba(16, 185, 129, 0.04); filter: blur(60px);"></div>
-        <div class="flex items-center space-x-5 relative z-10">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9);">
-                <i class="pi pi-th-large text-white text-xl"></i>
-            </div>
-            <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Gestión de <span style="color: #6C5CE7;">Desposte</span></h1>
-                <p class="text-[10px] mt-0.5" style="color: #475569;">Control de Cortes y Rendimientos</p>
-            </div>
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Header -->
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#6C5CE7,#a29bfe);box-shadow:0 4px 16px rgba(108,92,231,0.25);">
+          <i class="pi pi-objects-column text-white text-lg"></i>
         </div>
-        <div class="hidden md:flex items-center space-x-3 relative z-10">
-            <button (click)="loadData()" class="px-5 py-2.5 rounded-xl font-bold text-[10px] tracking-wider transition-all hover:bg-white/5" style="color: #94A3B8; border: 1px solid rgba(148,163,184,0.06);">REFRESCAR</button>
-            <button class="px-5 py-2.5 rounded-xl font-bold text-[10px] tracking-wider" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9); color: white;">NUEVO DESPOSTE</button>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Desposte</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">Cortes y rendimientos por canal</p>
         </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nuevo Desposte" class="p-button-sm"
+        style="background:linear-gradient(135deg,#6C5CE7,#a29bfe);border:none;"
+        (click)="openNew()">
+      </button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4" *ngIf="reportStats">
-        <app-stat-card title="Total Procesado" [value]="reportStats.pesoTotalProcesado" unit="KG" severity="slate"></app-stat-card>
-        <app-stat-card title="Productos Finales" [value]="reportStats.pesoTotalProductos" unit="KG" severity="info"></app-stat-card>
-        <app-stat-card title="Mermas" [value]="reportStats.totalMermas" unit="KG" severity="danger"></app-stat-card>
-        <app-stat-card title="Rendimiento" [value]="(reportStats.promedioRendimiento | number:'1.2-2') + '%'" severity="success"></app-stat-card>
-    </div>
-    <div class="glass-card overflow-hidden">
-        <p-table [value]="despostes" [loading]="loading" [rows]="10" [paginator]="true" responsiveLayout="scroll" styleClass="p-datatable-lg">
-            <ng-template pTemplate="header"><tr><th># Desposte</th><th>Canal Ref.</th><th>Operario</th><th>Peso Original</th><th>Estado</th><th>Progreso</th><th style="width:120px"></th></tr></ng-template>
-            <ng-template pTemplate="body" let-item>
-                <tr class="group">
-                    <td class="font-bold uppercase" style="color:#6C5CE7;">#{{item.NumeroDesposte}}</td>
-                    <td><span class="px-2.5 py-1 rounded-lg text-[10px] font-bold" style="background:rgba(2,6,23,0.5);color:#94A3B8;border:1px solid rgba(148,163,184,0.06);">CANAL-{{item.canal?.NumeroCanal||'N/A'}}</span></td>
-                    <td class="text-sm text-white font-medium">{{item.operario?.Nombre}}</td>
-                    <td class="font-semibold text-white">{{item.PesoCanalOriginal}} <span class="text-[10px] ml-1" style="color:#475569;">kg</span></td>
-                    <td><span class="px-3 py-1 rounded-lg text-[9px] font-bold uppercase" [style.background]="item.Estado==2?'rgba(16,185,129,0.06)':item.Estado==1?'rgba(245,158,11,0.06)':'rgba(6,182,212,0.06)'" [style.color]="item.Estado==2?'#6C5CE7':item.Estado==1?'#F59E0B':'#06B6D4'" [style.border]="'1px solid '+(item.Estado==2?'rgba(16,185,129,0.12)':item.Estado==1?'rgba(245,158,11,0.12)':'rgba(6,182,212,0.12)')">{{getStatusName(item.Estado||0)}}</span></td>
-                    <td class="w-48"><div class="h-1 w-full rounded-full overflow-hidden" style="background:rgba(2,6,23,0.5);"><div class="h-full rounded-full transition-all duration-700" style="background:linear-gradient(90deg,#00CEC9,#6C5CE7);" [style.width.%]="item.Estado==2?100:(item.Estado==1?50:0)"></div></div></td>
-                    <td class="text-right"><div class="flex justify-end space-x-1.5 opacity-0 group-hover:opacity-100 transition-all"><button *ngIf="item.Estado==0" (click)="startDesposte(item)" class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(16,185,129,0.08);color:#6C5CE7;"><i class="pi pi-play text-xs"></i></button><button *ngIf="item.Estado==1" (click)="completeDesposte(item)" class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(6,182,212,0.08);color:#06B6D4;"><i class="pi pi-check text-xs"></i></button><button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/5" style="color:#64748B;"><i class="pi pi-eye text-xs"></i></button></div></td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
+  </div>
+
+  <!-- Tabla despostes -->
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="20"
+             styleClass="p-datatable-sm" [rowHover]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N° Desposte</th>
+          <th>Canal</th>
+          <th style="text-align:right">Peso Original (kg)</th>
+          <th style="text-align:right">Peso Productos (kg)</th>
+          <th style="text-align:right">Merma (kg)</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-d>
+        <tr>
+          <td class="font-bold text-white">{{ d.NumeroDesposte }}</td>
+          <td style="color:#6C5CE7;font-weight:600">{{ d.canal?.NumeroCanal || d.CanalId || '—' }}</td>
+          <td style="text-align:right;color:#8892A4">{{ d.PesoCanalOriginal | number:'1.2-2' }}</td>
+          <td style="text-align:right" [style.color]="d.PesoTotalProductos ? '#00B894' : '#3D4050'" class="font-semibold">
+            {{ d.PesoTotalProductos ? (d.PesoTotalProductos | number:'1.2-2') : '—' }}
+          </td>
+          <td style="text-align:right" [style.color]="d.PerdidaProcesoKg ? '#D63031' : '#3D4050'" class="font-semibold text-xs">
+            {{ d.PerdidaProcesoKg ? (d.PerdidaProcesoKg | number:'1.2-2') : '—' }}
+          </td>
+          <td style="color:#8892A4;font-size:11px">{{ d.FechaDesposte | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td><p-tag [value]="estadoLabel(d.Estado)" [severity]="getSeverity(d.Estado)"></p-tag></td>
+          <td class="text-center">
+            <div class="flex justify-center gap-1">
+              <button pButton icon="pi pi-list" class="p-button-sm p-button-text p-button-success"
+                pTooltip="Ver / agregar productos" (click)="abrirProductos(d)"></button>
+              <button pButton icon="pi pi-play" class="p-button-sm p-button-text p-button-warning"
+                pTooltip="Iniciar" *ngIf="d.Estado===0" (click)="cambiarEstado(d,1)"></button>
+              <button pButton icon="pi pi-check" class="p-button-sm p-button-text p-button-info"
+                pTooltip="Completar" *ngIf="d.Estado===1" (click)="cambiarEstado(d,2)"></button>
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary"
+                pTooltip="Editar" (click)="openEdit(d)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger"
+                pTooltip="Eliminar" (click)="confirmDelete(d)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="text-center py-10" style="color:#3D4050">Sin despostes registrados</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>
-<p-toast></p-toast>
+
+<!-- ===== DIALOG: Nuevo / Editar Desposte ===== -->
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'480px'}"
+  [header]="editingId ? 'Editar Desposte' : 'Nuevo Desposte'"
+  [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Desposte *</label>
+        <input pInputText formControlName="NumeroDesposte" class="w-full" placeholder="Ej: D-00001" />
+        <small *ngIf="fi(form,'NumeroDesposte')" class="text-red-400">Obligatorio</small>
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">ID Canal (opcional)</label>
+        <input pInputText formControlName="CanalId" class="w-full" placeholder="UUID del canal" />
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Canal Original (kg) *</label>
+        <p-inputNumber formControlName="PesoCanalOriginal" [minFractionDigits]="2" [min]="0" class="w-full"></p-inputNumber>
+        <small *ngIf="fi(form,'PesoCanalOriginal')" class="text-red-400">Obligatorio</small>
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones de Calidad</label>
+        <input pInputText formControlName="ObservacionesCalidad" class="w-full" />
+      </div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check"
+      style="background:linear-gradient(135deg,#6C5CE7,#a29bfe);border:none;" (click)="save()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ===== DIALOG: Productos del Desposte ===== -->
+<p-dialog [(visible)]="displayProductos" [modal]="true" [style]="{width:'820px'}"
+  [header]="'Productos — Desposte ' + (selectedDesposte?.NumeroDesposte || '')"
+  [draggable]="false" [resizable]="false">
+
+  <div *ngIf="selectedDesposte" class="space-y-4 pt-1">
+
+    <!-- Resumen del desposte -->
+    <div class="grid grid-cols-3 gap-3">
+      <div class="p-3 rounded-xl text-center" style="background:rgba(108,92,231,0.08);border:1px solid rgba(108,92,231,0.15)">
+        <p class="text-[10px] font-bold uppercase" style="color:#3D4050">Peso Canal Orig.</p>
+        <p class="text-lg font-extrabold text-white">{{ selectedDesposte.PesoCanalOriginal | number:'1.2-2' }}</p>
+        <p class="text-[10px]" style="color:#3D4050">kg</p>
+      </div>
+      <div class="p-3 rounded-xl text-center" style="background:rgba(0,184,148,0.08);border:1px solid rgba(0,184,148,0.15)">
+        <p class="text-[10px] font-bold uppercase" style="color:#00B894">Total Productos</p>
+        <p class="text-lg font-extrabold" style="color:#00B894">{{ pesoTotalProductos() | number:'1.2-2' }}</p>
+        <p class="text-[10px]" style="color:#3D4050">kg</p>
+      </div>
+      <div class="p-3 rounded-xl text-center" style="background:rgba(253,203,110,0.08);border:1px solid rgba(253,203,110,0.15)">
+        <p class="text-[10px] font-bold uppercase" style="color:#FDCB6E">Rendimiento</p>
+        <p class="text-lg font-extrabold" style="color:#FDCB6E">{{ rendimiento() }}</p>
+        <p class="text-[10px]" style="color:#3D4050">peso final / original</p>
+      </div>
+    </div>
+
+    <!-- Botón nuevo producto -->
+    <div class="flex justify-end">
+      <button pButton icon="pi pi-plus" label="Agregar Producto" class="p-button-sm"
+        style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;"
+        (click)="openNuevoProducto()">
+      </button>
+    </div>
+
+    <!-- Tabla de productos -->
+    <p-table [value]="productos" [loading]="productosLoading" styleClass="p-datatable-sm" [rowHover]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Tipo Producto</th>
+          <th>N° Producto</th>
+          <th>Lote</th>
+          <th style="text-align:right">Peso (kg)</th>
+          <th>Temp. (°C)</th>
+          <th>Vence</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-p>
+        <tr>
+          <td class="font-bold text-white">{{ getTipoNombre(p.TipoProductoId) }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ p.NumeroProducto || '—' }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ p.Lote || p.CodigoLote || '—' }}</td>
+          <td style="text-align:right;color:#00B894;font-weight:700">{{ p.PesoKg | number:'1.3-3' }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ p.TemperaturaAlmacenamiento != null ? p.TemperaturaAlmacenamiento+'°C' : '—' }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ p.FechaLimiteProcesamiento | date:'dd/MM/yyyy' }}</td>
+          <td><p-tag [value]="p.Estado||'Disponible'" [severity]="getSeverityProducto(p.Estado)"></p-tag></td>
+          <td class="text-center">
+            <div class="flex justify-center gap-1">
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary"
+                (click)="openEditProducto(p)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger"
+                (click)="confirmDeleteProducto(p)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="text-center py-8" style="color:#3D4050">Sin productos registrados — agrega el primer corte</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cerrar" class="p-button-text p-button-secondary" (click)="displayProductos=false"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ===== DIALOG: Agregar / Editar Producto ===== -->
+<p-dialog [(visible)]="displayProductoDialog" [modal]="true" [style]="{width:'540px'}"
+  [header]="editingProductoId ? 'Editar Producto' : 'Agregar Producto'"
+  [draggable]="false" [resizable]="false">
+  <form [formGroup]="productoForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Tipo de Producto</label>
+        <p-dropdown formControlName="TipoProductoId" [options]="tiposProducto"
+          placeholder="Seleccionar tipo" [showClear]="true" class="w-full"></p-dropdown>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Producto</label>
+        <input pInputText formControlName="NumeroProducto" class="w-full" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#00B894">Peso (kg) *</label>
+        <p-inputNumber formControlName="PesoKg" [minFractionDigits]="3" [min]="0" class="w-full"></p-inputNumber>
+        <small *ngIf="fi(productoForm,'PesoKg')" class="text-red-400">Obligatorio</small>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Lote</label>
+        <input pInputText formControlName="Lote" class="w-full" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código Lote</label>
+        <input pInputText formControlName="CodigoLote" class="w-full" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Generación</label>
+        <input type="date" pInputText formControlName="FechaGeneracion" class="w-full" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Límite Proceso</label>
+        <input type="date" pInputText formControlName="FechaLimiteProcesamiento" class="w-full" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temp. Almac. (°C)</label>
+        <p-inputNumber formControlName="TemperaturaAlmacenamiento" [minFractionDigits]="1" class="w-full"></p-inputNumber>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label>
+        <p-dropdown formControlName="Estado" [options]="estadosProducto" class="w-full"></p-dropdown>
+      </div>
+
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Destino</label>
+        <input pInputText formControlName="Destino" class="w-full" />
+      </div>
+
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label>
+        <input pInputText formControlName="Observaciones" class="w-full" />
+      </div>
+
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayProductoDialog=false"></button>
+    <button pButton label="Guardar Producto" icon="pi pi-check"
+      style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;" (click)="saveProducto()"></button>
+  </ng-template>
+</p-dialog>
