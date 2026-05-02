@@ -1,0 +1,129 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Header -->
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
+             style="background: linear-gradient(135deg, #6C5CE7, #00CEC9); box-shadow: 0 4px 16px rgba(108,92,231,0.2);">
+          <i class="pi pi-users text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Clientes</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">{{ clientes.length }} registros activos</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nuevo Cliente"
+              class="p-button-sm"
+              style="background: linear-gradient(135deg,#6C5CE7,#00CEC9); border:none;"
+              (click)="openNew()">
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="clientes" [loading]="loading" [paginator]="true" [rows]="20"
+             styleClass="p-datatable-sm" [rowsPerPageOptions]="[10,20,50]"
+             [globalFilterFields]="['Nombre','NIT','Ciudad','Email']">
+      <ng-template pTemplate="caption">
+        <div class="flex justify-end p-3">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" placeholder="Buscar..." class="p-inputtext-sm" />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nombre</th>
+          <th>NIT</th>
+          <th>Ciudad</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Contacto</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-c>
+        <tr>
+          <td class="font-semibold text-white">{{ c.Nombre }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ c.NIT || '—' }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ c.Ciudad || '—' }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ c.Telefono || '—' }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ c.Email || '—' }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ c.Contacto || '—' }}</td>
+          <td class="text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary"
+                      pTooltip="Editar" (click)="openEdit(c)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger"
+                      pTooltip="Eliminar" (click)="confirmDelete(c)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="7" class="text-center py-8" style="color:#3D4050">No hay clientes registrados</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- Dialog -->
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'540px'}"
+          [header]="editingId ? 'Editar Cliente' : 'Nuevo Cliente'"
+          [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label>
+        <input pInputText formControlName="Nombre" class="w-full"
+               [class.ng-invalid]="fieldInvalid('Nombre')" [class.ng-dirty]="fieldInvalid('Nombre')" />
+        <small *ngIf="fieldInvalid('Nombre')" class="text-red-400">Campo obligatorio</small>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Razón Social</label>
+        <input pInputText formControlName="RazonSocial" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">NIT</label>
+        <input pInputText formControlName="NIT" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Teléfono</label>
+        <input pInputText formControlName="Telefono" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Email</label>
+        <input pInputText formControlName="Email" class="w-full"
+               [class.ng-invalid]="fieldInvalid('Email')" [class.ng-dirty]="fieldInvalid('Email')" />
+        <small *ngIf="fieldInvalid('Email')" class="text-red-400">Email inválido</small>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Ciudad</label>
+        <input pInputText formControlName="Ciudad" class="w-full" />
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Dirección</label>
+        <input pInputText formControlName="Direccion" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Contacto</label>
+        <input pInputText formControlName="Contacto" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label>
+        <input pInputText formControlName="Observaciones" class="w-full" />
+      </div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog = false"></button>
+    <button pButton label="Guardar" icon="pi pi-check"
+            style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none;"
+            (click)="save()"></button>
+  </ng-template>
+</p-dialog>

@@ -6,8 +6,8 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { AvatarModule } from 'primeng/avatar';
-
 import { MessageService } from 'primeng/api';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-config',
@@ -28,7 +28,7 @@ export class ConfigComponent implements OnInit {
 
   loadUsers() {
     this.loading = true;
-    this.http.get<any[]>('http://localhost:8000/api/users').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/users`).subscribe({
       next: (data) => {
         this.users = data;
         this.loading = false;

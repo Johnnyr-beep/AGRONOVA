@@ -41,6 +41,9 @@ export class MainLayoutComponent {
     { label: 'Desposte', icon: 'pi pi-objects-column', route: '/desposte' },
     { label: 'Acondicionamiento', icon: 'pi pi-box', route: '/acondicionamiento' },
     { label: 'Despacho', icon: 'pi pi-truck', route: '/despacho' },
+    { label: 'Clientes', icon: 'pi pi-users', route: '/clientes' },
+    { label: 'Proveedores', icon: 'pi pi-building', route: '/proveedores' },
+    { label: 'Tipos Producto', icon: 'pi pi-tag', route: '/tipos-producto' },
     { label: 'Reportes', icon: 'pi pi-chart-bar', route: '/reportes' },
     { label: 'Configuración', icon: 'pi pi-cog', route: '/config' },
   ];

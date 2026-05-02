@@ -17,6 +17,9 @@ export const routes: Routes = [
       { path: 'desposte', loadComponent: () => import('./desposte/desposte.component').then(m => m.DesposteComponent) },
       { path: 'despacho', loadComponent: () => import('./despacho/despacho.component').then(m => m.DespachoComponent) },
       { path: 'acondicionamiento', loadComponent: () => import('./acondicionamiento/acondicionamiento.component').then(m => m.AcondicionamientoComponent) },
+      { path: 'clientes', loadComponent: () => import('./clientes/clientes.component').then(m => m.ClientesComponent) },
+      { path: 'proveedores', loadComponent: () => import('./proveedores/proveedores.component').then(m => m.ProveedoresComponent) },
+      { path: 'tipos-producto', loadComponent: () => import('./tipos-producto/tipos-producto.component').then(m => m.TiposProductoComponent) },
       { path: 'config', loadComponent: () => import('./config/config.component').then(m => m.ConfigComponent) },
       { path: 'reportes', loadComponent: () => import('./reportes/reportes.component').then(m => m.ReportesComponent) },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }

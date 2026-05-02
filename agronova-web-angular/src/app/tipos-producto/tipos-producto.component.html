@@ -1,0 +1,132 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Header -->
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
+             style="background: linear-gradient(135deg, #FDCB6E, #E17055); box-shadow: 0 4px 16px rgba(253,203,110,0.2);">
+          <i class="pi pi-tag text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Tipos de Producto</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">Catálogo de productos de desposte</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nuevo Tipo"
+              class="p-button-sm"
+              style="background: linear-gradient(135deg,#FDCB6E,#E17055); border:none;"
+              (click)="openNew()">
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="tipos" [loading]="loading" [paginator]="true" [rows]="20"
+             styleClass="p-datatable-sm" [rowsPerPageOptions]="[10,20,50]">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nombre</th>
+          <th>Código</th>
+          <th>Clasificación</th>
+          <th>Precio Base/Kg</th>
+          <th>Vida Útil (días)</th>
+          <th>Temp. Óptima (°C)</th>
+          <th>Control Calidad</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-t>
+        <tr>
+          <td class="font-semibold text-white">{{ t.Nombre }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ t.Codigo || '—' }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ t.Clasificacion || '—' }}</td>
+          <td class="text-sm" style="color:#8892A4">
+            {{ t.PrecioBaseKg != null ? ('$' + (t.PrecioBaseKg | number:'1.0-0')) : '—' }}
+          </td>
+          <td class="text-sm" style="color:#8892A4">{{ t.DiasVidaUtil ?? '—' }}</td>
+          <td class="text-sm" style="color:#8892A4">{{ t.TemperaturaOptima ?? '—' }}</td>
+          <td>
+            <p-tag *ngIf="t.RequiereControlCalidad" severity="warning" value="Requerido"></p-tag>
+            <span *ngIf="!t.RequiereControlCalidad" class="text-sm" style="color:#3D4050">—</span>
+          </td>
+          <td class="text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary"
+                      pTooltip="Editar" (click)="openEdit(t)"></button>
+              <button pButton icon="pi pi-ban" class="p-button-sm p-button-text p-button-warning"
+                      pTooltip="Desactivar" (click)="confirmDelete(t)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="text-center py-8" style="color:#3D4050">No hay tipos de producto registrados</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- Dialog -->
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'580px'}"
+          [header]="editingId ? 'Editar Tipo de Producto' : 'Nuevo Tipo de Producto'"
+          [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label>
+        <input pInputText formControlName="Nombre" class="w-full"
+               [class.ng-invalid]="fieldInvalid('Nombre')" [class.ng-dirty]="fieldInvalid('Nombre')" />
+        <small *ngIf="fieldInvalid('Nombre')" class="text-red-400">Campo obligatorio</small>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código</label>
+        <input pInputText formControlName="Codigo" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Clasificación</label>
+        <input pInputText formControlName="Clasificacion" class="w-full" />
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Descripción</label>
+        <input pInputText formControlName="Descripcion" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Precio Base/Kg</label>
+        <p-inputNumber formControlName="PrecioBaseKg" mode="currency" currency="COP"
+                       locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temperatura Óptima (°C)</label>
+        <p-inputNumber formControlName="TemperaturaOptima" [min]="-30" [max]="30" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Mínimo (kg)</label>
+        <p-inputNumber formControlName="PesoMinimo" [minFractionDigits]="2" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Máximo (kg)</label>
+        <p-inputNumber formControlName="PesoMaximo" [minFractionDigits]="2" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Días de Vida Útil</label>
+        <p-inputNumber formControlName="DiasVidaUtil" [min]="0" class="w-full"></p-inputNumber>
+      </div>
+      <div class="flex items-center space-x-3 pt-5">
+        <p-checkbox formControlName="RequiereControlCalidad" [binary]="true" inputId="reqCC"></p-checkbox>
+        <label for="reqCC" class="text-xs font-bold uppercase tracking-widest cursor-pointer" style="color:#3D4050">
+          Requiere Control de Calidad
+        </label>
+      </div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog = false"></button>
+    <button pButton label="Guardar" icon="pi pi-check"
+            style="background:linear-gradient(135deg,#FDCB6E,#E17055);border:none;"
+            (click)="save()"></button>
+  </ng-template>
+</p-dialog>
