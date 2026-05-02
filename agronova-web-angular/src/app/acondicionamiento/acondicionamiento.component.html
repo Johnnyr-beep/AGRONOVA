@@ -1,91 +1,201 @@
 <div class="space-y-6 animate-fade-in">
-    <div class="glass-card p-7 flex justify-between items-center relative overflow-hidden">
-        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full" style="background: rgba(16,185,129,0.04); filter: blur(60px);"></div>
-        <div class="flex items-center space-x-5 relative z-10">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9);">
-                <i class="pi pi-snowflake text-white text-xl"></i>
-            </div>
-            <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Cuarto Frío <span style="color: #6C5CE7;">&</span> Empaque</h1>
-                <p class="text-[10px] mt-0.5" style="color: #475569;">Monitoreo de Termocontrol en Planta</p>
-            </div>
-        </div>
-        <div class="hidden md:flex items-center space-x-4">
-            <div class="text-right">
-                <span class="text-[9px] font-semibold uppercase block tracking-wider" style="color: #475569;">Estado</span>
-                <span class="text-xs font-bold uppercase" style="color: #6C5CE7;">OPERATIVO</span>
-            </div>
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="border: 1px solid rgba(16,185,129,0.12); background: rgba(16,185,129,0.04);">
-                <div class="w-2.5 h-2.5 rounded-full animate-ping" style="background: #6C5CE7;"></div>
-            </div>
-        </div>
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Header -->
+  <div class="glass-card p-7 flex justify-between items-center relative overflow-hidden">
+    <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full" style="background:rgba(108,92,231,0.04);filter:blur(60px);"></div>
+    <div class="flex items-center space-x-5 relative z-10">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);">
+        <i class="pi pi-snowflake text-white text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight">Cuarto Frío <span style="color:#6C5CE7">&</span> Empaque</h1>
+        <p class="text-[10px] mt-0.5" style="color:#475569">Acondicionamiento y control de calidad</p>
+      </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <div *ngFor="let item of acondicionamientos" class="glass-card group transition-all duration-500 overflow-hidden relative">
-            <div class="p-6" style="border-bottom: 1px solid rgba(148,163,184,0.04); background: rgba(2,6,23,0.2);">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider mb-1" style="color: #6C5CE7;">Lote #{{item.NumeroAcondicionamiento}}</span>
-                        <h3 class="text-lg font-extrabold text-white tracking-tight">Corte {{item.desposte?.NumeroDesposte || 'N/A'}}</h3>
-                    </div>
-                    <p-tag [value]="getStatusName(item.Estado || 0)" [style]="{'background': 'rgba(16,185,129,0.06)', 'color': '#6C5CE7', 'border': '1px solid rgba(16,185,129,0.12)', 'font-size': '9px', 'font-weight': '700'}"></p-tag>
-                </div>
-                <div class="flex items-center space-x-2 text-[8px] font-medium" style="color: #475569;">
-                    <i class="pi pi-calendar text-[8px]"></i>
-                    <span>{{item.FechaAcondicionamiento | date:'dd MMM yyyy'}}</span>
-                </div>
-            </div>
-            <div class="p-5 space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="space-y-1">
-                        <span class="text-[8px] font-semibold uppercase tracking-widest block" style="color: #475569;">Temp.</span>
-                        <div class="flex items-baseline space-x-1">
-                            <span class="text-xl font-extrabold" [ngClass]="getTempColor(item.TemperaturaProductos || 0)">{{item.TemperaturaProductos}}</span>
-                            <span class="text-[10px] font-medium" style="color: #475569;">°C</span>
-                        </div>
-                    </div>
-                    <div class="space-y-1 text-right">
-                        <span class="text-[8px] font-semibold uppercase tracking-widest block" style="color: #475569;">Peso</span>
-                        <div class="flex items-baseline justify-end space-x-1">
-                            <span class="text-xl font-extrabold text-white">{{item.PesoTotalAcondicionado}}</span>
-                            <span class="text-[10px] font-medium" style="color: #475569;">KG</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4 rounded-xl flex items-center justify-between transition-all" style="background: rgba(2,6,23,0.4); border: 1px solid rgba(148,163,184,0.06);">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(6,182,212,0.08); color: #06B6D4;"><i class="pi pi-tag text-sm"></i></div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider" style="color: #64748B;">Etiquetado</span>
-                    </div>
-                    <i class="pi text-base" [ngClass]="item.EtiquetadoCompleto ? 'pi-check-circle' : 'pi-clock'" [style.color]="item.EtiquetadoCompleto ? '#6C5CE7' : '#F59E0B'"></i>
-                </div>
-                <button *ngIf="!item.AprobadoControlCalidad" (click)="aprobar(item)" class="w-full py-4 rounded-xl font-bold uppercase text-[10px] tracking-wider transition-all flex items-center justify-center space-x-2" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9); color: white;">
-                    <i class="pi pi-verified text-sm"></i><span>Aprobar Control</span>
-                </button>
-                <div *ngIf="item.AprobadoControlCalidad" class="flex items-center justify-center p-4 rounded-xl text-[10px] font-bold uppercase tracking-wider" style="background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.1); color: #6C5CE7;">
-                    <i class="pi pi-check-circle mr-2 text-lg"></i>Listo Despacho
-                </div>
-            </div>
-            <div class="absolute bottom-0 left-0 w-0 h-[2px] group-hover:w-full transition-all duration-700" style="background: linear-gradient(90deg, #6C5CE7, #06B6D4);"></div>
-        </div>
-        <div (click)="showNewDialog()" class="glass-card border-dashed flex flex-col items-center justify-center p-10 hover:border-emerald-500/30 transition-all cursor-pointer group relative overflow-hidden" style="border-color: rgba(148,163,184,0.08);">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-all duration-500" style="background: rgba(2,6,23,0.5);">
-                <i class="pi pi-plus text-xl" style="color: #475569;"></i>
-            </div>
-            <span class="text-[10px] font-bold uppercase tracking-widest" style="color: #475569;">Nuevo Registro</span>
-        </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[9px] font-bold uppercase tracking-wider" style="color:#475569">{{ acondicionamientos.length }} registros</span>
     </div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+    <!-- Card por registro -->
+    <div *ngFor="let item of acondicionamientos"
+         class="glass-card group transition-all duration-500 overflow-hidden relative">
+
+      <div class="p-6" style="border-bottom:1px solid rgba(148,163,184,0.04);background:rgba(2,6,23,0.2);">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider mb-1" style="color:#6C5CE7">
+              Lote #{{ item.NumeroAcondicionamiento }}
+            </span>
+            <h3 class="text-lg font-extrabold text-white tracking-tight">
+              Desposte {{ item.desposte?.NumeroDesposte || (item.DesposteId ? item.DesposteId.substring(0,8)+'...' : 'N/A') }}
+            </h3>
+          </div>
+          <p-tag [value]="getStatusName(item.Estado || 0)" [severity]="getSeverity(item.Estado || 0)"></p-tag>
+        </div>
+        <div class="flex items-center space-x-2 text-[8px] font-medium" style="color:#475569">
+          <i class="pi pi-calendar text-[8px]"></i>
+          <span>{{ item.FechaAcondicionamiento | date:'dd MMM yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <!-- Temp y Peso -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <span class="text-[8px] font-semibold uppercase tracking-widest block" style="color:#475569">Temp.</span>
+            <div class="flex items-baseline space-x-1">
+              <span class="text-xl font-extrabold" [ngClass]="getTempColor(item.TemperaturaProductos || 0)">
+                {{ item.TemperaturaProductos != null ? item.TemperaturaProductos : '—' }}
+              </span>
+              <span class="text-[10px] font-medium" style="color:#475569">°C</span>
+            </div>
+          </div>
+          <div class="space-y-1 text-right">
+            <span class="text-[8px] font-semibold uppercase tracking-widest block" style="color:#475569">Peso</span>
+            <div class="flex items-baseline justify-end space-x-1">
+              <span class="text-xl font-extrabold text-white">
+                {{ item.PesoTotalAcondicionado != null ? item.PesoTotalAcondicionado : '—' }}
+              </span>
+              <span class="text-[10px] font-medium" style="color:#475569">KG</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Etiquetado -->
+        <div class="p-4 rounded-xl flex items-center justify-between"
+             style="background:rgba(2,6,23,0.4);border:1px solid rgba(148,163,184,0.06)">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(6,182,212,0.08);color:#06B6D4">
+              <i class="pi pi-tag text-sm"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider" style="color:#64748B">Etiquetado</span>
+          </div>
+          <i class="pi text-base"
+             [ngClass]="item.EtiquetadoCompleto ? 'pi-check-circle' : 'pi-clock'"
+             [style.color]="item.EtiquetadoCompleto ? '#6C5CE7' : '#F59E0B'"></i>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="space-y-2">
+          <!-- Completar (Estado 0 → 1) -->
+          <button *ngIf="(item.Estado ?? 0) === 0" (click)="completar(item)"
+            class="w-full py-3 rounded-xl font-bold uppercase text-[10px] tracking-wider flex items-center justify-center space-x-2"
+            style="background:linear-gradient(135deg,#FDCB6E,#E17055);color:white">
+            <i class="pi pi-play text-sm"></i><span>Completar</span>
+          </button>
+
+          <!-- Aprobar control de calidad -->
+          <button *ngIf="!item.AprobadoControlCalidad && (item.Estado ?? 0) >= 1" (click)="aprobar(item)"
+            class="w-full py-3 rounded-xl font-bold uppercase text-[10px] tracking-wider flex items-center justify-center space-x-2"
+            style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);color:white">
+            <i class="pi pi-verified text-sm"></i><span>Aprobar Control</span>
+          </button>
+
+          <!-- Aprobado -->
+          <div *ngIf="item.AprobadoControlCalidad"
+            class="flex items-center justify-center p-3 rounded-xl text-[10px] font-bold uppercase tracking-wider"
+            style="background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.1);color:#6C5CE7">
+            <i class="pi pi-check-circle mr-2 text-lg"></i>Listo para Despacho
+          </div>
+
+          <!-- Editar / Eliminar -->
+          <div class="flex gap-2">
+            <button pButton icon="pi pi-pencil" label="Editar" class="p-button-sm p-button-text p-button-secondary w-full"
+              pTooltip="Editar datos" (click)="openEdit(item)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger"
+              pTooltip="Eliminar" (click)="confirmDelete(item)"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-0 left-0 w-0 h-[2px] group-hover:w-full transition-all duration-700"
+           style="background:linear-gradient(90deg,#6C5CE7,#06B6D4);"></div>
+    </div>
+
+    <!-- Tarjeta agregar -->
+    <div (click)="showNewDialog()"
+      class="glass-card border-dashed flex flex-col items-center justify-center p-10 hover:border-indigo-500/30 transition-all cursor-pointer group"
+      style="border-color:rgba(148,163,184,0.08)">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-all duration-500"
+           style="background:rgba(2,6,23,0.5)">
+        <i class="pi pi-plus text-xl" style="color:#475569"></i>
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-widest" style="color:#475569">Nuevo Registro</span>
+    </div>
+  </div>
 </div>
-<p-dialog [(visible)]="displayNewDialog" [header]="'Registro de Acondicionamiento'" [modal]="true" [style]="{width: '450px'}" styleClass="industrial-dialog">
-    <form [formGroup]="acondicionamientoForm" (ngSubmit)="saveNew()" class="space-y-4">
-        <div class="flex flex-col space-y-1"><label class="text-[9px] font-bold uppercase tracking-widest" style="color: #475569;">Lote</label><input type="text" pInputText formControlName="NumeroAcondicionamiento" class="industrial-input" placeholder="AC-2026001" /></div>
-        <div class="flex flex-col space-y-1"><label class="text-[9px] font-bold uppercase tracking-widest" style="color: #475569;">ID Desposte</label><input type="text" pInputText formControlName="DesposteId" class="industrial-input" /></div>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="flex flex-col space-y-1"><label class="text-[9px] font-bold uppercase tracking-widest" style="color: #475569;">Temp. (°C)</label><p-inputNumber formControlName="TemperaturaProductos" [minFractionDigits]="1" [maxFractionDigits]="1" inputStyleClass="industrial-input" /></div>
-            <div class="flex flex-col space-y-1"><label class="text-[9px] font-bold uppercase tracking-widest" style="color: #475569;">Peso (Kg)</label><p-inputNumber formControlName="PesoTotalAcondicionado" [minFractionDigits]="2" inputStyleClass="industrial-input" /></div>
-        </div>
-        <div class="flex items-center space-x-3 py-2"><p-checkbox formControlName="EtiquetadoCompleto" [binary]="true"></p-checkbox><label class="text-[9px] font-bold text-white uppercase tracking-widest">Etiquetado Completo</label></div>
-        <div class="flex justify-end space-x-3 mt-4"><button type="button" pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayNewDialog = false"></button><button type="submit" pButton label="Guardar" class="p-button-success" [disabled]="acondicionamientoForm.invalid"></button></div>
-    </form>
+
+<!-- ===== Dialog: Nuevo Acondicionamiento ===== -->
+<p-dialog [(visible)]="displayNewDialog" header="Nuevo Acondicionamiento" [modal]="true"
+  [style]="{width:'460px'}" [draggable]="false" [resizable]="false">
+  <form [formGroup]="acondicionamientoForm" class="space-y-4 pt-2">
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Lote / N° Acondicionamiento *</label>
+      <input pInputText formControlName="NumeroAcondicionamiento" class="w-full" placeholder="AC-2026001" />
+      <small *ngIf="acondicionamientoForm.get('NumeroAcondicionamiento')?.invalid && acondicionamientoForm.get('NumeroAcondicionamiento')?.touched" class="text-red-400">Obligatorio</small>
+    </div>
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">ID Desposte (opcional)</label>
+      <input pInputText formControlName="DesposteId" class="w-full" placeholder="UUID del desposte" />
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temperatura (°C)</label>
+        <p-inputNumber formControlName="TemperaturaProductos" [minFractionDigits]="1" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#00B894">Peso Total (kg)</label>
+        <p-inputNumber formControlName="PesoTotalAcondicionado" [minFractionDigits]="2" class="w-full"></p-inputNumber>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 py-2">
+      <p-checkbox formControlName="EtiquetadoCompleto" [binary]="true" inputId="etiqNuevo"></p-checkbox>
+      <label for="etiqNuevo" class="text-xs font-bold text-white uppercase tracking-widest">Etiquetado Completo</label>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayNewDialog=false"></button>
+    <button pButton label="Crear" icon="pi pi-check"
+      style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="saveNew()"></button>
+  </ng-template>
 </p-dialog>
-<p-toast></p-toast>
+
+<!-- ===== Dialog: Editar Acondicionamiento ===== -->
+<p-dialog [(visible)]="displayEditDialog" header="Editar Acondicionamiento" [modal]="true"
+  [style]="{width:'460px'}" [draggable]="false" [resizable]="false">
+  <form [formGroup]="editForm" class="space-y-4 pt-2">
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Acondicionamiento *</label>
+      <input pInputText formControlName="NumeroAcondicionamiento" class="w-full" />
+    </div>
+    <div class="space-y-1">
+      <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label>
+      <p-dropdown formControlName="Estado" [options]="estadosAcond" optionLabel="label" optionValue="value" class="w-full"></p-dropdown>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temperatura (°C)</label>
+        <p-inputNumber formControlName="TemperaturaProductos" [minFractionDigits]="1" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#00B894">Peso Total (kg)</label>
+        <p-inputNumber formControlName="PesoTotalAcondicionado" [minFractionDigits]="2" class="w-full"></p-inputNumber>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 py-2">
+      <p-checkbox formControlName="EtiquetadoCompleto" [binary]="true" inputId="etiqEdit"></p-checkbox>
+      <label for="etiqEdit" class="text-xs font-bold text-white uppercase tracking-widest">Etiquetado Completo</label>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayEditDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check"
+      style="background:linear-gradient(135deg,#FDCB6E,#E17055);border:none" (click)="saveEdit()"></button>
+  </ng-template>
+</p-dialog>

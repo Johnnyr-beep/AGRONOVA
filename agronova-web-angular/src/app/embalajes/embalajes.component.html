@@ -1,5 +1,7 @@
 <div class="space-y-5 animate-fade-in">
   <p-toast></p-toast><p-confirmDialog></p-confirmDialog>
+
+  <!-- Header -->
   <div class="glass-card p-6">
     <div class="flex justify-between items-center">
       <div class="flex items-center space-x-4">
@@ -8,55 +10,150 @@
         </div>
         <div>
           <h1 class="text-xl font-extrabold text-white tracking-tight">Embalajes</h1>
-          <p class="text-xs mt-0.5" style="color:#3D4050">Empaque de productos</p>
+          <p class="text-xs mt-0.5" style="color:#3D4050">Empaque, etiquetado y despacho de productos</p>
         </div>
       </div>
-      <button pButton icon="pi pi-plus" label="Nuevo Embalaje" class="p-button-sm" style="background:linear-gradient(135deg,#A29BFE,#6C5CE7);border:none;" (click)="openNew()"></button>
+      <button pButton icon="pi pi-plus" label="Nuevo Embalaje" class="p-button-sm"
+        style="background:linear-gradient(135deg,#A29BFE,#6C5CE7);border:none;" (click)="openNew()"></button>
     </div>
   </div>
+
+  <!-- Filtros rápidos -->
+  <div class="flex gap-2">
+    <button (click)="filterMode='todos'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
+      [style.background]="filterMode==='todos'?'rgba(108,92,231,0.2)':'rgba(255,255,255,0.04)'"
+      [style.color]="filterMode==='todos'?'#6C5CE7':'#8892A4'"
+      [style.border]="filterMode==='todos'?'1px solid rgba(108,92,231,0.3)':'1px solid rgba(148,163,184,0.08)'">
+      <i class="pi pi-list mr-1"></i>Todos ({{ items.length }})
+    </button>
+    <button (click)="filterMode='pendientes'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
+      [style.background]="filterMode==='pendientes'?'rgba(253,203,110,0.15)':'rgba(255,255,255,0.04)'"
+      [style.color]="filterMode==='pendientes'?'#FDCB6E':'#8892A4'"
+      [style.border]="filterMode==='pendientes'?'1px solid rgba(253,203,110,0.3)':'1px solid rgba(148,163,184,0.08)'">
+      <i class="pi pi-clock mr-1"></i>Pendientes ({{ pendientesCount }})
+    </button>
+    <button (click)="filterMode='por-vencer'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
+      [style.background]="filterMode==='por-vencer'?'rgba(214,48,49,0.15)':'rgba(255,255,255,0.04)'"
+      [style.color]="filterMode==='por-vencer'?'#D63031':'#8892A4'"
+      [style.border]="filterMode==='por-vencer'?'1px solid rgba(214,48,49,0.3)':'1px solid rgba(148,163,184,0.08)'">
+      <i class="pi pi-exclamation-triangle mr-1"></i>Por Vencer 7 días ({{ porVencerCount }})
+    </button>
+  </div>
+
+  <!-- Tabla -->
   <div class="glass-card p-0 overflow-hidden">
-    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+    <p-table [value]="filteredItems" [loading]="loading" [paginator]="true" [rows]="20"
+             styleClass="p-datatable-sm" [rowHover]="true">
       <ng-template pTemplate="header">
-        <tr><th>N° Embalaje</th><th>Fecha</th><th>Peso Neto (kg)</th><th>Lote</th><th>Vencimiento</th><th>Estado</th><th class="text-center">Acciones</th></tr>
+        <tr>
+          <th>N° Embalaje</th>
+          <th>Fecha</th>
+          <th style="text-align:right">Peso Neto (kg)</th>
+          <th>Lote</th>
+          <th>Temperatura</th>
+          <th>Vencimiento</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
       </ng-template>
       <ng-template pTemplate="body" let-e>
         <tr>
-          <td class="font-semibold text-white">{{ e.NumeroEmbalaje }}</td>
-          <td style="color:#8892A4">{{ e.FechaEmbalaje | date:'dd/MM/yyyy' }}</td>
-          <td style="color:#8892A4">{{ e.PesoNeto ?? '—' }}</td>
-          <td style="color:#8892A4">{{ e.Lote || '—' }}</td>
-          <td style="color:#8892A4">{{ e.FechaVencimiento | date:'dd/MM/yyyy' }}</td>
+          <td class="font-bold text-white">{{ e.NumeroEmbalaje }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ e.FechaEmbalaje | date:'dd/MM/yyyy' }}</td>
+          <td style="text-align:right;color:#00B894;font-weight:700">{{ e.PesoNeto != null ? (e.PesoNeto | number:'1.3-3') : '—' }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ e.Lote || '—' }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ e.TemperaturaProducto != null ? e.TemperaturaProducto+'°C' : '—' }}</td>
+          <td [style.color]="e.FechaVencimiento ? '#D63031' : '#3D4050'" style="font-size:11px;font-weight:600">
+            {{ e.FechaVencimiento | date:'dd/MM/yyyy' }}
+          </td>
           <td><p-tag [value]="e.Estado || 'Pendiente'" [severity]="getSeverity(e.Estado)"></p-tag></td>
           <td class="text-center">
-            <div class="flex justify-center gap-2">
-              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit(e)"></button>
-              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(e)"></button>
+            <div class="flex justify-center gap-1">
+              <button pButton icon="pi pi-check" class="p-button-sm p-button-text p-button-info"
+                pTooltip="Marcar Embalado" *ngIf="e.Estado==='Pendiente' || !e.Estado"
+                (click)="cambiarEstado(e,'Embalado')"></button>
+              <button pButton icon="pi pi-send" class="p-button-sm p-button-text p-button-success"
+                pTooltip="Marcar Despachado" *ngIf="e.Estado==='Embalado'"
+                (click)="cambiarEstado(e,'Despachado')"></button>
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary"
+                pTooltip="Editar" (click)="openEdit(e)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger"
+                pTooltip="Eliminar" (click)="confirmDelete(e)"></button>
             </div>
           </td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage"><tr><td colspan="7" class="text-center py-8" style="color:#3D4050">No hay embalajes registrados</td></tr></ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="text-center py-10" style="color:#3D4050">
+          <ng-container *ngIf="filterMode==='por-vencer'">Sin embalajes por vencer esta semana</ng-container>
+          <ng-container *ngIf="filterMode==='pendientes'">Sin embalajes pendientes</ng-container>
+          <ng-container *ngIf="filterMode==='todos'">No hay embalajes registrados</ng-container>
+        </td></tr>
+      </ng-template>
     </p-table>
   </div>
 </div>
-<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'520px'}" [header]="editingId ? 'Editar Embalaje' : 'Nuevo Embalaje'" [draggable]="false" [resizable]="false">
+
+<!-- Dialog crear / editar -->
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'540px'}"
+  [header]="editingId ? 'Editar Embalaje' : 'Nuevo Embalaje'"
+  [draggable]="false" [resizable]="false">
   <form [formGroup]="form" class="space-y-4 pt-2">
     <div class="grid grid-cols-2 gap-4">
-      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Embalaje *</label><input pInputText formControlName="NumeroEmbalaje" class="w-full" /><small *ngIf="fieldInvalid('NumeroEmbalaje')" class="text-red-400">Campo obligatorio</small></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha</label><input type="date" pInputText formControlName="FechaEmbalaje" class="w-full" /></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Lote</label><input pInputText formControlName="Lote" class="w-full" /></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Neto (kg)</label><p-inputNumber formControlName="PesoNeto" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Bruto (kg)</label><p-inputNumber formControlName="PesoBruto" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Tara (kg)</label><p-inputNumber formControlName="PesoTara" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Unidades</label><p-inputNumber formControlName="CantidadUnidades" [min]="1" class="w-full"></p-inputNumber></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temp. Producto (°C)</label><p-inputNumber formControlName="TemperaturaProducto" [minFractionDigits]="1" class="w-full"></p-inputNumber></div>
-      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Vencimiento</label><input type="date" pInputText formControlName="FechaVencimiento" class="w-full" /></div>
-      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código de Barras</label><input pInputText formControlName="CodigoBarras" class="w-full" /></div>
-      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label><input pInputText formControlName="Observaciones" class="w-full" /></div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Embalaje *</label>
+        <input pInputText formControlName="NumeroEmbalaje" class="w-full" />
+        <small *ngIf="fieldInvalid('NumeroEmbalaje')" class="text-red-400">Obligatorio</small>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Embalaje</label>
+        <input type="date" pInputText formControlName="FechaEmbalaje" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label>
+        <p-dropdown formControlName="Estado" [options]="estadosEmbalaje" class="w-full"></p-dropdown>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Lote</label>
+        <input pInputText formControlName="Lote" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Vencimiento</label>
+        <input type="date" pInputText formControlName="FechaVencimiento" class="w-full" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Neto (kg)</label>
+        <p-inputNumber formControlName="PesoNeto" [minFractionDigits]="3" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Bruto (kg)</label>
+        <p-inputNumber formControlName="PesoBruto" [minFractionDigits]="3" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Tara (kg)</label>
+        <p-inputNumber formControlName="PesoTara" [minFractionDigits]="3" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Unidades</label>
+        <p-inputNumber formControlName="CantidadUnidades" [min]="1" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temp. Producto (°C)</label>
+        <p-inputNumber formControlName="TemperaturaProducto" [minFractionDigits]="1" class="w-full"></p-inputNumber>
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código de Barras</label>
+        <input pInputText formControlName="CodigoBarras" class="w-full" />
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label>
+        <input pInputText formControlName="Observaciones" class="w-full" />
+      </div>
     </div>
   </form>
   <ng-template pTemplate="footer">
     <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
-    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#A29BFE,#6C5CE7);border:none;" (click)="save()"></button>
+    <button pButton label="Guardar" icon="pi pi-check"
+      style="background:linear-gradient(135deg,#A29BFE,#6C5CE7);border:none;" (click)="save()"></button>
   </ng-template>
 </p-dialog>
