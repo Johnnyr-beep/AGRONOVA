@@ -1,53 +1,573 @@
-<div class="space-y-6 animate-fade-in">
-    <div class="glass-card p-7 flex justify-between items-center relative overflow-hidden">
-        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full" style="background: rgba(16,185,129,0.04); filter: blur(60px);"></div>
-        <div class="flex items-center space-x-5 relative z-10">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9);">
-                <i class="pi pi-cog text-white text-xl"></i>
-            </div>
-            <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Configuración <span style="color: #6C5CE7;">Global</span></h1>
-                <p class="text-[10px] mt-0.5" style="color: #475569;">Seguridad y Parámetros de Planta</p>
-            </div>
-        </div>
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div class="lg:col-span-1 space-y-3">
-            <div class="p-1.5 rounded-xl space-y-1" style="background: rgba(2,6,23,0.5); border: 1px solid rgba(148,163,184,0.06);">
-                <button class="w-full text-left py-3 px-5 rounded-lg font-bold text-[10px] tracking-wider uppercase transition-all flex items-center space-x-3" style="background: rgba(16,185,129,0.08); color: #6C5CE7;"><i class="pi pi-users"></i><span>Usuarios</span></button>
-                <button class="w-full text-left py-3 px-5 rounded-lg font-bold text-[10px] tracking-wider uppercase transition-all flex items-center space-x-3 hover:bg-white/5" style="color: #64748B;"><i class="pi pi-lock"></i><span>Roles</span></button>
-                <button class="w-full text-left py-3 px-5 rounded-lg font-bold text-[10px] tracking-wider uppercase transition-all flex items-center space-x-3 hover:bg-white/5" style="color: #64748B;"><i class="pi pi-sliders-h"></i><span>Planta</span></button>
-            </div>
-        </div>
-        <div class="lg:col-span-3">
-            <div class="glass-card overflow-hidden">
-                <div class="p-6 flex justify-between items-center" style="border-bottom: 1px solid rgba(148,163,184,0.06); background: rgba(2,6,23,0.3);">
-                    <div>
-                        <h3 class="text-base font-bold text-white">Directorio de Usuarios</h3>
-                        <p class="text-[9px] mt-0.5" style="color: #475569;">Control de accesos y credenciales</p>
-                    </div>
-                    <button class="px-5 py-2.5 rounded-xl font-bold text-[10px] tracking-wider" style="background: linear-gradient(135deg, #6C5CE7, #00CEC9); color: white;">NUEVO USUARIO</button>
-                </div>
-                <p-table [value]="users" [loading]="loading" styleClass="p-datatable-lg">
-                    <ng-template pTemplate="header"><tr><th>Nombre</th><th>Identificador</th><th>Estado</th><th style="width: 80px"></th></tr></ng-template>
-                    <ng-template pTemplate="body" let-user>
-                        <tr class="group">
-                            <td class="p-4">
-                                <div class="flex items-center space-x-3">
-                                    <p-avatar [label]="user.Nombre[0]" shape="circle" [style]="{'background': 'linear-gradient(135deg, #6C5CE7, #00CEC9)', 'color': 'white', 'font-weight': '700', 'font-size': '11px'}"></p-avatar>
-                                    <span class="font-bold text-white text-sm">{{user.Nombre}} {{user.Apellido}}</span>
-                                </div>
-                            </td>
-                            <td class="text-xs font-medium uppercase" style="color: #64748B;">{{user.NombreUsuario}}</td>
-                            <td>
-                                <span class="px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider" [style.background]="user.Activo ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)'" [style.color]="user.Activo ? '#6C5CE7' : '#EF4444'" [style.border]="'1px solid ' + (user.Activo ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)')">{{user.Activo ? 'ACTIVO' : 'RESTRINGIDO'}}</span>
-                            </td>
-                            <td class="text-right"><button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary opacity-0 group-hover:opacity-100 transition-all"></button></td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
-        </div>
-    </div>
-</div>
 <p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="space-y-5 animate-fade-in">
+  <!-- Header -->
+  <div class="glass-card p-6">
+    <div class="flex items-center space-x-4">
+      <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);box-shadow:0 4px 16px rgba(108,92,231,0.3);">
+        <i class="pi pi-cog text-white text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold text-white tracking-tight">Configuración <span style="color:#6C5CE7">Global</span></h1>
+        <p class="text-xs mt-0.5" style="color:#3D4050">Maestros, logística, inventario y parámetros de planta</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+    <!-- Sidebar tabs -->
+    <div class="lg:col-span-1">
+      <div class="glass-card p-3 space-y-4">
+        <!-- Administración -->
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-widest px-2 mb-2" style="color:#3D4050">Administración</p>
+          <button (click)="setTab('usuarios')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='usuarios'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='usuarios'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-users"></i> Usuarios
+          </button>
+        </div>
+        <!-- Maestros de transporte -->
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-widest px-2 mb-2" style="color:#3D4050">Transporte</p>
+          <button (click)="setTab('vehiculos')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='vehiculos'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='vehiculos'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-car"></i> Vehículos
+          </button>
+          <button (click)="setTab('conductores')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='conductores'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='conductores'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-id-card"></i> Conductores
+          </button>
+          <button (click)="setTab('tarifas')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='tarifas'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='tarifas'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-calculator"></i> Tarifas
+          </button>
+          <button (click)="setTab('logistica')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='logistica'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='logistica'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-map"></i> Logística
+          </button>
+        </div>
+        <!-- Maestros comerciales -->
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-widest px-2 mb-2" style="color:#3D4050">Comercial</p>
+          <button (click)="setTab('categorias')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='categorias'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='categorias'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-sitemap"></i> Categorías
+          </button>
+          <button (click)="setTab('tiendas')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='tiendas'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='tiendas'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-shopping-bag"></i> Tiendas
+          </button>
+          <button (click)="setTab('sedes')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='sedes'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='sedes'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-building"></i> Sedes
+          </button>
+          <button (click)="setTab('lista-precios')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='lista-precios'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='lista-precios'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-tag"></i> Lista Precios
+          </button>
+          <button (click)="setTab('pedidos')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='pedidos'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='pedidos'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-shopping-cart"></i> Pedidos
+          </button>
+        </div>
+        <!-- Maestros de almacén -->
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-widest px-2 mb-2" style="color:#3D4050">Almacén</p>
+          <button (click)="setTab('bodegas')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='bodegas'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='bodegas'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-warehouse"></i> Bodegas
+          </button>
+          <button (click)="setTab('conservacion')" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all" [style.background]="activeTab==='conservacion'?'rgba(108,92,231,0.15)':'transparent'" [style.color]="activeTab==='conservacion'?'#6C5CE7':'#8892A4'">
+            <i class="pi pi-snowflake"></i> Conservación
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="lg:col-span-4">
+
+      <!-- ======================== USUARIOS ======================== -->
+      <div *ngIf="activeTab==='usuarios'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Directorio de Usuarios</h3><p class="text-xs mt-0.5" style="color:#3D4050">Control de accesos y credenciales</p></div>
+        </div>
+        <p-table [value]="users" [loading]="usersLoading" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Usuario</th><th>Tipo</th><th>Estado</th></tr></ng-template>
+          <ng-template pTemplate="body" let-u>
+            <tr>
+              <td class="font-bold text-white">{{ u.Nombre }} {{ u.Apellido }}</td>
+              <td style="color:#8892A4">{{ u.NombreUsuario }}</td>
+              <td style="color:#8892A4">{{ u.TipoEmpleado }}</td>
+              <td><p-tag [value]="u.Activo?'Activo':'Inactivo'" [severity]="u.Activo?'success':'danger'"></p-tag></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="4" class="text-center py-8" style="color:#3D4050">Sin usuarios registrados</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== VEHÍCULOS ======================== -->
+      <div *ngIf="activeTab==='vehiculos'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Vehículos</h3><p class="text-xs mt-0.5" style="color:#3D4050">Flota de transporte</p></div>
+          <button pButton icon="pi pi-plus" label="Nuevo" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('vehiculos')"></button>
+        </div>
+        <p-table [value]="vehiculos" [loading]="vehiculosLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Placa</th><th>Marca / Modelo</th><th>Tipo</th><th>Cap. (kg)</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-v>
+            <tr>
+              <td class="font-bold text-white">{{ v.Placa }}</td>
+              <td style="color:#8892A4">{{ v.Marca }} {{ v.Modelo }}</td>
+              <td style="color:#8892A4">{{ v.Tipo || '—' }}</td>
+              <td style="color:#8892A4">{{ v.CapacidadKg || '—' }}</td>
+              <td><p-tag [value]="v.Activo?'Activo':'Inactivo'" [severity]="v.Activo?'success':'danger'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('vehiculos',v)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('vehiculos',v)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">Sin vehículos registrados</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== CONDUCTORES ======================== -->
+      <div *ngIf="activeTab==='conductores'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Conductores</h3><p class="text-xs mt-0.5" style="color:#3D4050">Personal de transporte</p></div>
+          <button pButton icon="pi pi-plus" label="Nuevo" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('conductores')"></button>
+        </div>
+        <p-table [value]="conductores" [loading]="conductoresLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Licencia</th><th>Vence</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-c>
+            <tr>
+              <td class="font-bold text-white">{{ c.Nombre }} {{ c.Apellido }}</td>
+              <td style="color:#8892A4">{{ c.Cedula || '—' }}</td>
+              <td style="color:#8892A4">{{ c.Telefono || '—' }}</td>
+              <td style="color:#8892A4">{{ c.LicenciaCategoria || '—' }}</td>
+              <td style="color:#8892A4">{{ c.FechaVencimientoLicencia | date:'dd/MM/yyyy' }}</td>
+              <td><p-tag [value]="c.Activo?'Activo':'Inactivo'" [severity]="c.Activo?'success':'danger'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('conductores',c)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('conductores',c)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="7" class="text-center py-8" style="color:#3D4050">Sin conductores registrados</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== TARIFAS ======================== -->
+      <div *ngIf="activeTab==='tarifas'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Tarifas</h3><p class="text-xs mt-0.5" style="color:#3D4050">Tarifas de transporte y servicios</p></div>
+          <button pButton icon="pi pi-plus" label="Nueva" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('tarifas')"></button>
+        </div>
+        <p-table [value]="tarifas" [loading]="tarifasLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Tipo Servicio</th><th>Valor Base</th><th>Valor/km</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-t>
+            <tr>
+              <td class="font-bold text-white">{{ t.Nombre }}</td>
+              <td style="color:#8892A4">{{ t.TipoServicio || '—' }}</td>
+              <td style="color:#00B894">{{ t.ValorBase ? ('$'+t.ValorBase) : '—' }}</td>
+              <td style="color:#8892A4">{{ t.ValorPorKm ? ('$'+t.ValorPorKm) : '—' }}</td>
+              <td><p-tag [value]="t.Activo?'Activo':'Inactivo'" [severity]="t.Activo?'success':'danger'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('tarifas',t)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('tarifas',t)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">Sin tarifas registradas</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== LOGÍSTICA ======================== -->
+      <div *ngIf="activeTab==='logistica'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Logística</h3><p class="text-xs mt-0.5" style="color:#3D4050">Seguimiento de entregas y despachos</p></div>
+          <button pButton icon="pi pi-plus" label="Nuevo" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('logistica')"></button>
+        </div>
+        <p-table [value]="logistica" [loading]="logisticaLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>N° Logística</th><th>Fecha</th><th>Vehículo</th><th>Conductor</th><th>Origen → Destino</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-l>
+            <tr>
+              <td class="font-bold text-white">{{ l.NumeroLogistica }}</td>
+              <td style="color:#8892A4">{{ l.FechaLogistica | date:'dd/MM/yyyy' }}</td>
+              <td style="color:#8892A4">{{ l.VehiculoPlaca || '—' }}</td>
+              <td style="color:#8892A4">{{ l.ConductorNombre || '—' }}</td>
+              <td style="color:#8892A4">{{ l.Origen || '—' }} → {{ l.Destino || '—' }}</td>
+              <td><p-tag [value]="l.Estado||'Pendiente'" [severity]="l.Estado==='Entregado'?'success':l.Estado==='Cancelado'?'danger':'warning'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('logistica',l)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('logistica',l)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="7" class="text-center py-8" style="color:#3D4050">Sin registros de logística</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== CATEGORÍAS ======================== -->
+      <div *ngIf="activeTab==='categorias'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Categorías</h3><p class="text-xs mt-0.5" style="color:#3D4050">Categorías de productos</p></div>
+          <button pButton icon="pi pi-plus" label="Nueva" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('categorias')"></button>
+        </div>
+        <p-table [value]="categorias" [loading]="categoriasLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Código</th><th>Descripción</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-c>
+            <tr>
+              <td class="font-bold text-white">{{ c.Nombre }}</td>
+              <td style="color:#8892A4">{{ c.Codigo || '—' }}</td>
+              <td style="color:#8892A4;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.Descripcion || '—' }}</td>
+              <td><p-tag [value]="c.Activo?'Activo':'Inactivo'" [severity]="c.Activo?'success':'danger'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('categorias',c)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('categorias',c)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="5" class="text-center py-8" style="color:#3D4050">Sin categorías registradas</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== TIENDAS ======================== -->
+      <div *ngIf="activeTab==='tiendas'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Tiendas</h3><p class="text-xs mt-0.5" style="color:#3D4050">Puntos de venta</p></div>
+          <button pButton icon="pi pi-plus" label="Nueva" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('tiendas')"></button>
+        </div>
+        <p-table [value]="tiendas" [loading]="tiendasLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Código</th><th>Ciudad</th><th>Teléfono</th><th>Responsable</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-t>
+            <tr>
+              <td class="font-bold text-white">{{ t.Nombre }}</td>
+              <td style="color:#8892A4">{{ t.Codigo || '—' }}</td>
+              <td style="color:#8892A4">{{ t.Ciudad || '—' }}</td>
+              <td style="color:#8892A4">{{ t.Telefono || '—' }}</td>
+              <td style="color:#8892A4">{{ t.Responsable || '—' }}</td>
+              <td><p-tag [value]="t.Activo?'Activo':'Inactivo'" [severity]="t.Activo?'success':'danger'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('tiendas',t)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('tiendas',t)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="7" class="text-center py-8" style="color:#3D4050">Sin tiendas registradas</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== SEDES ======================== -->
+      <div *ngIf="activeTab==='sedes'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Sedes</h3><p class="text-xs mt-0.5" style="color:#3D4050">Sucursales de clientes y proveedores</p></div>
+          <button pButton icon="pi pi-plus" label="Nueva" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('sedes')"></button>
+        </div>
+        <p-table [value]="sedes" [loading]="sedesLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Ciudad</th><th>Teléfono</th><th>Contacto</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-s>
+            <tr>
+              <td class="font-bold text-white">{{ s.Nombre }}</td>
+              <td style="color:#8892A4">{{ s.Ciudad || '—' }}</td>
+              <td style="color:#8892A4">{{ s.Telefono || '—' }}</td>
+              <td style="color:#8892A4">{{ s.Contacto || '—' }}</td>
+              <td><p-tag [value]="s.Activo?'Activo':'Inactivo'" [severity]="s.Activo?'success':'danger'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('sedes',s)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('sedes',s)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">Sin sedes registradas</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== LISTA PRECIOS ======================== -->
+      <div *ngIf="activeTab==='lista-precios'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Lista de Precios</h3><p class="text-xs mt-0.5" style="color:#3D4050">Precios acordados por cliente y producto</p></div>
+          <button pButton icon="pi pi-plus" label="Nuevo" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('lista-precios')"></button>
+        </div>
+        <p-table [value]="listaPrecios" [loading]="listaPreciosLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Cliente</th><th>Producto</th><th>Precio/kg</th><th>Vigencia</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-p>
+            <tr>
+              <td class="font-bold text-white">{{ p.ClienteNombre || '—' }}</td>
+              <td style="color:#8892A4">{{ p.ProductoNombre || '—' }}</td>
+              <td style="color:#00B894;font-weight:700">${{ p.PrecioKg | number:'1.0-2' }}</td>
+              <td style="color:#8892A4">{{ p.FechaVigencia | date:'dd/MM/yyyy' }}</td>
+              <td><p-tag [value]="p.Estado||'Activo'" [severity]="p.Estado==='Activo'?'success':p.Estado==='Vencido'?'danger':'warning'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('lista-precios',p)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('lista-precios',p)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">Sin precios registrados</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== PEDIDOS ======================== -->
+      <div *ngIf="activeTab==='pedidos'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Pedidos</h3><p class="text-xs mt-0.5" style="color:#3D4050">Solicitudes de clientes</p></div>
+          <button pButton icon="pi pi-plus" label="Nuevo" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('pedidos')"></button>
+        </div>
+        <p-table [value]="pedidos" [loading]="pedidosLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>N° Pedido</th><th>Fecha</th><th>Cliente</th><th>Peso (kg)</th><th>Monto</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-p>
+            <tr>
+              <td class="font-bold text-white">{{ p.NumeroPedido }}</td>
+              <td style="color:#8892A4">{{ p.FechaPedido | date:'dd/MM/yyyy' }}</td>
+              <td style="color:#8892A4">{{ p.ClienteNombre || '—' }}</td>
+              <td style="color:#8892A4">{{ p.PesoTotalKg || '—' }}</td>
+              <td style="color:#00B894">{{ p.MontoTotal ? ('$'+(p.MontoTotal|number:'1.0-0')) : '—' }}</td>
+              <td><p-tag [value]="p.Estado||'Pendiente'" [severity]="p.Estado==='Despachado'?'success':p.Estado==='Cancelado'?'danger':'warning'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('pedidos',p)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('pedidos',p)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="7" class="text-center py-8" style="color:#3D4050">Sin pedidos registrados</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== BODEGAS ======================== -->
+      <div *ngIf="activeTab==='bodegas'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Bodegas</h3><p class="text-xs mt-0.5" style="color:#3D4050">Almacenes de inventario</p></div>
+          <button pButton icon="pi pi-plus" label="Nueva" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('bodegas')"></button>
+        </div>
+        <p-table [value]="bodegas" [loading]="bodegasLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Nombre</th><th>Código</th><th>Tipo</th><th>Capacidad</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-b>
+            <tr>
+              <td class="font-bold text-white">{{ b.Nombre }}</td>
+              <td style="color:#8892A4">{{ b.Codigo || '—' }}</td>
+              <td style="color:#8892A4">{{ b.Tipo || '—' }}</td>
+              <td style="color:#8892A4">{{ b.Capacidad || '—' }}</td>
+              <td><p-tag [value]="b.Estado||'Disponible'" [severity]="b.Estado==='Disponible'?'success':b.Estado==='Mantenimiento'?'danger':'warning'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('bodegas',b)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('bodegas',b)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">Sin bodegas registradas</td></tr></ng-template>
+        </p-table>
+      </div>
+
+      <!-- ======================== CONSERVACIÓN ======================== -->
+      <div *ngIf="activeTab==='conservacion'" class="glass-card p-0 overflow-hidden">
+        <div class="p-5 flex justify-between items-center" style="border-bottom:1px solid rgba(148,163,184,0.06)">
+          <div><h3 class="font-bold text-white">Conservación</h3><p class="text-xs mt-0.5" style="color:#3D4050">Registro de temperatura y humedad en cavas</p></div>
+          <button pButton icon="pi pi-plus" label="Nuevo Registro" class="p-button-sm" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="openNew('conservacion')"></button>
+        </div>
+        <p-table [value]="conservacion" [loading]="conservacionLoading" [paginator]="true" [rows]="15" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header"><tr><th>Cava</th><th>Fecha</th><th>Temp. (°C)</th><th>Humedad (%)</th><th>Estado</th><th class="text-center">Acciones</th></tr></ng-template>
+          <ng-template pTemplate="body" let-c>
+            <tr>
+              <td class="font-bold text-white">{{ c.CavaNombre || '—' }}</td>
+              <td style="color:#8892A4">{{ c.FechaRegistro | date:'dd/MM/yyyy' }}</td>
+              <td [style.color]="c.Estado==='Critico'?'#D63031':c.Estado==='Alerta'?'#FDCB6E':'#00B894'" class="font-bold">{{ c.Temperatura != null ? c.Temperatura+'°C' : '—' }}</td>
+              <td style="color:#8892A4">{{ c.Humedad != null ? c.Humedad+'%' : '—' }}</td>
+              <td><p-tag [value]="c.Estado||'Normal'" [severity]="c.Estado==='Normal'?'success':c.Estado==='Critico'?'danger':'warning'"></p-tag></td>
+              <td class="text-center"><div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit('conservacion',c)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete('conservacion',c)"></button>
+              </div></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">Sin registros de conservación</td></tr></ng-template>
+        </p-table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ======================== DIALOGS ======================== -->
+
+<!-- Vehículos dialog -->
+<p-dialog [(visible)]="vehiculosDialog" [modal]="true" [style]="{width:'480px'}" [header]="vehiculosEditId?'Editar Vehículo':'Nuevo Vehículo'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="vehiculosForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Placa *</label><input pInputText formControlName="Placa" class="w-full" /><small *ngIf="fi(vehiculosForm,'Placa')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Marca</label><input pInputText formControlName="Marca" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Modelo</label><input pInputText formControlName="Modelo" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Tipo</label><p-dropdown formControlName="Tipo" [options]="opcionesTipoVehiculo" class="w-full" [showClear]="true" placeholder="Seleccionar"></p-dropdown></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Capacidad (kg)</label><p-inputNumber formControlName="CapacidadKg" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="vehiculosDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('vehiculos')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Conductores dialog -->
+<p-dialog [(visible)]="conductoresDialog" [modal]="true" [style]="{width:'500px'}" [header]="conductoresEditId?'Editar Conductor':'Nuevo Conductor'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="conductoresForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fi(conductoresForm,'Nombre')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Apellido</label><input pInputText formControlName="Apellido" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Cédula</label><input pInputText formControlName="Cedula" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Teléfono</label><input pInputText formControlName="Telefono" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Cat. Licencia</label><input pInputText formControlName="LicenciaCategoria" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Vence Licencia</label><input type="date" pInputText formControlName="FechaVencimientoLicencia" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="conductoresDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('conductores')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Tarifas dialog -->
+<p-dialog [(visible)]="tarifasDialog" [modal]="true" [style]="{width:'440px'}" [header]="tarifasEditId?'Editar Tarifa':'Nueva Tarifa'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="tarifasForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fi(tarifasForm,'Nombre')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Tipo de Servicio</label><input pInputText formControlName="TipoServicio" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Valor Base</label><p-inputNumber formControlName="ValorBase" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Valor/km</label><p-inputNumber formControlName="ValorPorKm" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="tarifasDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('tarifas')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Logística dialog -->
+<p-dialog [(visible)]="logisticaDialog" [modal]="true" [style]="{width:'520px'}" [header]="logisticaEditId?'Editar Logística':'Nueva Logística'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="logisticaForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Logística *</label><input pInputText formControlName="NumeroLogistica" class="w-full" /><small *ngIf="fi(logisticaForm,'NumeroLogistica')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha</label><input type="date" pInputText formControlName="FechaLogistica" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Placa Vehículo</label><input pInputText formControlName="VehiculoPlaca" class="w-full" /></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Conductor</label><input pInputText formControlName="ConductorNombre" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Origen</label><input pInputText formControlName="Origen" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Destino</label><input pInputText formControlName="Destino" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label><p-dropdown formControlName="Estado" [options]="opcionesEstadoLogistica" class="w-full"></p-dropdown></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label><input pInputText formControlName="Observaciones" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="logisticaDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('logistica')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Categorías dialog -->
+<p-dialog [(visible)]="categoriasDialog" [modal]="true" [style]="{width:'440px'}" [header]="categoriasEditId?'Editar Categoría':'Nueva Categoría'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="categoriasForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fi(categoriasForm,'Nombre')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código</label><input pInputText formControlName="Codigo" class="w-full" /></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Descripción</label><input pInputText formControlName="Descripcion" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="categoriasDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('categorias')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Tiendas dialog -->
+<p-dialog [(visible)]="tiendasDialog" [modal]="true" [style]="{width:'480px'}" [header]="tiendasEditId?'Editar Tienda':'Nueva Tienda'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="tiendasForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fi(tiendasForm,'Nombre')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código</label><input pInputText formControlName="Codigo" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Ciudad</label><input pInputText formControlName="Ciudad" class="w-full" /></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Dirección</label><input pInputText formControlName="Direccion" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Teléfono</label><input pInputText formControlName="Telefono" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Responsable</label><input pInputText formControlName="Responsable" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="tiendasDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('tiendas')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Sedes dialog -->
+<p-dialog [(visible)]="sedesDialog" [modal]="true" [style]="{width:'480px'}" [header]="sedesEditId?'Editar Sede':'Nueva Sede'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="sedesForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fi(sedesForm,'Nombre')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Ciudad</label><input pInputText formControlName="Ciudad" class="w-full" /></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Dirección</label><input pInputText formControlName="Direccion" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Teléfono</label><input pInputText formControlName="Telefono" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Contacto</label><input pInputText formControlName="Contacto" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="sedesDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('sedes')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Lista Precios dialog -->
+<p-dialog [(visible)]="listaPreciosDialog" [modal]="true" [style]="{width:'460px'}" [header]="listaPreciosEditId?'Editar Precio':'Nuevo Precio'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="listaPreciosForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Cliente</label><input pInputText formControlName="ClienteNombre" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Producto</label><input pInputText formControlName="ProductoNombre" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Precio/kg *</label><p-inputNumber formControlName="PrecioKg" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber><small *ngIf="fi(listaPreciosForm,'PrecioKg')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Vigencia</label><input type="date" pInputText formControlName="FechaVigencia" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label><p-dropdown formControlName="Estado" [options]="opcionesEstadoPrecio" class="w-full"></p-dropdown></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="listaPreciosDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('lista-precios')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Pedidos dialog -->
+<p-dialog [(visible)]="pedidosDialog" [modal]="true" [style]="{width:'500px'}" [header]="pedidosEditId?'Editar Pedido':'Nuevo Pedido'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="pedidosForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Pedido *</label><input pInputText formControlName="NumeroPedido" class="w-full" /><small *ngIf="fi(pedidosForm,'NumeroPedido')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha</label><input type="date" pInputText formControlName="FechaPedido" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Cliente</label><input pInputText formControlName="ClienteNombre" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Total (kg)</label><p-inputNumber formControlName="PesoTotalKg" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Monto Total</label><p-inputNumber formControlName="MontoTotal" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label><p-dropdown formControlName="Estado" [options]="opcionesEstadoPedido" class="w-full"></p-dropdown></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label><input pInputText formControlName="Observaciones" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="pedidosDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('pedidos')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Bodegas dialog -->
+<p-dialog [(visible)]="bodegasDialog" [modal]="true" [style]="{width:'460px'}" [header]="bodegasEditId?'Editar Bodega':'Nueva Bodega'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="bodegasForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fi(bodegasForm,'Nombre')" class="text-red-400">Obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código</label><input pInputText formControlName="Codigo" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Tipo</label><p-dropdown formControlName="Tipo" [options]="opcionesTipoBodega" class="w-full" [showClear]="true" placeholder="Seleccionar"></p-dropdown></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Capacidad</label><p-inputNumber formControlName="Capacidad" [min]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label><p-dropdown formControlName="Estado" [options]="opcionesEstadoBodega" class="w-full"></p-dropdown></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="bodegasDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('bodegas')"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Conservación dialog -->
+<p-dialog [(visible)]="conservacionDialog" [modal]="true" [style]="{width:'460px'}" [header]="conservacionEditId?'Editar Registro':'Nuevo Registro'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="conservacionForm" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Cava</label><input pInputText formControlName="CavaNombre" class="w-full" placeholder="Nombre de la cava" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha</label><input type="date" pInputText formControlName="FechaRegistro" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label><p-dropdown formControlName="Estado" [options]="opcionesEstadoConservacion" class="w-full"></p-dropdown></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temperatura (°C)</label><p-inputNumber formControlName="Temperatura" [minFractionDigits]="1" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Humedad (%)</label><p-inputNumber formControlName="Humedad" [min]="0" [max]="100" [minFractionDigits]="1" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label><input pInputText formControlName="Observaciones" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="conservacionDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);border:none" (click)="save('conservacion')"></button>
+  </ng-template>
+</p-dialog>

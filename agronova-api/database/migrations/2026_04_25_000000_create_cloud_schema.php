@@ -422,10 +422,180 @@ return new class extends Migration
             $table->timestamp('FechaHora')->nullable();
             $table->timestamps();
         });
+
+        // Sedes (sucursales de clientes/proveedores)
+        Schema::create('Sedes', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->uuid('ClienteId')->nullable();
+            $table->uuid('ProveedorId')->nullable();
+            $table->string('Direccion')->nullable();
+            $table->string('Ciudad')->nullable();
+            $table->string('Telefono')->nullable();
+            $table->string('Contacto')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Lista de Precios (por cliente/producto)
+        Schema::create('ListaPrecios', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('ClienteId')->nullable();
+            $table->string('ClienteNombre')->nullable();
+            $table->uuid('TipoProductoId')->nullable();
+            $table->string('ProductoNombre')->nullable();
+            $table->decimal('PrecioKg', 12, 2);
+            $table->date('FechaVigencia')->nullable();
+            $table->string('Estado')->default('Activo');
+            $table->text('Observaciones')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Tiendas
+        Schema::create('Tiendas', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('Codigo')->nullable()->unique();
+            $table->string('Direccion')->nullable();
+            $table->string('Ciudad')->nullable();
+            $table->string('Telefono')->nullable();
+            $table->string('Responsable')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Categorías de productos
+        Schema::create('Categorias', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('Codigo')->nullable()->unique();
+            $table->text('Descripcion')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Vehículos
+        Schema::create('Vehiculos', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Placa')->unique();
+            $table->string('Marca')->nullable();
+            $table->string('Modelo')->nullable();
+            $table->string('Tipo')->nullable();
+            $table->decimal('CapacidadKg', 12, 2)->nullable();
+            $table->uuid('ConductorId')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Tarifas de transporte
+        Schema::create('Tarifas', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('TipoServicio')->nullable();
+            $table->decimal('ValorBase', 12, 2)->nullable();
+            $table->decimal('ValorPorKm', 10, 2)->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Conductores
+        Schema::create('Conductores', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('Apellido')->nullable();
+            $table->string('Cedula')->nullable()->unique();
+            $table->string('Telefono')->nullable();
+            $table->string('LicenciaCategoria')->nullable();
+            $table->date('FechaVencimientoLicencia')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Conservación (logs de temperatura en cavas)
+        Schema::create('Conservacion', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('CavaId')->nullable();
+            $table->string('CavaNombre')->nullable();
+            $table->date('FechaRegistro')->nullable();
+            $table->decimal('Temperatura', 5, 2)->nullable();
+            $table->decimal('Humedad', 5, 2)->nullable();
+            $table->string('Estado')->default('Normal');
+            $table->uuid('OperarioId')->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Logística (seguimiento de despachos)
+        Schema::create('Logistica', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroLogistica')->unique();
+            $table->date('FechaLogistica')->nullable();
+            $table->uuid('DespachoId')->nullable();
+            $table->uuid('VehiculoId')->nullable();
+            $table->string('VehiculoPlaca')->nullable();
+            $table->uuid('ConductorId')->nullable();
+            $table->string('ConductorNombre')->nullable();
+            $table->string('Origen')->nullable();
+            $table->string('Destino')->nullable();
+            $table->string('Estado')->default('Pendiente');
+            $table->text('Observaciones')->nullable();
+            $table->uuid('CreadoPor')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Bodegas (almacenes de inventario)
+        Schema::create('Bodegas', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('Codigo')->nullable()->unique();
+            $table->string('Tipo')->nullable();
+            $table->uuid('CavaId')->nullable();
+            $table->integer('Capacidad')->nullable();
+            $table->string('Estado')->default('Disponible');
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Pedidos
+        Schema::create('Pedidos', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroPedido')->unique();
+            $table->date('FechaPedido')->nullable();
+            $table->uuid('ClienteId')->nullable();
+            $table->string('ClienteNombre')->nullable();
+            $table->decimal('PesoTotalKg', 12, 3)->nullable();
+            $table->decimal('MontoTotal', 14, 2)->nullable();
+            $table->string('Estado')->default('Pendiente');
+            $table->text('Observaciones')->nullable();
+            $table->uuid('CreadoPor')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('Pedidos');
+        Schema::dropIfExists('Bodegas');
+        Schema::dropIfExists('Logistica');
+        Schema::dropIfExists('Conservacion');
+        Schema::dropIfExists('Conductores');
+        Schema::dropIfExists('Tarifas');
+        Schema::dropIfExists('Vehiculos');
+        Schema::dropIfExists('Categorias');
+        Schema::dropIfExists('Tiendas');
+        Schema::dropIfExists('ListaPrecios');
+        Schema::dropIfExists('Sedes');
         Schema::dropIfExists('Auditorias');
         Schema::dropIfExists('Liquidaciones');
         Schema::dropIfExists('Traslados');

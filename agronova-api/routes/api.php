@@ -23,6 +23,17 @@ use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\TrasladoController;
 use App\Http\Controllers\LiquidacionController;
 use App\Http\Controllers\AuditoriaController;
+use App\Http\Controllers\SedeController;
+use App\Http\Controllers\ListaPrecioController;
+use App\Http\Controllers\TiendaController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\VehiculoController;
+use App\Http\Controllers\TarifaController;
+use App\Http\Controllers\ConductorController;
+use App\Http\Controllers\ConservacionController;
+use App\Http\Controllers\LogisticaController;
+use App\Http\Controllers\BodegaController;
+use App\Http\Controllers\PedidoController;
 use Illuminate\Support\Facades\Route;
 
 // Login público con rate limiting: máximo 5 intentos por minuto por IP
@@ -124,4 +135,17 @@ Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
     // Auditorías
     Route::get('auditorias', [AuditoriaController::class, 'index']);
     Route::get('auditorias/{id}', [AuditoriaController::class, 'show']);
+
+    // Configuración — módulos maestros
+    Route::apiResource('sedes', SedeController::class);
+    Route::apiResource('lista-precios', ListaPrecioController::class);
+    Route::apiResource('tiendas', TiendaController::class);
+    Route::apiResource('categorias', CategoriaController::class);
+    Route::apiResource('vehiculos', VehiculoController::class);
+    Route::apiResource('tarifas', TarifaController::class);
+    Route::apiResource('conductores', ConductorController::class);
+    Route::apiResource('conservacion', ConservacionController::class);
+    Route::apiResource('logistica', LogisticaController::class);
+    Route::apiResource('bodegas', BodegaController::class);
+    Route::apiResource('pedidos', PedidoController::class);
 });
