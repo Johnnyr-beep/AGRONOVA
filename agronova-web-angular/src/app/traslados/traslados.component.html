@@ -1,0 +1,57 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast><p-confirmDialog></p-confirmDialog>
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#FD79A8,#E84393);box-shadow:0 4px 16px rgba(253,121,168,0.2);">
+          <i class="pi pi-send text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Traslados</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">Traslados de canales entre cavas</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nuevo Traslado" class="p-button-sm" style="background:linear-gradient(135deg,#FD79A8,#E84393);border:none;" (click)="openNew()"></button>
+    </div>
+  </div>
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr><th>N° Traslado</th><th>Fecha</th><th>Origen</th><th>Destino</th><th>Estado</th><th class="text-center">Acciones</th></tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-t>
+        <tr>
+          <td class="font-semibold text-white">{{ t.NumeroTraslado }}</td>
+          <td style="color:#8892A4">{{ t.FechaTraslado | date:'dd/MM/yyyy' }}</td>
+          <td style="color:#8892A4">{{ t.Origen || '—' }}</td>
+          <td style="color:#8892A4">{{ t.Destino || '—' }}</td>
+          <td><p-tag [value]="t.Estado || 'Pendiente'" [severity]="t.Estado === 'Ejecutado' ? 'success' : 'warning'"></p-tag></td>
+          <td class="text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-play" class="p-button-sm p-button-text p-button-success" pTooltip="Ejecutar" *ngIf="t.Estado !== 'Ejecutado'" (click)="ejecutar(t)"></button>
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit(t)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(t)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">No hay traslados registrados</td></tr></ng-template>
+    </p-table>
+  </div>
+</div>
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'460px'}" [header]="editingId ? 'Editar Traslado' : 'Nuevo Traslado'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Traslado *</label><input pInputText formControlName="NumeroTraslado" class="w-full" /><small *ngIf="fieldInvalid('NumeroTraslado')" class="text-red-400">Campo obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha</label><input type="date" pInputText formControlName="FechaTraslado" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">ID Canal</label><input pInputText formControlName="CanalId" class="w-full" placeholder="UUID" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Origen</label><input pInputText formControlName="Origen" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Destino</label><input pInputText formControlName="Destino" class="w-full" /></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label><input pInputText formControlName="Observaciones" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#FD79A8,#E84393);border:none;" (click)="save()"></button>
+  </ng-template>
+</p-dialog>

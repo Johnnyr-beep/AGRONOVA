@@ -1,0 +1,59 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast><p-confirmDialog></p-confirmDialog>
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#00B894,#55EFC4);box-shadow:0 4px 16px rgba(0,184,148,0.2);">
+          <i class="pi pi-shopping-cart text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Insumos</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">Inventario de materiales e insumos</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nuevo Insumo" class="p-button-sm" style="background:linear-gradient(135deg,#00B894,#55EFC4);border:none;" (click)="openNew()"></button>
+    </div>
+  </div>
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr><th>Nombre</th><th>Código</th><th>Unidad</th><th>Stock Actual</th><th>Stock Mínimo</th><th>Precio Unitario</th><th class="text-center">Acciones</th></tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-i>
+        <tr>
+          <td class="font-semibold text-white">{{ i.Nombre }}</td>
+          <td style="color:#8892A4">{{ i.Codigo || '—' }}</td>
+          <td style="color:#8892A4">{{ i.UnidadMedida || '—' }}</td>
+          <td [style.color]="isStockBajo(i) ? '#D63031' : '#00B894'" class="font-bold">{{ i.StockActual ?? 0 }}</td>
+          <td style="color:#8892A4">{{ i.StockMinimo ?? 0 }}</td>
+          <td style="color:#8892A4">{{ i.PrecioUnitario ? ('$' + (i.PrecioUnitario | number:'1.0-0')) : '—' }}</td>
+          <td class="text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit(i)"></button>
+              <button pButton icon="pi pi-ban" class="p-button-sm p-button-text p-button-warning" pTooltip="Desactivar" (click)="confirmDelete(i)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage"><tr><td colspan="7" class="text-center py-8" style="color:#3D4050">No hay insumos registrados</td></tr></ng-template>
+    </p-table>
+  </div>
+</div>
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'500px'}" [header]="editingId ? 'Editar Insumo' : 'Nuevo Insumo'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label><input pInputText formControlName="Nombre" class="w-full" /><small *ngIf="fieldInvalid('Nombre')" class="text-red-400">Campo obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Código</label><input pInputText formControlName="Codigo" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Unidad de Medida</label><input pInputText formControlName="UnidadMedida" class="w-full" placeholder="kg, litros, unidades..." /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Stock Actual</label><p-inputNumber formControlName="StockActual" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Stock Mínimo</label><p-inputNumber formControlName="StockMinimo" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Precio Unitario</label><p-inputNumber formControlName="PrecioUnitario" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Proveedor</label><input pInputText formControlName="ProveedorNombre" class="w-full" /></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Descripción</label><input pInputText formControlName="Descripcion" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#00B894,#55EFC4);border:none;" (click)="save()"></button>
+  </ng-template>
+</p-dialog>

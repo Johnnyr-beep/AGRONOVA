@@ -1,0 +1,64 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast><p-confirmDialog></p-confirmDialog>
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#FDCB6E,#F9CA24);box-shadow:0 4px 16px rgba(249,202,36,0.2);">
+          <i class="pi pi-dollar text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Liquidaciones</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">Pago a proveedores por animales beneficiados</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nueva Liquidación" class="p-button-sm" style="background:linear-gradient(135deg,#FDCB6E,#F9CA24);border:none;" (click)="openNew()"></button>
+    </div>
+  </div>
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr><th>N° Liquidación</th><th>Fecha</th><th>Animales</th><th>Peso Total (kg)</th><th>Valor Bruto</th><th>Deducciones</th><th>Valor Neto</th><th>Estado</th><th class="text-center">Acciones</th></tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-l>
+        <tr>
+          <td class="font-semibold text-white">{{ l.NumeroLiquidacion }}</td>
+          <td style="color:#8892A4">{{ l.FechaLiquidacion | date:'dd/MM/yyyy' }}</td>
+          <td style="color:#8892A4">{{ l.TotalAnimales ?? '—' }}</td>
+          <td style="color:#8892A4">{{ l.PesoTotalKg ?? '—' }}</td>
+          <td style="color:#8892A4">{{ l.ValorBruto ? ('$' + (l.ValorBruto | number:'1.0-0')) : '—' }}</td>
+          <td style="color:#D63031">{{ l.Deducciones ? ('$' + (l.Deducciones | number:'1.0-0')) : '—' }}</td>
+          <td class="font-bold" style="color:#00B894">{{ l.ValorNeto ? ('$' + (l.ValorNeto | number:'1.0-0')) : '—' }}</td>
+          <td><p-tag [value]="l.Estado || 'Pendiente'" [severity]="getSeverity(l.Estado)"></p-tag></td>
+          <td class="text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-check" class="p-button-sm p-button-text p-button-info" pTooltip="Aprobar" *ngIf="l.Estado === 'Pendiente'" (click)="aprobar(l)"></button>
+              <button pButton icon="pi pi-money-bill" class="p-button-sm p-button-text p-button-success" pTooltip="Marcar Pagada" *ngIf="l.Estado === 'Aprobada'" (click)="marcarPagada(l)"></button>
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit(l)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(l)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage"><tr><td colspan="9" class="text-center py-8" style="color:#3D4050">No hay liquidaciones registradas</td></tr></ng-template>
+    </p-table>
+  </div>
+</div>
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'560px'}" [header]="editingId ? 'Editar Liquidación' : 'Nueva Liquidación'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Liquidación *</label><input pInputText formControlName="NumeroLiquidacion" class="w-full" /><small *ngIf="fieldInvalid('NumeroLiquidacion')" class="text-red-400">Campo obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Liquidación</label><input type="date" pInputText formControlName="FechaLiquidacion" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Total Animales</label><p-inputNumber formControlName="TotalAnimales" [min]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Total (kg)</label><p-inputNumber formControlName="PesoTotalKg" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Precio/kg</label><p-inputNumber formControlName="PrecioKg" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Valor Bruto</label><p-inputNumber formControlName="ValorBruto" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Deducciones</label><p-inputNumber formControlName="Deducciones" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Valor Neto</label><p-inputNumber formControlName="ValorNeto" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label><input pInputText formControlName="Observaciones" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#FDCB6E,#F9CA24);border:none;" (click)="save()"></button>
+  </ng-template>
+</p-dialog>

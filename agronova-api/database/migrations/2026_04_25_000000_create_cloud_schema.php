@@ -256,10 +256,186 @@ return new class extends Migration
             $table->boolean('Eliminado')->default(false);
             $table->timestamps();
         });
+
+        // Cavas (salas de refrigeración)
+        Schema::create('Cavas', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->integer('Numero')->nullable();
+            $table->integer('CapacidadCanales')->nullable();
+            $table->decimal('TemperaturaObjetivo', 5, 2)->nullable();
+            $table->decimal('TemperaturaActual', 5, 2)->nullable();
+            $table->string('Estado')->default('Disponible');
+            $table->text('Descripcion')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Asignación Canal-Cava
+        Schema::create('CanalCava', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('CanalId');
+            $table->uuid('CavaId');
+            $table->timestamp('FechaEntrada')->nullable();
+            $table->timestamp('FechaSalida')->nullable();
+            $table->string('Estado')->default('Activo');
+            $table->uuid('OperarioId')->nullable();
+            $table->timestamps();
+        });
+
+        // Embalaje
+        Schema::create('Embalajes', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroEmbalaje')->unique();
+            $table->date('FechaEmbalaje')->nullable();
+            $table->uuid('TipoProductoId')->nullable();
+            $table->uuid('ProductoDesposteId')->nullable();
+            $table->decimal('PesoNeto', 10, 3)->nullable();
+            $table->decimal('PesoBruto', 10, 3)->nullable();
+            $table->decimal('PesoTara', 10, 3)->nullable();
+            $table->integer('CantidadUnidades')->nullable();
+            $table->decimal('TemperaturaProducto', 5, 2)->nullable();
+            $table->string('Lote')->nullable();
+            $table->date('FechaVencimiento')->nullable();
+            $table->string('CodigoBarras')->nullable()->unique();
+            $table->string('Estado')->default('Pendiente');
+            $table->uuid('OperarioId')->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Devoluciones
+        Schema::create('Devoluciones', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroDevolucion')->unique();
+            $table->date('FechaDevolucion')->nullable();
+            $table->uuid('DespachoId')->nullable();
+            $table->uuid('ClienteId')->nullable();
+            $table->text('MotivoDevolucion')->nullable();
+            $table->decimal('PesoDevueltoKg', 10, 3)->nullable();
+            $table->decimal('MontoDevolucion', 12, 2)->nullable();
+            $table->string('Estado')->default('Pendiente');
+            $table->uuid('AprobadoPorId')->nullable();
+            $table->timestamp('FechaAprobacion')->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->uuid('CreadoPor')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Pieles
+        Schema::create('Pieles', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('CanalId')->nullable();
+            $table->date('FechaRegistro')->nullable();
+            $table->decimal('PesoKg', 10, 3)->nullable();
+            $table->string('Estado')->default('Disponible');
+            $table->string('Destino')->nullable();
+            $table->decimal('PrecioKg', 10, 2)->nullable();
+            $table->decimal('ValorTotal', 12, 2)->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Insumos
+        Schema::create('Insumos', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Nombre');
+            $table->string('Codigo')->nullable()->unique();
+            $table->text('Descripcion')->nullable();
+            $table->string('UnidadMedida')->nullable();
+            $table->decimal('StockActual', 12, 3)->default(0);
+            $table->decimal('StockMinimo', 12, 3)->default(0);
+            $table->decimal('PrecioUnitario', 10, 2)->nullable();
+            $table->string('ProveedorNombre')->nullable();
+            $table->boolean('Activo')->default(true);
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Movimientos de inventario
+        Schema::create('Movimientos', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Tipo');
+            $table->uuid('InsumoId')->nullable();
+            $table->decimal('Cantidad', 12, 3);
+            $table->decimal('StockAnterior', 12, 3)->nullable();
+            $table->decimal('StockResultante', 12, 3)->nullable();
+            $table->timestamp('FechaMovimiento')->nullable();
+            $table->string('Referencia')->nullable();
+            $table->text('Motivo')->nullable();
+            $table->uuid('OperarioId')->nullable();
+            $table->timestamps();
+        });
+
+        // Traslados
+        Schema::create('Traslados', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroTraslado')->unique();
+            $table->date('FechaTraslado')->nullable();
+            $table->uuid('CanalId')->nullable();
+            $table->uuid('CavaOrigenId')->nullable();
+            $table->uuid('CavaDestinoId')->nullable();
+            $table->string('Origen')->nullable();
+            $table->string('Destino')->nullable();
+            $table->string('Estado')->default('Pendiente');
+            $table->text('Observaciones')->nullable();
+            $table->uuid('OperarioId')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Liquidaciones (pago a proveedores)
+        Schema::create('Liquidaciones', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('NumeroLiquidacion')->unique();
+            $table->date('FechaLiquidacion')->nullable();
+            $table->uuid('BeneficioId')->nullable();
+            $table->uuid('ProveedorId')->nullable();
+            $table->integer('TotalAnimales')->nullable();
+            $table->decimal('PesoTotalKg', 12, 3)->nullable();
+            $table->decimal('PrecioKg', 10, 2)->nullable();
+            $table->decimal('ValorBruto', 14, 2)->nullable();
+            $table->decimal('Deducciones', 12, 2)->default(0);
+            $table->decimal('ValorNeto', 14, 2)->nullable();
+            $table->string('Estado')->default('Pendiente');
+            $table->date('FechaPago')->nullable();
+            $table->text('Observaciones')->nullable();
+            $table->uuid('CreadoPor')->nullable();
+            $table->boolean('Eliminado')->default(false);
+            $table->timestamps();
+        });
+
+        // Auditorías
+        Schema::create('Auditorias', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->uuid('UsuarioId')->nullable();
+            $table->string('Accion');
+            $table->string('Modulo');
+            $table->string('RegistroId')->nullable();
+            $table->jsonb('DatosAntes')->nullable();
+            $table->jsonb('DatosDespues')->nullable();
+            $table->string('IpAddress')->nullable();
+            $table->timestamp('FechaHora')->nullable();
+            $table->timestamps();
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('Auditorias');
+        Schema::dropIfExists('Liquidaciones');
+        Schema::dropIfExists('Traslados');
+        Schema::dropIfExists('Movimientos');
+        Schema::dropIfExists('Insumos');
+        Schema::dropIfExists('Pieles');
+        Schema::dropIfExists('Devoluciones');
+        Schema::dropIfExists('Embalajes');
+        Schema::dropIfExists('CanalCava');
+        Schema::dropIfExists('Cavas');
         Schema::dropIfExists('Despachos');
         Schema::dropIfExists('ProductosDesposte');
         Schema::dropIfExists('TiposProductos');

@@ -1,0 +1,88 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
+             style="background: linear-gradient(135deg,#00B894,#00CEC9); box-shadow:0 4px 16px rgba(0,184,148,0.2);">
+          <i class="pi pi-warehouse text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Cavas de Refrigeración</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">{{ items.length }} cavas registradas</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nueva Cava" class="p-button-sm"
+              style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;" (click)="openNew()"></button>
+    </div>
+  </div>
+
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N°</th><th>Nombre</th><th>Capacidad</th><th>Temp. Objetivo (°C)</th><th>Estado</th><th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-c>
+        <tr>
+          <td class="font-bold" style="color:#6C5CE7">{{ c.Numero ?? '—' }}</td>
+          <td class="font-semibold text-white">{{ c.Nombre }}</td>
+          <td style="color:#8892A4">{{ c.CapacidadCanales ? (c.CapacidadCanales + ' canales') : '—' }}</td>
+          <td style="color:#8892A4">{{ c.TemperaturaObjetivo ?? '—' }}</td>
+          <td><p-tag [value]="c.Estado || 'Disponible'" [severity]="getEstadoSeverity(c.Estado)"></p-tag></td>
+          <td class="text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" pTooltip="Editar" (click)="openEdit(c)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" pTooltip="Eliminar" (click)="confirmDelete(c)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="6" class="text-center py-8" style="color:#3D4050">No hay cavas registradas</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'460px'}"
+          [header]="editingId ? 'Editar Cava' : 'Nueva Cava'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Nombre *</label>
+        <input pInputText formControlName="Nombre" class="w-full"
+               [class.ng-invalid]="fieldInvalid('Nombre')" [class.ng-dirty]="fieldInvalid('Nombre')" />
+        <small *ngIf="fieldInvalid('Nombre')" class="text-red-400">Campo obligatorio</small>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Número</label>
+        <p-inputNumber formControlName="Numero" class="w-full" [min]="1"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Cap. Canales</label>
+        <p-inputNumber formControlName="CapacidadCanales" class="w-full" [min]="0"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Temp. Objetivo (°C)</label>
+        <p-inputNumber formControlName="TemperaturaObjetivo" class="w-full" [min]="-30" [max]="10" [minFractionDigits]="1"></p-inputNumber>
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label>
+        <p-dropdown formControlName="Estado" [options]="estadoOptions" optionLabel="label" optionValue="value" class="w-full"></p-dropdown>
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Descripción</label>
+        <input pInputText formControlName="Descripcion" class="w-full" />
+      </div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check"
+            style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;" (click)="save()"></button>
+  </ng-template>
+</p-dialog>

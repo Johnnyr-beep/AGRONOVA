@@ -1,0 +1,57 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast><p-confirmDialog></p-confirmDialog>
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#D63031,#E17055);box-shadow:0 4px 16px rgba(214,48,49,0.2);">
+          <i class="pi pi-undo text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Devoluciones</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">{{ items.length }} registros</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Nueva Devolución" class="p-button-sm" style="background:linear-gradient(135deg,#D63031,#E17055);border:none;" (click)="openNew()"></button>
+    </div>
+  </div>
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="20" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr><th>N° Devolución</th><th>Fecha</th><th>Peso Devuelto (kg)</th><th>Monto</th><th>Estado</th><th class="text-center">Acciones</th></tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-d>
+        <tr>
+          <td class="font-semibold text-white">{{ d.NumeroDevolucion }}</td>
+          <td style="color:#8892A4">{{ d.FechaDevolucion | date:'dd/MM/yyyy' }}</td>
+          <td style="color:#8892A4">{{ d.PesoDevueltoKg ?? '—' }}</td>
+          <td style="color:#8892A4">{{ d.MontoDevolucion ? ('$' + (d.MontoDevolucion | number:'1.0-0')) : '—' }}</td>
+          <td><p-tag [value]="d.Estado || 'Pendiente'" [severity]="getSeverity(d.Estado)"></p-tag></td>
+          <td class="text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-check-circle" class="p-button-sm p-button-text p-button-success" pTooltip="Aprobar" *ngIf="d.Estado === 'Pendiente'" (click)="aprobar(d)"></button>
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary" (click)="openEdit(d)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger" (click)="confirmDelete(d)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">No hay devoluciones registradas</td></tr></ng-template>
+    </p-table>
+  </div>
+</div>
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'480px'}" [header]="editingId ? 'Editar Devolución' : 'Nueva Devolución'" [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Devolución *</label><input pInputText formControlName="NumeroDevolucion" class="w-full" /><small *ngIf="fieldInvalid('NumeroDevolucion')" class="text-red-400">Campo obligatorio</small></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha</label><input type="date" pInputText formControlName="FechaDevolucion" class="w-full" /></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Devuelto (kg)</label><p-inputNumber formControlName="PesoDevueltoKg" [minFractionDigits]="3" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Monto Devolución</label><p-inputNumber formControlName="MontoDevolucion" mode="currency" currency="COP" locale="es-CO" [minFractionDigits]="0" class="w-full"></p-inputNumber></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Motivo</label><input pInputText formControlName="MotivoDevolucion" class="w-full" /></div>
+      <div class="space-y-1 col-span-2"><label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones</label><input pInputText formControlName="Observaciones" class="w-full" /></div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" style="background:linear-gradient(135deg,#D63031,#E17055);border:none;" (click)="save()"></button>
+  </ng-template>
+</p-dialog>

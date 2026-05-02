@@ -1,0 +1,46 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast>
+  <div class="glass-card p-6">
+    <div class="flex items-center space-x-4">
+      <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#636E72,#2D3436);box-shadow:0 4px 16px rgba(99,110,114,0.2);">
+        <i class="pi pi-history text-white text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold text-white tracking-tight">Auditorías del Sistema</h1>
+        <p class="text-xs mt-0.5" style="color:#3D4050">Registro de actividad — solo lectura</p>
+      </div>
+    </div>
+  </div>
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="30" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr><th>Fecha/Hora</th><th>Módulo</th><th>Acción</th><th>Registro ID</th><th>IP</th><th class="text-center">Detalle</th></tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-a>
+        <tr>
+          <td style="color:#8892A4">{{ a.FechaHora | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td class="text-white font-semibold">{{ a.Modulo }}</td>
+          <td><p-tag [value]="a.Accion" [severity]="getSeverity(a.Accion)"></p-tag></td>
+          <td style="color:#8892A4;font-size:11px">{{ a.RegistroId ? (a.RegistroId | slice:0:8) + '...' : '—' }}</td>
+          <td style="color:#8892A4">{{ a.IpAddress || '—' }}</td>
+          <td class="text-center"><button pButton icon="pi pi-eye" class="p-button-sm p-button-text p-button-secondary" pTooltip="Ver detalle" (click)="verDetalle(a)"></button></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage"><tr><td colspan="6" class="text-center py-8" style="color:#3D4050">No hay registros de auditoría</td></tr></ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayDetail" [modal]="true" [style]="{width:'580px'}" header="Detalle de Auditoría" [draggable]="false" [resizable]="false">
+  <div *ngIf="selected" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-3 text-sm">
+      <div><span style="color:#3D4050" class="text-xs uppercase font-bold">Módulo</span><p class="text-white mt-1">{{ selected.Modulo }}</p></div>
+      <div><span style="color:#3D4050" class="text-xs uppercase font-bold">Acción</span><p class="mt-1"><p-tag [value]="selected.Accion!" [severity]="getSeverity(selected.Accion)"></p-tag></p></div>
+      <div class="col-span-2"><span style="color:#3D4050" class="text-xs uppercase font-bold">Datos Antes</span><pre class="text-xs mt-1 p-3 rounded-lg overflow-auto max-h-40" style="background:rgba(255,255,255,0.03);color:#A0AEC0">{{ jsonPretty(selected.DatosAntes) }}</pre></div>
+      <div class="col-span-2"><span style="color:#3D4050" class="text-xs uppercase font-bold">Datos Después</span><pre class="text-xs mt-1 p-3 rounded-lg overflow-auto max-h-40" style="background:rgba(255,255,255,0.03);color:#A0AEC0">{{ jsonPretty(selected.DatosDespues) }}</pre></div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cerrar" class="p-button-text p-button-secondary" (click)="displayDetail=false"></button>
+  </ng-template>
+</p-dialog>

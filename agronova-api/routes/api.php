@@ -14,6 +14,15 @@ use App\Http\Controllers\CanalController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\TipoProductoController;
+use App\Http\Controllers\CavaController;
+use App\Http\Controllers\EmbalajeController;
+use App\Http\Controllers\DevolucionController;
+use App\Http\Controllers\PielController;
+use App\Http\Controllers\InsumoController;
+use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\TrasladoController;
+use App\Http\Controllers\LiquidacionController;
+use App\Http\Controllers\AuditoriaController;
 use Illuminate\Support\Facades\Route;
 
 // Login público con rate limiting: máximo 5 intentos por minuto por IP
@@ -82,4 +91,37 @@ Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
     Route::get('reportes/dashboard', [ReporteController::class, 'dashboardStats']);
     Route::get('reportes/faena', [ReporteController::class, 'faenaReport']);
     Route::get('reportes/desposte', [ReporteController::class, 'desposteReport']);
+
+    // Cavas
+    Route::apiResource('cavas', CavaController::class);
+
+    // Embalajes
+    Route::apiResource('embalajes', EmbalajeController::class);
+
+    // Devoluciones
+    Route::post('devoluciones/{id}/aprobar', [DevolucionController::class, 'aprobar']);
+    Route::apiResource('devoluciones', DevolucionController::class);
+
+    // Pieles
+    Route::apiResource('pieles', PielController::class);
+
+    // Insumos
+    Route::apiResource('insumos', InsumoController::class);
+
+    // Movimientos
+    Route::get('movimientos', [MovimientoController::class, 'index']);
+    Route::post('movimientos', [MovimientoController::class, 'store']);
+
+    // Traslados
+    Route::post('traslados/{id}/ejecutar', [TrasladoController::class, 'ejecutar']);
+    Route::apiResource('traslados', TrasladoController::class);
+
+    // Liquidaciones
+    Route::post('liquidaciones/{id}/aprobar', [LiquidacionController::class, 'aprobar']);
+    Route::post('liquidaciones/{id}/pagar', [LiquidacionController::class, 'marcarPagada']);
+    Route::apiResource('liquidaciones', LiquidacionController::class);
+
+    // Auditorías
+    Route::get('auditorias', [AuditoriaController::class, 'index']);
+    Route::get('auditorias/{id}', [AuditoriaController::class, 'show']);
 });
