@@ -1,0 +1,279 @@
+<div class="space-y-5 animate-fade-in">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Header -->
+  <div class="glass-card p-6">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#00B894,#00CEC9);box-shadow:0 4px 16px rgba(0,184,148,0.25);">
+          <i class="pi pi-sliders-h text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Canales</h1>
+          <p class="text-xs mt-0.5" style="color:#3D4050">Registro de pesos y estado post-sacrificio</p>
+        </div>
+      </div>
+      <button pButton icon="pi pi-plus" label="Registrar Canal" class="p-button-sm"
+        style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;"
+        (click)="openNew()">
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla principal -->
+  <div class="glass-card p-0 overflow-hidden">
+    <p-table [value]="items" [loading]="loading" [paginator]="true" [rows]="25"
+             styleClass="p-datatable-sm" [rowHover]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N° Canal</th>
+          <th>Oreja</th>
+          <th>Tipo</th>
+          <th style="text-align:right">P. Vivo (kg)</th>
+          <th style="text-align:right">PEC (kg)</th>
+          <th style="text-align:right">PEF (kg)</th>
+          <th style="text-align:right">Merma</th>
+          <th style="text-align:right">Rendimiento</th>
+          <th>Fecha Faena</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-c>
+        <tr>
+          <td class="font-bold text-white">{{ c.NumeroCanal }}</td>
+          <td style="color:#8892A4">{{ c.NumeroOreja || '—' }}</td>
+          <td><span class="text-xs font-bold px-2 py-1 rounded-lg" style="background:rgba(108,92,231,0.12);color:#6C5CE7">{{ c.TipoAnimal }}</span></td>
+          <td style="text-align:right;color:#8892A4">{{ c.PesoVivo ? (c.PesoVivo | number:'1.2-2') : '—' }}</td>
+          <td style="text-align:right" [style.color]="c.PesoCanalCaliente ? '#FDCB6E' : '#3D4050'" class="font-semibold">
+            {{ c.PesoCanalCaliente ? (c.PesoCanalCaliente | number:'1.2-2') : '—' }}
+          </td>
+          <td style="text-align:right" [style.color]="c.PesoCanalFria ? '#00B894' : '#3D4050'" class="font-semibold">
+            {{ c.PesoCanalFria ? (c.PesoCanalFria | number:'1.2-2') : '—' }}
+          </td>
+          <td style="text-align:right;color:#D63031;font-size:11px">{{ merma(c) }}</td>
+          <td style="text-align:right;color:#00B894;font-size:11px">{{ rendimiento(c) }}</td>
+          <td style="color:#8892A4;font-size:11px">{{ c.FechaFaena | date:'dd/MM/yyyy' }}</td>
+          <td><p-tag [value]="c.Estado || 'Sacrificado'" [severity]="getSeverity(c.Estado)"></p-tag></td>
+          <td class="text-center">
+            <div class="flex justify-center gap-1">
+              <button pButton icon="pi pi-eye" class="p-button-sm p-button-text p-button-secondary"
+                pTooltip="Ver detalle" (click)="verDetalle(c)"></button>
+              <button pButton icon="pi pi-thermometer" class="p-button-sm p-button-text p-button-warning"
+                pTooltip="Peso en Caliente (PEC)" (click)="openPEC(c)"></button>
+              <button pButton icon="pi pi-snowflake" class="p-button-sm p-button-text p-button-info"
+                pTooltip="Peso en Frío (PEF)" (click)="openPEF(c)"></button>
+              <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text p-button-secondary"
+                pTooltip="Editar" (click)="openEdit(c)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-sm p-button-text p-button-danger"
+                pTooltip="Eliminar" (click)="confirmDelete(c)"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="11" class="text-center py-10" style="color:#3D4050">Sin canales registrados</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- ===== DIALOG: Registrar / Editar Canal ===== -->
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width:'580px'}"
+  [header]="editingId ? 'Editar Canal' : 'Registrar Canal'"
+  [draggable]="false" [resizable]="false">
+  <form [formGroup]="form" class="space-y-4 pt-2">
+    <div class="grid grid-cols-2 gap-4">
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Canal *</label>
+        <input pInputText formControlName="NumeroCanal" class="w-full" placeholder="Ej: C-00001" />
+        <small *ngIf="fi(form,'NumeroCanal')" class="text-red-400">Obligatorio</small>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">N° Oreja / Brazalete</label>
+        <input pInputText formControlName="NumeroOreja" class="w-full" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Tipo Animal *</label>
+        <p-dropdown formControlName="TipoAnimal" [options]="tiposAnimal" class="w-full"></p-dropdown>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Estado</label>
+        <p-dropdown formControlName="Estado" [options]="estados" class="w-full"></p-dropdown>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Peso Vivo (kg)</label>
+        <p-inputNumber formControlName="PesoVivo" [minFractionDigits]="2" class="w-full"></p-inputNumber>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#FDCB6E">Peso Canal Caliente — PEC (kg)</label>
+        <p-inputNumber formControlName="PesoCanalCaliente" [minFractionDigits]="2" class="w-full"></p-inputNumber>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#00B894">Peso Canal Frío — PEF (kg)</label>
+        <p-inputNumber formControlName="PesoCanalFria" [minFractionDigits]="2" class="w-full"></p-inputNumber>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Faena</label>
+        <input type="date" pInputText formControlName="FechaFaena" class="w-full" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Refrigeración</label>
+        <input type="date" pInputText formControlName="FechaRefrigeracion" class="w-full" />
+      </div>
+
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Observaciones Faena</label>
+        <input pInputText formControlName="ObservacionesFaena" class="w-full" />
+      </div>
+
+      <div class="col-span-2 flex items-center gap-3">
+        <p-checkbox formControlName="AptilizadoFaena" [binary]="true" inputId="apto"></p-checkbox>
+        <label for="apto" class="text-sm font-semibold" style="color:#00B894">Aptilizado — Aprobado control calidad</label>
+      </div>
+
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check"
+      style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;" (click)="save()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ===== DIALOG: Peso en Caliente (PEC) ===== -->
+<p-dialog [(visible)]="displayPEC" [modal]="true" [style]="{width:'400px'}"
+  header="Registrar Peso en Caliente (PEC)" [draggable]="false" [resizable]="false">
+  <div *ngIf="selected" class="pt-2 space-y-4">
+    <div class="p-3 rounded-xl flex items-center gap-3" style="background:rgba(253,203,110,0.08);border:1px solid rgba(253,203,110,0.15)">
+      <i class="pi pi-thermometer text-2xl" style="color:#FDCB6E"></i>
+      <div>
+        <p class="text-xs font-bold uppercase" style="color:#3D4050">Canal</p>
+        <p class="font-bold text-white">{{ selected.NumeroCanal }} — {{ selected.TipoAnimal }}</p>
+        <p class="text-xs" style="color:#8892A4">Peso vivo: {{ selected.PesoVivo ? (selected.PesoVivo | number:'1.2-2') : '—' }} kg</p>
+      </div>
+    </div>
+    <form [formGroup]="pecForm" class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#FDCB6E">Peso en Caliente (kg) *</label>
+        <p-inputNumber formControlName="PesoCanalCaliente" [minFractionDigits]="2" [min]="0" class="w-full" [autofocus]="true"></p-inputNumber>
+        <small *ngIf="fi(pecForm,'PesoCanalCaliente')" class="text-red-400">Obligatorio</small>
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Faena</label>
+        <input type="date" pInputText formControlName="FechaFaena" class="w-full" />
+      </div>
+    </form>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayPEC=false"></button>
+    <button pButton label="Guardar PEC" icon="pi pi-thermometer"
+      style="background:linear-gradient(135deg,#FDCB6E,#F9CA24);border:none;color:#2D3436;" (click)="savePEC()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ===== DIALOG: Peso en Frío (PEF) ===== -->
+<p-dialog [(visible)]="displayPEF" [modal]="true" [style]="{width:'420px'}"
+  header="Registrar Peso en Frío (PEF)" [draggable]="false" [resizable]="false">
+  <div *ngIf="selected" class="pt-2 space-y-4">
+    <div class="p-3 rounded-xl flex items-center gap-3" style="background:rgba(0,184,148,0.08);border:1px solid rgba(0,184,148,0.15)">
+      <i class="pi pi-snowflake text-2xl" style="color:#00B894"></i>
+      <div>
+        <p class="text-xs font-bold uppercase" style="color:#3D4050">Canal</p>
+        <p class="font-bold text-white">{{ selected.NumeroCanal }} — {{ selected.TipoAnimal }}</p>
+        <p class="text-xs" style="color:#8892A4">
+          PEC: {{ selected.PesoCanalCaliente ? (selected.PesoCanalCaliente | number:'1.2-2') : '—' }} kg
+        </p>
+      </div>
+    </div>
+    <form [formGroup]="pefForm" class="grid grid-cols-2 gap-4">
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#00B894">Peso en Frío (kg) *</label>
+        <p-inputNumber formControlName="PesoCanalFria" [minFractionDigits]="2" [min]="0" class="w-full" [autofocus]="true"></p-inputNumber>
+        <small *ngIf="fi(pefForm,'PesoCanalFria')" class="text-red-400">Obligatorio</small>
+      </div>
+      <div class="space-y-1 col-span-2">
+        <label class="text-xs font-bold uppercase tracking-widest" style="color:#3D4050">Fecha Refrigeración</label>
+        <input type="date" pInputText formControlName="FechaRefrigeracion" class="w-full" />
+      </div>
+      <div class="col-span-2 flex items-center gap-3">
+        <p-checkbox formControlName="AptilizadoFaena" [binary]="true" inputId="aptoFrio"></p-checkbox>
+        <label for="aptoFrio" class="text-sm font-semibold" style="color:#00B894">Aptilizado — Aprobado control calidad</label>
+      </div>
+    </form>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayPEF=false"></button>
+    <button pButton label="Guardar PEF" icon="pi pi-snowflake"
+      style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;" (click)="savePEF()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ===== DIALOG: Detalle Canal ===== -->
+<p-dialog [(visible)]="displayDetalle" [modal]="true" [style]="{width:'560px'}"
+  header="Detalle de Canal" [draggable]="false" [resizable]="false">
+  <div *ngIf="selected" class="pt-2 space-y-4">
+    <div class="grid grid-cols-3 gap-3">
+      <div class="p-3 rounded-xl text-center" style="background:rgba(108,92,231,0.08);border:1px solid rgba(108,92,231,0.15)">
+        <p class="text-[10px] font-bold uppercase" style="color:#3D4050">Peso Vivo</p>
+        <p class="text-lg font-extrabold text-white">{{ selected.PesoVivo ? (selected.PesoVivo | number:'1.2-2') : '—' }}</p>
+        <p class="text-[10px]" style="color:#3D4050">kg</p>
+      </div>
+      <div class="p-3 rounded-xl text-center" style="background:rgba(253,203,110,0.08);border:1px solid rgba(253,203,110,0.15)">
+        <p class="text-[10px] font-bold uppercase" style="color:#FDCB6E">PEC — Caliente</p>
+        <p class="text-lg font-extrabold" style="color:#FDCB6E">{{ selected.PesoCanalCaliente ? (selected.PesoCanalCaliente | number:'1.2-2') : '—' }}</p>
+        <p class="text-[10px]" style="color:#3D4050">kg</p>
+      </div>
+      <div class="p-3 rounded-xl text-center" style="background:rgba(0,184,148,0.08);border:1px solid rgba(0,184,148,0.15)">
+        <p class="text-[10px] font-bold uppercase" style="color:#00B894">PEF — Frío</p>
+        <p class="text-lg font-extrabold" style="color:#00B894">{{ selected.PesoCanalFria ? (selected.PesoCanalFria | number:'1.2-2') : '—' }}</p>
+        <p class="text-[10px]" style="color:#3D4050">kg</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div class="p-3 rounded-xl" style="background:rgba(255,255,255,0.02)">
+        <p class="text-[10px] font-bold uppercase" style="color:#3D4050">Merma (%)</p>
+        <p class="font-bold" style="color:#D63031">{{ merma(selected) }}</p>
+      </div>
+      <div class="p-3 rounded-xl" style="background:rgba(255,255,255,0.02)">
+        <p class="text-[10px] font-bold uppercase" style="color:#3D4050">Rendimiento (%)</p>
+        <p class="font-bold" style="color:#00B894">{{ rendimiento(selected) }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 text-sm">
+      <div><span class="text-[10px] font-bold uppercase" style="color:#3D4050">N° Canal</span><p class="text-white font-bold mt-0.5">{{ selected.NumeroCanal }}</p></div>
+      <div><span class="text-[10px] font-bold uppercase" style="color:#3D4050">N° Oreja</span><p class="mt-0.5" style="color:#8892A4">{{ selected.NumeroOreja || '—' }}</p></div>
+      <div><span class="text-[10px] font-bold uppercase" style="color:#3D4050">Tipo Animal</span><p class="mt-0.5" style="color:#6C5CE7;font-weight:700">{{ selected.TipoAnimal }}</p></div>
+      <div><span class="text-[10px] font-bold uppercase" style="color:#3D4050">Estado</span><p class="mt-0.5"><p-tag [value]="selected.Estado || 'Sacrificado'" [severity]="getSeverity(selected.Estado)"></p-tag></p></div>
+      <div><span class="text-[10px] font-bold uppercase" style="color:#3D4050">Fecha Faena</span><p class="mt-0.5" style="color:#8892A4">{{ selected.FechaFaena | date:'dd/MM/yyyy HH:mm' }}</p></div>
+      <div><span class="text-[10px] font-bold uppercase" style="color:#3D4050">Fecha Refrigeración</span><p class="mt-0.5" style="color:#8892A4">{{ selected.FechaRefrigeracion | date:'dd/MM/yyyy HH:mm' }}</p></div>
+      <div class="col-span-2"><span class="text-[10px] font-bold uppercase" style="color:#3D4050">Control Calidad</span>
+        <p class="mt-0.5 font-bold" [style.color]="selected.AptilizadoFaena ? '#00B894' : '#D63031'">
+          {{ selected.AptilizadoFaena ? 'APTILIZADO ✓' : 'PENDIENTE' }}
+        </p>
+      </div>
+      <div class="col-span-2" *ngIf="selected.ObservacionesFaena">
+        <span class="text-[10px] font-bold uppercase" style="color:#3D4050">Observaciones</span>
+        <p class="mt-0.5 text-xs" style="color:#8892A4">{{ selected.ObservacionesFaena }}</p>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cerrar" class="p-button-text p-button-secondary" (click)="displayDetalle=false"></button>
+    <button pButton label="Editar" icon="pi pi-pencil"
+      style="background:linear-gradient(135deg,#00B894,#00CEC9);border:none;"
+      (click)="displayDetalle=false; openEdit(selected)"></button>
+  </ng-template>
+</p-dialog>

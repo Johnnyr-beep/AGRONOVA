@@ -16,7 +16,9 @@ class Canal extends Model
     protected $fillable = [
         'NumeroCanal',
         'NumeroOreja',
-        'BasiculaId',
+        'BasculaId',
+        'BeneficioId',
+        'ProveedorId',
         'TipoAnimal',
         'PesoVivo',
         'PesoCanalCaliente',
@@ -26,24 +28,19 @@ class Canal extends Model
         'Estado',
         'AptilizadoFaena',
         'ObservacionesFaena',
-        'ProveedorId',
-        'DesposteId',
-        'FechaDesposte',
         'CodigoQR',
         'CreadoPor',
-        'ModificadoPor',
         'Eliminado',
     ];
 
     protected $casts = [
-        'PesoVivo' => 'decimal:2',
+        'PesoVivo'          => 'decimal:2',
         'PesoCanalCaliente' => 'decimal:2',
-        'PesoCanalFria' => 'decimal:2',
-        'FechaFaena' => 'datetime',
-        'FechaRefrigeracion' => 'datetime',
-        'FechaDesposte' => 'datetime',
-        'AptilizadoFaena' => 'boolean',
-        'Eliminado' => 'boolean',
+        'PesoCanalFria'     => 'decimal:2',
+        'FechaFaena'        => 'datetime',
+        'FechaRefrigeracion'=> 'datetime',
+        'AptilizadoFaena'   => 'boolean',
+        'Eliminado'         => 'boolean',
     ];
 
     public function bascula()

@@ -38,6 +38,7 @@ export class MainLayoutComponent {
     { label: 'Báscula', icon: 'pi pi-server', route: '/bascula' },
     { label: 'Peso en Pie', icon: 'pi pi-chart-line', route: '/peso-en-pie' },
     { label: 'Beneficio', icon: 'pi pi-bolt', route: '/beneficio' },
+    { label: 'Canales', icon: 'pi pi-sliders-h', route: '/canales' },
     { label: 'Desposte', icon: 'pi pi-objects-column', route: '/desposte' },
     { label: 'Acondicionamiento', icon: 'pi pi-box', route: '/acondicionamiento' },
     { label: 'Despacho', icon: 'pi pi-truck', route: '/despacho' },

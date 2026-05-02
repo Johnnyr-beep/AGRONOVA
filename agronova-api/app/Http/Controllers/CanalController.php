@@ -21,9 +21,11 @@ class CanalController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'NumeroCanal'        => 'required|string|unique:Canales',
+            'NumeroCanal'        => 'required|string|unique:Canales,NumeroCanal',
             'NumeroOreja'        => 'nullable|string',
-            'BasiculaId'         => 'nullable|uuid',
+            'BasculaId'          => 'nullable|uuid',
+            'BeneficioId'        => 'nullable|uuid',
+            'ProveedorId'        => 'nullable|uuid',
             'TipoAnimal'         => 'required|in:PORCINO,BOVINO,OVINO,OTROS',
             'PesoVivo'           => 'nullable|numeric|min:0',
             'PesoCanalCaliente'  => 'nullable|numeric|min:0',
@@ -32,10 +34,9 @@ class CanalController extends Controller
             'FechaRefrigeracion' => 'nullable|date',
             'AptilizadoFaena'    => 'nullable|boolean',
             'ObservacionesFaena' => 'nullable|string',
-            'ProveedorId'        => 'nullable|uuid',
         ]);
 
-        $validated['Estado'] = 0;
+        $validated['Estado'] = 'Sacrificado';
         $validated['CreadoPor'] = auth()->user()->getKey();
 
         return response()->json(Canal::create($validated), 201);
@@ -53,20 +54,21 @@ class CanalController extends Controller
         $canal = Canal::findOrFail($id);
 
         $validated = $request->validate([
-            'NumeroCanal'        => "nullable|string|unique:Canales,NumeroCanal,{$id}",
+            'NumeroCanal'        => "nullable|string|unique:Canales,NumeroCanal,{$id},Id",
             'NumeroOreja'        => 'nullable|string',
+            'BeneficioId'        => 'nullable|uuid',
+            'ProveedorId'        => 'nullable|uuid',
             'TipoAnimal'         => 'nullable|in:PORCINO,BOVINO,OVINO,OTROS',
             'PesoVivo'           => 'nullable|numeric|min:0',
             'PesoCanalCaliente'  => 'nullable|numeric|min:0',
             'PesoCanalFria'      => 'nullable|numeric|min:0',
             'FechaFaena'         => 'nullable|date',
             'FechaRefrigeracion' => 'nullable|date',
-            'Estado'             => 'nullable|integer',
+            'Estado'             => 'nullable|string',
             'AptilizadoFaena'    => 'nullable|boolean',
             'ObservacionesFaena' => 'nullable|string',
         ]);
 
-        $validated['ModificadoPor'] = auth()->user()->getKey();
         $canal->update($validated);
 
         return response()->json($canal);

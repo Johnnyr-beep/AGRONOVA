@@ -14,6 +14,7 @@ export const routes: Routes = [
       { path: 'bascula', loadComponent: () => import('./bascula/bascula.component').then(m => m.BasculaComponent) },
       { path: 'peso-en-pie', loadComponent: () => import('./peso-en-pie/peso-en-pie.component').then(m => m.PesoEnPieComponent) },
       { path: 'beneficio', loadComponent: () => import('./beneficio/beneficio.component').then(m => m.BeneficioComponent) },
+      { path: 'canales', loadComponent: () => import('./canales/canales.component').then(m => m.CanalesComponent) },
       { path: 'desposte', loadComponent: () => import('./desposte/desposte.component').then(m => m.DesposteComponent) },
       { path: 'despacho', loadComponent: () => import('./despacho/despacho.component').then(m => m.DespachoComponent) },
       { path: 'acondicionamiento', loadComponent: () => import('./acondicionamiento/acondicionamiento.component').then(m => m.AcondicionamientoComponent) },
